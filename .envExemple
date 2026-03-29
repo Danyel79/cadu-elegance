@@ -1,0 +1,8 @@
+# Copie para .env e preencha com o projeto Appwrite (Console → Settings).
+# https://appwrite.io/docs
+
+VITE_APPWRITE_PROJECT_ID=6938618b00071d1a0c7b
+VITE_APPWRITE_ENDPOINT=https://sfo.cloud.appwrite.io/v1
+VITE_APPWRITE_DATABASE_ID=695191e800348139a325
+VITE_APPWRITE_USER_PROFILE_COLLECTION_ID=userprofile
+VITE_APPWRITE_SERVICES_COLLECTION_ID=services

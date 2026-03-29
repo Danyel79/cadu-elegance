@@ -1,6 +1,41 @@
 // src/context/authService.js
-import { account } from "./appwriteConfig";
-import { ID } from "appwrite";
+import { account, databases } from "./appwriteConfig";
+import { ID, Permission, Role } from "appwrite";
+
+const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID || "";
+const USER_PROFILE_COLLECTION_ID =
+  import.meta.env.VITE_APPWRITE_USER_PROFILE_COLLECTION_ID || "";
+
+/** Role padrão no registo; admin altera para "admin" ou "profissional" na consola ou app admin. */
+const DEFAULT_APP_ROLE = "client";
+
+async function createUserProfileDocument(user, nickName) {
+  if (!DATABASE_ID || !USER_PROFILE_COLLECTION_ID) {
+    throw new Error(
+      "Defina VITE_APPWRITE_DATABASE_ID e VITE_APPWRITE_USER_PROFILE_COLLECTION_ID no .env."
+    );
+  }
+
+  const label = (nickName || user.name || "").trim();
+
+  await databases.createDocument(
+    DATABASE_ID,
+    USER_PROFILE_COLLECTION_ID,
+    ID.unique(),
+    {
+      userId: user.$id,
+      nickName: label,
+      roles: [DEFAULT_APP_ROLE],
+      services: [],
+    },
+    [
+      Permission.read(Role.user(user.$id)),
+      Permission.update(Role.user(user.$id)),
+      Permission.read(Role.label("admin")),
+      Permission.update(Role.label("admin")),
+    ]
+  );
+}
 
 async function login(email, senha) {
   if (!email || !email.trim()) {
@@ -12,7 +47,7 @@ async function login(email, senha) {
   }
 
   try {
-    const session = await account.createEmailSession(email, senha);
+    const session = await account.createEmailPasswordSession(email, senha);
 
     return {
       success: true,
@@ -125,7 +160,17 @@ async function register(name, email, senha) {
   }
 
   try {
-    const user = await account.create(ID.unique(), email.trim(), senha.trim(), name.trim());
+    await account.create({
+      userId: ID.unique(),
+      email: email.trim(),
+      password: senha.trim(),
+      name: name.trim(),
+    });
+    await account.createEmailPasswordSession(email.trim(), senha.trim());
+
+    const user = await account.get();
+
+    await createUserProfileDocument(user, name.trim());
 
     return {
       success: true,

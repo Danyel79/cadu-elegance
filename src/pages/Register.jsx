@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -10,8 +10,14 @@ function Register() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
+  const { user, signUp } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/home", { replace: true });
+    }
+  }, [user, navigate]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -35,9 +41,9 @@ function Register() {
     setLoading(false);
 
     if (result.success) {
-      setSuccess("Cadastro realizado com sucesso. Redirecionando para login...");
+      setSuccess("Cadastro realizado com sucesso. Redirecionando...");
       setError("");
-      setTimeout(() => navigate("/login"), 1000);
+      setTimeout(() => navigate("/home", { replace: true }), 600);
     } else {
       setError(result.error || "Erro ao cadastrar.");
       setSuccess("");
