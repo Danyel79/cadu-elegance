@@ -1,17 +1,22 @@
 // src/context/appwriteClient.js
-import { Permission, Role } from "appwrite";
-import { databases, storage, teams, users } from "./appwriteConfig";
+import { ID, Permission, Role } from "appwrite";
+import { databases, storage, teams } from "./appwriteConfig";
 
 const AppwriteClient = {
   databases,
   storage,
   teams,
-  users,
 
   // Utilizar backup com ID único no Appwrite (quando tiver variável de ambiente).
   createDocument: async ({ databaseId, collectionId, data, permissions = [] }) => {
     try {
-      const doc = await databases.createDocument(databaseId, collectionId, "unique()", data, permissions);
+      const doc = await databases.createDocument(
+        databaseId,
+        collectionId,
+        ID.unique(),
+        data,
+        permissions
+      );
       return { success: true, data: doc };
     } catch (error) {
       return { success: false, error, message: error.message || "Erro ao criar documento." };

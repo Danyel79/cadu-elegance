@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -8,8 +8,14 @@ function Login() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { user, signIn } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/home", { replace: true });
+    }
+  }, [user, navigate]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -30,7 +36,6 @@ function Login() {
     if (result.success) {
       setSuccess("Login efetuado com sucesso!");
       setError("");
-      navigate("/");
     } else {
       setError(result.error || "Erro ao autenticar.");
       setSuccess("");

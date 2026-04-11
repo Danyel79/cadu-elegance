@@ -1,9 +1,16 @@
 // src/context/appwriteConfig.js
-import { Client, Account, Databases, Storage, Teams, Users } from "appwrite";
+import { Client, Account, Databases, Storage, Teams } from "appwrite";
 
-// Substitua pelos valores do seu Appwrite
-const APPWRITE_ENDPOINT = "https://[SEU_APPWRITE_HOST]/v1";
-const APPWRITE_PROJECT = "[SEU_PROJECT_ID]";
+// Cloud: https://cloud.appwrite.io/v1 | self-host: https://seu-dominio/v1
+const APPWRITE_ENDPOINT =
+  import.meta.env.VITE_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1";
+const APPWRITE_PROJECT = import.meta.env.VITE_APPWRITE_PROJECT_ID || "";
+
+if (!APPWRITE_PROJECT && import.meta.env.DEV) {
+  console.warn(
+    "[Appwrite] Defina VITE_APPWRITE_PROJECT_ID no ficheiro .env (ver .env.example)."
+  );
+}
 
 const client = new Client()
   .setEndpoint(APPWRITE_ENDPOINT)
@@ -13,6 +20,5 @@ const account = new Account(client);
 const databases = new Databases(client);
 const storage = new Storage(client);
 const teams = new Teams(client);
-const users = new Users(client);
 
-export { client, account, databases, storage, teams, users };
+export { client, account, databases, storage, teams };
