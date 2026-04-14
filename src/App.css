@@ -634,3 +634,724 @@
   cursor: not-allowed;
 }
 
+/* —— Atelier auth (login + register) —— alinhado a src/stitch/login_the_modern_atelier e cadastro_the_modern_atelier_2 */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined', sans-serif;
+  font-weight: 300;
+  font-style: normal;
+  font-size: 1.25rem;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+.atelier-auth {
+  --a-bg: #131313;
+  --a-surface: #131313;
+  --a-on-surface: #e5e2e1;
+  --a-on-variant: #d0c5af;
+  --a-primary: #f2ca50;
+  --a-primary-dim: #d4af37;
+  --a-on-primary: #3c2f00;
+  --a-outline: rgba(77, 70, 53, 0.4);
+  --a-panel: #2a2a2a;
+  --a-panel-high: #353534;
+  --a-stone: #78716c;
+  box-sizing: border-box;
+}
+
+.atelier-auth *,
+.atelier-auth *::before,
+.atelier-auth *::after {
+  box-sizing: inherit;
+}
+
+.atelier-auth--login {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--a-bg);
+  color: var(--a-on-surface);
+  font-family: Manrope, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.atelier-auth-login-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.atelier-auth-login-bg-photo {
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+  background-size: cover;
+  background-position: center;
+}
+
+.atelier-auth-login-bg-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--a-bg) 0%,
+    transparent 45%,
+    transparent 55%,
+    var(--a-bg) 100%
+  );
+}
+
+.atelier-auth-login-main {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 28rem;
+  padding: 3rem 1.5rem 2rem;
+}
+
+.atelier-auth-brand {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.atelier-auth-logo {
+  font-family: 'Noto Serif', Georgia, serif;
+  font-size: clamp(1.35rem, 4.5vw, 1.9rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--a-primary);
+  margin: 0 0 0.5rem;
+  line-height: 1.2;
+}
+
+.atelier-auth-logo--sm {
+  font-size: 1.2rem;
+  letter-spacing: 0.05em;
+  display: inline-block;
+}
+
+.atelier-auth-tagline {
+  margin: 0;
+  font-size: 0.625rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--a-on-variant);
+  opacity: 0.7;
+}
+
+.atelier-auth-card {
+  background: rgba(19, 19, 19, 0.8);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  border: 1px solid rgba(77, 70, 53, 0.12);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+.atelier-auth-card-head {
+  margin-bottom: 2rem;
+}
+
+.atelier-auth-eyebrow {
+  display: block;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--a-primary);
+  margin-bottom: 0.35rem;
+}
+
+.atelier-auth-eyebrow--on-dark {
+  letter-spacing: 0.3em;
+}
+
+.atelier-auth-title {
+  font-family: 'Noto Serif', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--a-on-surface);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.atelier-auth-title--register {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  margin-bottom: 0.35rem;
+}
+
+.atelier-auth-subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--a-on-variant);
+  line-height: 1.5;
+}
+
+.atelier-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.atelier-auth-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.atelier-auth-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.atelier-auth-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.atelier-auth-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--a-on-variant);
+}
+
+.atelier-auth-field-group:focus-within .atelier-auth-label {
+  color: var(--a-primary);
+}
+
+.atelier-auth-text-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--a-stone);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.atelier-auth-text-btn:hover {
+  color: var(--a-primary);
+}
+
+.atelier-auth-input-line {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--a-outline);
+  background: transparent;
+  padding: 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--a-on-surface);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.atelier-auth-input-line::placeholder {
+  color: #44403c;
+}
+
+.atelier-auth-input-line:focus {
+  border-bottom-color: var(--a-primary);
+}
+
+.atelier-auth-btn-gold {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 1.15rem 1rem;
+  font-family: inherit;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--a-on-primary);
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--a-primary) 0%, var(--a-primary-dim) 100%);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  transition: filter 0.15s, transform 0.1s;
+}
+
+.atelier-auth-btn-gold:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.atelier-auth-btn-gold:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.atelier-auth-btn-gold:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.atelier-auth-btn-gold--register {
+  border-radius: 0.5rem;
+  padding: 1.25rem 1rem;
+  box-shadow: 0 10px 25px rgba(242, 202, 80, 0.2);
+}
+
+.atelier-auth-btn-gold--register:hover:not(:disabled) {
+  box-shadow: 0 15px 35px rgba(242, 202, 80, 0.28);
+  transform: translateY(-1px);
+}
+
+.atelier-auth-btn-icon {
+  font-size: 1rem !important;
+}
+
+.atelier-auth-alert {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.35rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.atelier-auth-alert--error {
+  background: rgba(147, 0, 10, 0.35);
+  color: #ffdad6;
+  border: 1px solid rgba(255, 180, 171, 0.25);
+}
+
+.atelier-auth-alert--success {
+  background: rgba(55, 65, 0, 0.45);
+  color: #d4e157;
+  border: 1px solid rgba(212, 225, 87, 0.2);
+}
+
+.atelier-auth-alert--hint {
+  background: rgba(42, 42, 42, 0.9);
+  color: var(--a-on-variant);
+  border: 1px solid rgba(77, 70, 53, 0.25);
+}
+
+.atelier-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 2.5rem 0;
+}
+
+.atelier-auth-divider-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(77, 70, 53, 0.2);
+}
+
+.atelier-auth-divider-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #57534e;
+}
+
+.atelier-auth-social-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.atelier-auth-social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  border: 1px solid rgba(77, 70, 53, 0.12);
+  background: var(--a-panel);
+  color: var(--a-on-surface);
+  font-family: inherit;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: not-allowed;
+  opacity: 0.85;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.atelier-auth-social-btn:not(:disabled) {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.atelier-auth-social-btn:not(:disabled):hover {
+  background: var(--a-panel-high);
+}
+
+.atelier-auth-login-footer {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+
+.atelier-auth-switch {
+  margin: 0 0 1rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--a-on-variant);
+}
+
+.atelier-auth-switch--center {
+  text-align: center;
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.atelier-auth-switch-muted {
+  color: var(--a-on-variant);
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+}
+
+.atelier-auth-link {
+  color: var(--a-primary);
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 0.15rem;
+}
+
+.atelier-auth-link:hover {
+  text-decoration: underline;
+}
+
+.atelier-auth-legal {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(77, 70, 53, 0.12);
+}
+
+.atelier-auth-legal-link {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #57534e;
+  text-decoration: none;
+}
+
+.atelier-auth-legal-link:hover {
+  color: #a8a29e;
+}
+
+.atelier-auth-floating-quote {
+  display: none;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 2;
+  flex-direction: column;
+  align-items: flex-end;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.atelier-auth-floating-rule {
+  width: 1px;
+  height: 3rem;
+  background: var(--a-primary);
+  margin-bottom: 1rem;
+}
+
+.atelier-auth-floating-text {
+  font-family: 'Noto Serif', Georgia, serif;
+  font-style: italic;
+  font-size: 1.25rem;
+  color: var(--a-on-surface);
+}
+
+@media (min-width: 1024px) {
+  .atelier-auth-floating-quote {
+    display: flex;
+  }
+}
+
+/* Register split layout */
+.atelier-auth--register {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--a-bg);
+  color: var(--a-on-surface);
+  font-family: Manrope, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.atelier-auth-register-shell {
+  width: 100%;
+  max-width: min(72rem, 100%);
+  display: grid;
+  grid-template-columns: 1fr;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+@media (min-width: 1024px) {
+  .atelier-auth-register-shell {
+    grid-template-columns: 5fr 7fr;
+  }
+}
+
+.atelier-auth-register-visual {
+  display: none;
+  position: relative;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 22rem;
+  padding: 3rem;
+  background: #0e0e0e;
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  .atelier-auth-register-visual {
+    display: flex;
+  }
+}
+
+.atelier-auth-register-visual-img-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.atelier-auth-register-visual-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.6;
+}
+
+.atelier-auth-register-visual-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--a-bg) 0%, transparent 55%);
+}
+
+.atelier-auth-register-visual-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.atelier-auth-register-hero-title {
+  font-family: 'Noto Serif', Georgia, serif;
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0 0 1.5rem;
+  color: var(--a-on-surface);
+}
+
+.atelier-auth-register-hero-text {
+  margin: 0;
+  max-width: 20rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--a-on-variant);
+  opacity: 0.85;
+}
+
+.atelier-auth-register-panel {
+  background: var(--a-surface);
+  padding: 2rem 1.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .atelier-auth-register-panel {
+    padding: 3rem 4rem;
+  }
+}
+
+.atelier-auth-register-inner {
+  max-width: 28rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.atelier-auth-register-mobile-brand {
+  margin-bottom: 3rem;
+}
+
+@media (min-width: 1024px) {
+  .atelier-auth-register-mobile-brand {
+    display: none;
+  }
+}
+
+.atelier-auth-register-header {
+  margin-bottom: 2.5rem;
+}
+
+.atelier-auth-register-hint {
+  margin: 0 0 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--a-primary);
+  opacity: 0.75;
+}
+
+.atelier-auth-float-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.atelier-auth-float {
+  position: relative;
+}
+
+.atelier-auth-float-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--a-outline);
+  background: transparent;
+  padding: 0.85rem 0 0.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--a-on-surface);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.atelier-auth-float-input:focus {
+  border-bottom-color: var(--a-primary);
+}
+
+.atelier-auth-float-label {
+  position: absolute;
+  left: 0;
+  top: 0.85rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--a-on-variant);
+  pointer-events: none;
+  transform-origin: left center;
+  transition: transform 0.2s ease, color 0.2s, font-size 0.2s;
+}
+
+.atelier-auth-float-input:focus + .atelier-auth-float-label,
+.atelier-auth-float-input:not(:placeholder-shown) + .atelier-auth-float-label {
+  transform: translateY(-1.35rem) scale(0.82);
+  color: var(--a-primary);
+}
+
+.atelier-auth-register-two-col {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .atelier-auth-register-two-col {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+}
+
+.atelier-auth-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.atelier-auth-checkbox {
+  margin-top: 0.15rem;
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  accent-color: var(--a-primary);
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.atelier-auth-terms-label {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--a-on-variant);
+  cursor: pointer;
+}
+
+.atelier-auth-inline-link {
+  color: var(--a-primary);
+  text-decoration: none;
+}
+
+.atelier-auth-inline-link:hover {
+  text-decoration: underline;
+}
+
+.atelier-auth-register-actions {
+  padding-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.atelier-auth-register-foot {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(77, 70, 53, 0.12);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  opacity: 0.4;
+  color: var(--a-on-variant);
+}
+
+.atelier-auth-register-foot .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+.atelier-auth-register-foot-text {
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+

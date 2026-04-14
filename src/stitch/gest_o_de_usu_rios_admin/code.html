@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Management | The Modern Atelier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@300;400;600;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed-dim": "#e9c349",
+                    "on-secondary-container": "#b6b5b4",
+                    "on-primary-fixed": "#241a00",
+                    "on-tertiary-fixed-variant": "#474746",
+                    "surface": "#131313",
+                    "on-tertiary": "#313030",
+                    "on-secondary-fixed-variant": "#474747",
+                    "on-primary-container": "#554300",
+                    "inverse-on-surface": "#313030",
+                    "inverse-surface": "#e5e2e1",
+                    "on-surface-variant": "#d0c5af",
+                    "surface-container": "#201f1f",
+                    "tertiary": "#d0cdcd",
+                    "background": "#131313",
+                    "secondary": "#c8c6c6",
+                    "error": "#ffb4ab",
+                    "surface-bright": "#393939",
+                    "on-background": "#e5e2e1",
+                    "primary-fixed": "#ffe088",
+                    "surface-container-high": "#2a2a2a",
+                    "secondary-fixed-dim": "#c8c6c6",
+                    "outline-variant": "#4d4635",
+                    "surface-container-highest": "#353534",
+                    "outline": "#99907c",
+                    "on-secondary": "#303030",
+                    "on-tertiary-fixed": "#1c1b1b",
+                    "surface-container-low": "#1c1b1b",
+                    "secondary-fixed": "#e4e2e1",
+                    "on-secondary-fixed": "#1b1c1c",
+                    "on-primary": "#3c2f00",
+                    "on-primary-fixed-variant": "#574500",
+                    "tertiary-fixed": "#e5e2e1",
+                    "on-tertiary-container": "#454544",
+                    "error-container": "#93000a",
+                    "inverse-primary": "#735c00",
+                    "on-surface": "#e5e2e1",
+                    "on-error-container": "#ffdad6",
+                    "on-error": "#690005",
+                    "primary-container": "#d4af37",
+                    "primary": "#f2ca50",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "tertiary-container": "#b4b2b2",
+                    "secondary-container": "#474747",
+                    "surface-variant": "#353534",
+                    "surface-tint": "#e9c349",
+                    "surface-container-lowest": "#0e0e0e",
+                    "surface-dim": "#131313"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Noto Serif"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; background-color: #131313; color: #e5e2e1; }
+        .font-serif { font-family: 'Noto Serif', serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #131313; }
+        ::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-x-hidden">
+<!-- SideNavBar Anchor -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-stone-950 flex flex-col py-8 border-r border-stone-800/20 z-40">
+<div class="px-8 mb-12">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-8 h-8 rounded-full bg-primary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-amber-200 text-xl" data-icon="content_cut">content_cut</span>
+</div>
+<h2 class="font-serif italic text-amber-200 text-xl">The Atelier</h2>
+</div>
+<p class="font-serif text-sm tracking-tight font-light text-stone-500">Master Admin</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center transition-transform duration-300 hover:bg-stone-900/80 hover:translate-x-1 text-amber-400 font-bold border-l-4 border-amber-500 pl-4 bg-stone-900 py-3" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="group">group</span>
+<span class="font-serif text-lg tracking-tight font-light">Client List</span>
+</a>
+<a class="flex items-center transition-transform duration-300 hover:bg-stone-900/80 hover:translate-x-1 text-stone-500 pl-4 py-3 hover:text-stone-300" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="content_cut">content_cut</span>
+<span class="font-serif text-lg tracking-tight font-light">Staff Management</span>
+</a>
+<a class="flex items-center transition-transform duration-300 hover:bg-stone-900/80 hover:translate-x-1 text-stone-500 pl-4 py-3 hover:text-stone-300" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="inventory_2">inventory_2</span>
+<span class="font-serif text-lg tracking-tight font-light">Inventory</span>
+</a>
+<a class="flex items-center transition-transform duration-300 hover:bg-stone-900/80 hover:translate-x-1 text-stone-500 pl-4 py-3 hover:text-stone-300" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="insights">insights</span>
+<span class="font-serif text-lg tracking-tight font-light">Analytics</span>
+</a>
+<a class="flex items-center transition-transform duration-300 hover:bg-stone-900/80 hover:translate-x-1 text-stone-500 pl-4 py-3 hover:text-stone-300" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="history">history</span>
+<span class="font-serif text-lg tracking-tight font-light">Archive</span>
+</a>
+</nav>
+<div class="px-6 mb-8">
+<button class="w-full py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold rounded-lg shadow-lg shadow-black/40 text-sm transition-transform duration-200 active:scale-95">
+                Quick Consultation
+            </button>
+</div>
+<div class="px-4 border-t border-stone-800/20 pt-6">
+<a class="flex items-center text-stone-500 pl-4 py-2 hover:text-stone-300 text-sm" href="#">
+<span class="material-symbols-outlined mr-3 text-lg" data-icon="help">help</span>
+<span class="font-serif tracking-tight font-light">Support</span>
+</a>
+<a class="flex items-center text-stone-500 pl-4 py-2 hover:text-stone-300 text-sm" href="#">
+<span class="material-symbols-outlined mr-3 text-lg" data-icon="logout">logout</span>
+<span class="font-serif tracking-tight font-light">Log Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-64 min-h-screen p-12 bg-surface">
+<!-- Header Section -->
+<header class="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
+<div class="max-w-2xl">
+<span class="font-label text-xs uppercase tracking-[0.2em] text-primary mb-4 block">Registry Management</span>
+<h1 class="font-headline text-5xl md:text-6xl text-on-surface font-light leading-tight">Client <span class="italic font-normal">List</span></h1>
+<p class="font-body text-on-surface-variant mt-4 text-lg max-w-md">Oversee the elite circle of The Modern Atelier. Manage permissions and monitor engagement with precision.</p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4 items-center">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors" data-icon="search">search</span>
+<input class="bg-surface-container-low border-b border-outline-variant/40 focus:border-primary focus:ring-0 text-on-surface pl-12 pr-6 py-3 w-64 transition-all" placeholder="Search users..." type="text"/>
+</div>
+<button class="flex items-center gap-2 px-6 py-3 bg-surface-container-highest border border-outline-variant/15 text-on-surface hover:bg-surface-bright transition-colors rounded-lg">
+<span class="material-symbols-outlined text-primary" data-icon="filter_list">filter_list</span>
+<span class="font-label text-sm font-semibold">Roles</span>
+</button>
+</div>
+</header>
+<!-- Bento Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+<div class="bg-surface-container-low p-6 rounded-xl border-l-2 border-primary/30">
+<p class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">Total Members</p>
+<h3 class="font-headline text-3xl">1,248</h3>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border-l-2 border-amber-800/30">
+<p class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">Active Barbers</p>
+<h3 class="font-headline text-3xl">14</h3>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border-l-2 border-stone-600/30">
+<p class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">Administrators</p>
+<h3 class="font-headline text-3xl">03</h3>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border-l-2 border-primary-fixed-dim/30">
+<p class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">New This Week</p>
+<h3 class="font-headline text-3xl">+42</h3>
+</div>
+</div>
+<!-- Data Table Container -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden shadow-2xl shadow-black/60 border border-outline-variant/5">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-stone-950/50">
+<th class="px-8 py-6 font-label text-[10px] uppercase tracking-[0.2em] text-outline font-semibold">Identity</th>
+<th class="px-8 py-6 font-label text-[10px] uppercase tracking-[0.2em] text-outline font-semibold">Email Contact</th>
+<th class="px-8 py-6 font-label text-[10px] uppercase tracking-[0.2em] text-outline font-semibold">Access Level</th>
+<th class="px-8 py-6 font-label text-[10px] uppercase tracking-[0.2em] text-outline font-semibold">Last Access</th>
+<th class="px-8 py-6 font-label text-[10px] uppercase tracking-[0.2em] text-outline font-semibold text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<!-- Row 1 -->
+<tr class="group hover:bg-surface-container-highest/30 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg overflow-hidden bg-stone-800">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="portrait of a professional male with a well-groomed beard against a dark moody background with high contrast" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDVQGG0gtcpxAVMI9ahNmyuGyKjAl76T0Db1drnXFQROW-hBySf0c77ZRnEoGuayxvXTy0vH-VmjKPhqVRz5jRhm4AkQFdCs6XxNEzNK1Wt_QTnQfs9Cj4WjYmBtzeit21jD7zKZ6iLhyWL8vyzwT6mzdgDBdPZpZGLW4X2PLlVzv3vCxpRgMzfIWe4l4aY6n7e7eIfhs3u82jPjsxHrMarvR6k_2QAZhrDM1qfNckMSYv1WW91f6pcqSN3w6bBXGuhSvMYxUr-is"/>
+</div>
+<span class="font-headline text-lg text-on-surface">Julian Thorne</span>
+</div>
+</td>
+<td class="px-8 py-6 font-body text-on-surface-variant text-sm">j.thorne@atelier.com</td>
+<td class="px-8 py-6">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase bg-primary/10 text-primary border border-primary/20">
+                                Admin
+                            </span>
+</td>
+<td class="px-8 py-6 font-body text-on-surface-variant text-sm">Oct 24, 14:32</td>
+<td class="px-8 py-6 text-right">
+<button class="p-2 hover:text-primary transition-colors bg-surface-container-highest rounded-lg border border-outline-variant/20">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="group hover:bg-surface-container-highest/30 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg overflow-hidden bg-stone-800">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="handsome man with sharp jawline and sleek hairstyle in a professional barbershop setting with dramatic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbTeHBOOsr_JHkpEpJB29P5mYL9af8bkLaIWkFIiaCMuB1M4ZAdao9o-mYaHZovKLhz5PFeEkfoou2MvqH6uTsOSU0EyjEsLsD5UYKj2zS9fWOSwt6Yk1kyfRPTVW8gFYm8S86qpzAaTRnWbUHZPDRlbdfijELotlutxxNqIrOlgRC3ugr9bOZwtD5yEDVj4i_K6KK6VHKTJeAv2FshqtVF-8vvLkXyDiR8A33QqVZ8o9gFLaQ4BRKzdUomiYT2uiVNQGBM1KHDwo"/>
+</div>
+<span class="font-headline text-lg text-on-surface">Marcus Vane</span>
+</div>
+</td>
+<td class="px-8 py-6 font-body text-on-surface-variant text-sm">m.vane@atelier.com</td>
+<td class="px-8 py-6">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase bg-amber-900/20 text-amber-200 border border-amber-900/30">
+                                Barber
+                            </span>
+</td>
+<td class="px-8 py-6 font-body text-on-surface-variant text-sm">Oct 24, 09:15</td>
+<td class="px-8 py-6 text-right">
+<button class="p-2 hover:text-primary transition-colors bg-surface-container-highest rounded-lg border border-outline-variant/20">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="group hover:bg-surface-container-highest/30 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg overflow-hidden bg-stone-800">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="sophisticated customer with classic grooming style looking away with atmospheric shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhH6NlzeHXRh554gUKgMfUbWzp88K2IsL0dJzuruPy3FHazXfE7XfG6k_vYjY94FAqysjuWCTHhCVjuszW85bnqd7GdQxd6j7ikDsjr6pLWuBZe3xKktfr9EtplceD5xF1B1ZvWRGC3GJuH816Wov4JAU8tsb_F9_qWQJctCw_CFcAx8R1kyW2bXVTfcX-tuZ-2ZZZyzbhej0HdEvg4ltJx4ojL-0kolJZ3UnyGIF1ANrASlqE-jX0L8RurbW_lbyVVrgABBIMfMQ"/>
+</div>
+<span class="font-headline text-lg text-on-surface">Silas Sterling</span>
+</div>
+</td>
+<td class="px-8 py-6 font-body text-on-surface-variant text-sm">silas.s@gmail.com</td>
+<td class="px-8 py-6">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase bg-stone-800 text-stone-300 border border-stone-700">
+                                Client
+                            </span>
+</td>
+<td class="px-8 py-6 font-body text-on-surface-variant text-sm">Oct 22, 17:45</td>
+<td class="px-8 py-6 text-right">
+<button class="p-2 hover:text-primary transition-colors bg-surface-container-highest rounded-lg border border-outline-variant/20">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="group hover:bg-surface-container-highest/30 transition-colors">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg overflow-hidden bg-stone-800">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" data-alt="distinguished older man with grey hair and sharp suit in a dimly lit luxurious interior" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfLHsjNqs01Bgt_VYwCvWK4L2nMyJbwIPGU8lC1srPUZIAG2CxXb_Pt7cX9edOMZ27Vd4KaZ1Q20tyKVbVekjIvQjuOT2OUstQGRTGN_sbRT2haPPYtWVyxMB3vTuQKcyIoxofwl0FDQ6hTuljD1UkXmvqQIVMGm6ohrUsj90xKl6j6HdG9-_Z6VSjjjsgRuz2XJHQUk8HFp_be-5Dmo9UDlR--be6BimfJBy5Y-8NkLeDbDDg-3OC6c-b5h2_IwBD2CMBGEmLTm8"/>
+</div>
+<span class="font-headline text-lg text-on-surface">Dominic Black</span>
+</div>
+</td>
+<td class="px-8 py-6 font-body text-on-surface-variant text-sm">d.black@corporate.net</td>
+<td class="px-8 py-6">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase bg-stone-800 text-stone-300 border border-stone-700">
+                                Client
+                            </span>
+</td>
+<td class="px-8 py-6 font-body text-on-surface-variant text-sm">Oct 21, 12:00</td>
+<td class="px-8 py-6 text-right">
+<button class="p-2 hover:text-primary transition-colors bg-surface-container-highest rounded-lg border border-outline-variant/20">
+<span class="material-symbols-outlined text-lg" data-icon="edit">edit</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Pagination Overlay -->
+<div class="px-8 py-6 bg-stone-950/20 border-t border-outline-variant/10 flex items-center justify-between">
+<p class="font-body text-xs text-on-surface-variant">Showing 1 to 4 of 1,248 members</p>
+<div class="flex gap-2">
+<button class="p-2 text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded bg-primary text-on-primary font-bold text-xs flex items-center justify-center">1</button>
+<button class="w-8 h-8 rounded hover:bg-surface-container-highest text-on-surface-variant text-xs flex items-center justify-center transition-colors">2</button>
+<button class="w-8 h-8 rounded hover:bg-surface-container-highest text-on-surface-variant text-xs flex items-center justify-center transition-colors">3</button>
+<button class="p-2 text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Luxury Aesthetic Note (Asymmetric Detail) -->
+<div class="mt-24 border-t border-outline-variant/10 pt-8 flex justify-end">
+<div class="max-w-xs text-right italic font-serif text-stone-600 text-sm">
+                "True luxury is felt in the invisible details, the silent organization of a master's craft."
+            </div>
+</div>
+</main>
+<!-- Contextual FAB (Restricted to Home/Dashboard as per rule, but technically allowed here for "New Registration" action from TopNavBar intent) -->
+<button class="fixed bottom-10 right-10 w-16 h-16 bg-primary text-on-primary rounded-lg shadow-2xl flex items-center justify-center hover:scale-110 transition-transform duration-300 z-50">
+<span class="material-symbols-outlined text-3xl" data-icon="person_add">person_add</span>
+</button>
+</body></html>

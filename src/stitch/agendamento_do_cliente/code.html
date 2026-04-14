@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#99907c",
+                        "on-background": "#e5e2e1",
+                        "on-tertiary-container": "#454544",
+                        "on-primary-fixed": "#241a00",
+                        "on-primary-container": "#554300",
+                        "surface-dim": "#131313",
+                        "secondary": "#c8c6c6",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-primary": "#3c2f00",
+                        "inverse-on-surface": "#313030",
+                        "tertiary": "#d0cdcd",
+                        "on-surface": "#e5e2e1",
+                        "surface-tint": "#e9c349",
+                        "on-secondary-fixed-variant": "#474747",
+                        "on-tertiary": "#313030",
+                        "background": "#131313",
+                        "inverse-primary": "#735c00",
+                        "surface-container": "#201f1f",
+                        "on-secondary-fixed": "#1b1c1c",
+                        "secondary-fixed-dim": "#c8c6c6",
+                        "outline-variant": "#4d4635",
+                        "tertiary-container": "#b4b2b2",
+                        "on-secondary-container": "#b6b5b4",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "surface": "#131313",
+                        "on-secondary": "#303030",
+                        "surface-variant": "#353534",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "on-primary-fixed-variant": "#574500",
+                        "surface-container-low": "#1c1b1b",
+                        "primary-fixed": "#ffe088",
+                        "surface-container-highest": "#353534",
+                        "tertiary-fixed": "#e5e2e1",
+                        "on-error": "#690005",
+                        "primary-fixed-dim": "#e9c349",
+                        "secondary-fixed": "#e4e2e1",
+                        "surface-bright": "#393939",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "secondary-container": "#474747",
+                        "error": "#ffb4ab",
+                        "primary": "#f2ca50",
+                        "primary-container": "#d4af37",
+                        "on-surface-variant": "#d0c5af",
+                        "inverse-surface": "#e5e2e1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .primary-gradient {
+            background: linear-gradient(135deg, #f2ca50 0%, #d4af37 100%);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1c1b1b;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #4d4635;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar -->
+<header class="w-full top-0 sticky bg-stone-950/80 backdrop-blur-xl shadow-[0px_20px_40px_rgba(0,0,0,0.4)] z-50">
+<nav class="flex justify-between items-center px-8 h-20 max-w-screen-2xl mx-auto">
+<div class="font-serif italic text-2xl text-yellow-500">The Modern Atelier</div>
+<div class="hidden md:flex items-center gap-8 font-serif tracking-tight text-stone-200">
+<a class="text-yellow-500 border-b-2 border-yellow-500 pb-1" href="#">Dashboard</a>
+<a class="text-stone-400 hover:text-stone-200 transition-colors" href="#">Services</a>
+<a class="text-stone-400 hover:text-stone-200 transition-colors" href="#">Schedule</a>
+<a class="text-stone-400 hover:text-stone-200 transition-colors" href="#">Appointments</a>
+<a class="text-stone-400 hover:text-stone-200 transition-colors" href="#">Analytics</a>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-stone-400 hover:text-stone-200 transition-all scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-stone-400 hover:text-stone-200 transition-all scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</nav>
+</header>
+<main class="max-w-screen-2xl mx-auto px-8 py-12">
+<!-- Hero Title Section -->
+<div class="mb-16">
+<span class="font-label uppercase tracking-widest text-xs text-primary mb-2 block">Executive Concierge</span>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<h1 class="font-headline text-5xl md:text-7xl font-bold tracking-tight text-on-surface">Your Next <br/><span class="italic text-primary-container">Masterpiece</span></h1>
+<p class="font-body text-on-surface-variant max-w-sm mb-2 opacity-80">Curating your aesthetic through precision, tradition, and contemporary craft.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<!-- Left Column: Booking Flow -->
+<div class="lg:col-span-8 space-y-16">
+<!-- Service Grid (Bento Style) -->
+<section>
+<div class="flex items-center justify-between mb-8">
+<h2 class="font-headline text-3xl">Select Service</h2>
+<span class="font-label text-xs uppercase tracking-widest text-outline">Category: All Services</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="group relative bg-surface-container-low p-8 h-64 flex flex-col justify-between transition-all duration-300 hover:bg-surface-container-highest cursor-pointer border-l-2 border-transparent hover:border-primary">
+<div>
+<span class="material-symbols-outlined text-primary mb-4" data-icon="content_cut">content_cut</span>
+<h3 class="font-headline text-xl mb-2">Signature Cut</h3>
+<p class="text-xs text-on-surface-variant uppercase tracking-tighter">45 Minutes • Consultation included</p>
+</div>
+<div class="flex justify-between items-end">
+<span class="font-label font-bold text-2xl text-primary">$85</span>
+<span class="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity" data-icon="add_circle">add_circle</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group relative bg-surface-container-highest p-8 h-64 flex flex-col justify-between transition-all duration-300 border-l-2 border-primary cursor-pointer">
+<div>
+<span class="material-symbols-outlined text-primary mb-4" data-icon="face">face</span>
+<h3 class="font-headline text-xl mb-2">Classic Shave</h3>
+<p class="text-xs text-on-surface-variant uppercase tracking-tighter">30 Minutes • Straight razor &amp; towels</p>
+</div>
+<div class="flex justify-between items-end">
+<span class="font-label font-bold text-2xl text-primary">$60</span>
+<span class="material-symbols-outlined text-primary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group relative bg-surface-container-low p-8 h-64 flex flex-col justify-between transition-all duration-300 hover:bg-surface-container-highest cursor-pointer border-l-2 border-transparent hover:border-primary">
+<div>
+<span class="material-symbols-outlined text-primary mb-4" data-icon="dry_cleaning">dry_cleaning</span>
+<h3 class="font-headline text-xl mb-2">Full Grooming</h3>
+<p class="text-xs text-on-surface-variant uppercase tracking-tighter">90 Minutes • The complete works</p>
+</div>
+<div class="flex justify-between items-end">
+<span class="font-label font-bold text-2xl text-primary">$140</span>
+<span class="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity" data-icon="add_circle">add_circle</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Professional Selection -->
+<section>
+<h2 class="font-headline text-3xl mb-8">Choose Artist</h2>
+<div class="flex gap-8 overflow-x-auto pb-4 custom-scrollbar">
+<div class="flex-shrink-0 w-48 group cursor-pointer">
+<div class="relative mb-4 grayscale group-hover:grayscale-0 transition-all duration-500">
+<img alt="" class="w-48 h-64 object-cover rounded-lg" data-alt="close-up portrait of a professional barber with a manicured beard in a moody studio setting with warm directional lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpKQxcTJPz_xt9sD1Qp0jpUv5HaviZxqtK0JVljwNVfmjV85_Qi3QowE6L0c6-IEON3FZSkLpf4vC3-7Y8coKZbsiG49v-VYxsY1-csJcO8L1RnsirJTyriWE0vgGp_z6nk35uFGz6CkyuvJGe-XwyrariHt22CmucVclsk4DlWCTtBvf_V0esucEzSXpTaGofcaq7LFrp3cqj14BrEJmSRAred4pmez6BB24JQSiE2jkXlDTzGwmw3QwQQWjBLP1fQ7ySLjaYcVc"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"></div>
+</div>
+<h4 class="font-headline text-lg">Julian Vance</h4>
+<p class="text-xs uppercase tracking-widest text-outline">Master Barber</p>
+</div>
+<div class="flex-shrink-0 w-48 group cursor-pointer">
+<div class="relative mb-4 grayscale group-hover:grayscale-0 transition-all duration-500 border-2 border-primary p-1 rounded-lg">
+<img alt="" class="w-46 h-62 object-cover rounded" data-alt="portrait of a focused hair stylist in a professional atelier wearing a black apron with soft bokeh background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeLJa92fMPZg9UBj9gsF5qvF9Raf5Ff-fBY-BKvtMOSZq7u_tEpeyu9A3TlWTn3BtSbN87g_7j-347Eb60PaNI2VcCmKeZOUgM8OQDiqCgxEz4QwfO2nUFUjxOtcAX4yGbB5_wdM8gOwgJ7I_jrfnN340BOjzXmu0oHxcOc3czh8A_pdL3FYRx1PDylDeK72B5xRvTFNGbO_AKRRQkh_-VfL-cU5QVA4Gv-deiMCaEPugdWwwB4DtZMjrVjLUv9TkIKHDlguFiof8"/>
+<div class="absolute bottom-2 right-2 bg-primary text-on-primary text-[10px] px-2 py-1 font-bold">SELECTED</div>
+</div>
+<h4 class="font-headline text-lg">Marcus Thorne</h4>
+<p class="text-xs uppercase tracking-widest text-outline">Straight Razor Specialist</p>
+</div>
+<div class="flex-shrink-0 w-48 group cursor-pointer">
+<div class="relative mb-4 grayscale group-hover:grayscale-0 transition-all duration-500">
+<img alt="" class="w-48 h-64 object-cover rounded-lg" data-alt="portrait of a classic barber with tattoos on arms working in a luxury vintage barbershop environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBotIxktXFv9kAGvEgUQa_-cvVNCxc7fEWPc8JGSQAk-VQhewJBolQvnkxiG5Ktb9X2bBwF94p4HAPaLkkwgkhqm3mvNMkufSPb3GA_Lf8P8aS6jp5rjp8oyNPfbfz8In3-1soUTxhs9kuzhTMHVGGeHBC71OyWsFNrod0AKfM_bejwDh5LzQt2EnXkxsTkPw6mEAXZ1pfQKQMi-X36XtLOGisyBiq4l-00N81oWzEYCt9k1aSHdJXTgZdR1p-DKZgOSIoxGtYVTtc"/>
+</div>
+<h4 class="font-headline text-lg">Elias Reed</h4>
+<p class="text-xs uppercase tracking-widest text-outline">Creative Director</p>
+</div>
+</div>
+</section>
+<!-- Calendar View -->
+<section>
+<h2 class="font-headline text-3xl mb-8">Select Date</h2>
+<div class="bg-surface-container-low p-8 rounded-xl">
+<div class="flex justify-between items-center mb-8">
+<button class="material-symbols-outlined text-outline hover:text-primary transition-colors" data-icon="chevron_left">chevron_left</button>
+<span class="font-headline text-xl">October 2024</span>
+<button class="material-symbols-outlined text-outline hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</button>
+</div>
+<div class="grid grid-cols-7 gap-4 text-center">
+<div class="font-label text-[10px] uppercase tracking-widest text-outline mb-2">Mon</div>
+<div class="font-label text-[10px] uppercase tracking-widest text-outline mb-2">Tue</div>
+<div class="font-label text-[10px] uppercase tracking-widest text-outline mb-2">Wed</div>
+<div class="font-label text-[10px] uppercase tracking-widest text-outline mb-2">Thu</div>
+<div class="font-label text-[10px] uppercase tracking-widest text-outline mb-2">Fri</div>
+<div class="font-label text-[10px] uppercase tracking-widest text-outline mb-2">Sat</div>
+<div class="font-label text-[10px] uppercase tracking-widest text-outline mb-2">Sun</div>
+<!-- Calendar Days -->
+<div class="py-3 text-stone-700">28</div>
+<div class="py-3 text-stone-700">29</div>
+<div class="py-3 text-stone-700">30</div>
+<div class="py-3 hover:text-primary transition-colors cursor-pointer">1</div>
+<div class="py-3 hover:text-primary transition-colors cursor-pointer">2</div>
+<div class="py-3 hover:text-primary transition-colors cursor-pointer">3</div>
+<div class="py-3 hover:text-primary transition-colors cursor-pointer">4</div>
+<div class="py-3 hover:text-primary transition-colors cursor-pointer">5</div>
+<div class="py-3 hover:text-primary transition-colors cursor-pointer">6</div>
+<div class="py-3 bg-primary text-on-primary rounded-lg font-bold">7</div>
+<div class="py-3 hover:text-primary transition-colors cursor-pointer">8</div>
+<div class="py-3 hover:text-primary transition-colors cursor-pointer">9</div>
+<div class="py-3 hover:text-primary transition-colors cursor-pointer">10</div>
+<div class="py-3 hover:text-primary transition-colors cursor-pointer">11</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Summary & Appointments -->
+<div class="lg:col-span-4 space-y-12">
+<!-- Booking Summary Card -->
+<div class="sticky top-32">
+<div class="bg-surface-container-highest p-8 rounded-xl border border-outline-variant/15">
+<h2 class="font-headline text-2xl mb-6">Booking Details</h2>
+<div class="space-y-6 mb-8">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-xs uppercase tracking-widest text-outline mb-1">Service</p>
+<p class="font-medium">Classic Shave</p>
+</div>
+<span class="font-label text-primary">$60</span>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<p class="text-xs uppercase tracking-widest text-outline mb-1">Artist</p>
+<p class="font-medium">Marcus Thorne</p>
+</div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<p class="text-xs uppercase tracking-widest text-outline mb-1">Date &amp; Time</p>
+<p class="font-medium">Monday, Oct 7th @ 11:30 AM</p>
+</div>
+</div>
+</div>
+<div class="pt-6 border-t border-outline-variant/30 mb-8">
+<div class="flex justify-between items-center">
+<span class="font-headline text-lg">Total</span>
+<span class="font-headline text-3xl text-primary">$60.00</span>
+</div>
+</div>
+<button class="w-full primary-gradient text-on-primary font-bold py-4 rounded-lg uppercase tracking-widest text-sm transition-transform active:scale-95 shadow-[0px_10px_20px_rgba(242,202,80,0.2)]">
+                            Confirm Booking
+                        </button>
+</div>
+<!-- My Appointments Section -->
+<div class="mt-12">
+<h2 class="font-headline text-2xl mb-6">My Appointments</h2>
+<div class="space-y-4">
+<!-- Appointment Item -->
+<div class="bg-surface-container-low p-5 border-l-2 border-primary-container">
+<div class="flex justify-between mb-4">
+<div>
+<p class="font-headline text-lg">Signature Cut</p>
+<p class="text-xs text-on-surface-variant">Sept 28, 2024 • 2:00 PM</p>
+</div>
+<span class="material-symbols-outlined text-outline-variant" data-icon="event">event</span>
+</div>
+<div class="flex gap-4 items-center">
+<button class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant hover:text-on-surface transition-colors">Reschedule</button>
+<button class="text-[10px] uppercase tracking-widest font-bold text-error hover:underline transition-all">Cancel</button>
+</div>
+</div>
+<!-- Appointment Item -->
+<div class="bg-surface-container-low p-5 opacity-60">
+<div class="flex justify-between mb-2">
+<div>
+<p class="font-headline text-lg line-through">Beard Trim</p>
+<p class="text-xs text-on-surface-variant">Sept 15, 2024 • 10:30 AM</p>
+</div>
+<span class="text-[10px] uppercase font-bold text-outline">Completed</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-stone-950 w-full py-12 border-t border-stone-900 mt-24">
+<div class="max-w-screen-2xl mx-auto px-12 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="font-serif text-lg text-stone-200">The Modern Atelier</div>
+<div class="flex gap-8 font-sans text-stone-500 text-sm tracking-wide">
+<a class="hover:text-stone-200 transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-stone-200 transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-stone-200 transition-colors" href="#">Contact Support</a>
+<a class="hover:text-stone-200 transition-colors" href="#">Location</a>
+</div>
+<div class="font-sans text-stone-500 text-sm tracking-wide">
+                © 2024 The Modern Atelier. Meticulously Crafted.
+            </div>
+</div>
+</footer>
+</body></html>
