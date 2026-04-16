@@ -28,12 +28,9 @@ async function createUserProfileDocument(user, nickName) {
       roles: [DEFAULT_APP_ROLE],
       services: [],
     },
-    [
-      Permission.read(Role.user(user.$id)),
-      Permission.update(Role.user(user.$id)),
-      Permission.read(Role.label("admin")),
-      Permission.update(Role.label("admin")),
-    ]
+    // Apenas roles que o Appwrite aceita em documentos: any, users, user:id, …/unverified.
+    // Role.label() falha com "Permissions must be one of: …" em muitos projetos (ver adminDataService).
+    [Permission.read(Role.user(user.$id)), Permission.update(Role.user(user.$id))]
   );
 }
 

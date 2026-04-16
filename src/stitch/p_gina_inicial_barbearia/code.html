@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Modern Atelier | Bespoke Grooming</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#99907c",
+                        "on-background": "#e5e2e1",
+                        "on-tertiary-container": "#454544",
+                        "on-primary-fixed": "#241a00",
+                        "on-primary-container": "#554300",
+                        "surface-dim": "#131313",
+                        "secondary": "#c8c6c6",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-primary": "#3c2f00",
+                        "inverse-on-surface": "#313030",
+                        "tertiary": "#d0cdcd",
+                        "on-surface": "#e5e2e1",
+                        "surface-tint": "#e9c349",
+                        "on-secondary-fixed-variant": "#474747",
+                        "on-tertiary": "#313030",
+                        "background": "#131313",
+                        "inverse-primary": "#735c00",
+                        "surface-container": "#201f1f",
+                        "on-secondary-fixed": "#1b1c1c",
+                        "secondary-fixed-dim": "#c8c6c6",
+                        "outline-variant": "#4d4635",
+                        "tertiary-container": "#b4b2b2",
+                        "on-secondary-container": "#b6b5b4",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "surface": "#131313",
+                        "on-secondary": "#303030",
+                        "surface-variant": "#353534",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "on-primary-fixed-variant": "#574500",
+                        "surface-container-low": "#1c1b1b",
+                        "primary-fixed": "#ffe088",
+                        "surface-container-highest": "#353534",
+                        "tertiary-fixed": "#e5e2e1",
+                        "on-error": "#690005",
+                        "primary-fixed-dim": "#e9c349",
+                        "secondary-fixed": "#e4e2e1",
+                        "surface-bright": "#393939",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed-variant": "#474746",
+                        "secondary-container": "#474747",
+                        "error": "#ffb4ab",
+                        "primary": "#f2ca50",
+                        "primary-container": "#d4af37",
+                        "on-surface-variant": "#d0c5af",
+                        "inverse-surface": "#e5e2e1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; background-color: #131313; color: #e5e2e1; }
+        h1, h2, h3, .font-serif { font-family: 'Noto Serif', serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+        .gold-gradient { background: linear-gradient(135deg, #f2ca50 0%, #d4af37 100%); }
+        .glass-nav { backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+    </style>
+</head>
+<body class="bg-background text-on-background">
+<!-- TopNavBar -->
+<nav class="w-full top-0 sticky z-50 bg-stone-950/80 backdrop-blur-xl shadow-[0px_20px_40px_rgba(0,0,0,0.4)]">
+<div class="flex justify-between items-center px-8 h-20 max-w-screen-2xl mx-auto">
+<div class="font-serif italic text-2xl text-yellow-500">The Modern Atelier</div>
+<div class="hidden md:flex gap-10 items-center">
+<a class="font-serif tracking-tight text-yellow-500 border-b-2 border-yellow-500 pb-1" href="#">Dashboard</a>
+<a class="font-serif tracking-tight text-stone-400 hover:text-stone-200 transition-colors" href="#">Services</a>
+<a class="font-serif tracking-tight text-stone-400 hover:text-stone-200 transition-colors" href="#">Schedule</a>
+<a class="font-serif tracking-tight text-stone-400 hover:text-stone-200 transition-colors" href="#">Appointments</a>
+<a class="font-serif tracking-tight text-stone-400 hover:text-stone-200 transition-colors" href="#">Analytics</a>
+</div>
+<div class="flex items-center gap-6">
+<span class="material-symbols-outlined text-stone-400 hover:text-yellow-500 cursor-pointer transition-all scale-95 duration-200" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-stone-400 hover:text-yellow-500 cursor-pointer transition-all scale-95 duration-200" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="relative h-[921px] flex items-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-60 grayscale-[0.3]" data-alt="Moody high-contrast close-up of a professional barber meticulously trimming a beard in a luxury vintage dark-toned studio with warm lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1emBf2FdIhoI-AD5lRQwL_fMRfFixzWgWtxfNFB9g1cztTRv29ZyWuDpv04YCXHtp2tPAFPr-WIgyinVHp9TGC2z4be69gzdiWDd1q5bSKW_sesFVtXGG6NVR8ZLf7AxSKvcfnwepPazk1oO2DDVKrv5pyknr1pwEZyIG_W4gda-gaaVY1FMX90g2GmhToGONGeeZMPZ0aFuk8S14I0cVZaBs4mDC9wpqu534An2KORr2eeMnZqbiKEDdMRRD-reeNfkiOMgDcsI"/>
+<div class="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent"></div>
+</div>
+<div class="relative z-10 px-8 md:px-24 max-w-4xl">
+<span class="font-label uppercase tracking-[0.2em] text-primary text-xs mb-4 block">Est. 2024 — London</span>
+<h1 class="text-6xl md:text-8xl font-serif mb-6 leading-[1.1] tracking-tight">The Art of <br/><span class="italic text-primary">Precision</span></h1>
+<p class="text-lg md:text-xl text-on-surface-variant font-body max-w-xl mb-10 leading-relaxed">
+                Beyond grooming. A private sanctuary where traditional mastery meets modern architectural aesthetics. Tailored for the discerning gentleman.
+            </p>
+<div class="flex flex-col sm:flex-row gap-6">
+<button class="gold-gradient text-on-primary font-label px-10 py-4 rounded-lg font-bold tracking-widest uppercase text-sm hover:brightness-110 transition-all shadow-lg">
+                    Book Now
+                </button>
+<button class="border border-primary/30 text-primary font-label px-10 py-4 rounded-lg font-bold tracking-widest uppercase text-sm hover:bg-primary/10 transition-all">
+                    Our Philosophy
+                </button>
+</div>
+</div>
+</section>
+<!-- Services Section -->
+<section class="py-32 px-8 max-w-screen-2xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+<div class="max-w-2xl">
+<span class="font-label uppercase tracking-widest text-primary text-xs mb-4 block">Curated Menu</span>
+<h2 class="text-5xl font-serif">Signature <span class="italic">Treatments</span></h2>
+</div>
+<p class="text-stone-500 font-body max-w-xs text-right">
+                Every service begins with a personal consultation and ends with a meticulous finish.
+            </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-0.5 bg-stone-900 overflow-hidden">
+<!-- Service Card 1 -->
+<div class="bg-surface group p-12 hover:bg-surface-container-highest transition-all duration-500 relative">
+<div class="absolute left-0 top-0 bottom-0 w-0.5 bg-primary opacity-0 group-hover:opacity-100 transition-all"></div>
+<div class="mb-12">
+<span class="material-symbols-outlined text-4xl text-primary/40 group-hover:text-primary transition-colors" data-icon="content_cut">content_cut</span>
+</div>
+<h3 class="text-2xl font-serif mb-4">Master Cut</h3>
+<p class="text-on-surface-variant font-body mb-8 leading-relaxed">A bespoke haircut tailored to your head shape and lifestyle. Includes a luxury wash and styling.</p>
+<div class="flex justify-between items-center">
+<span class="text-primary font-serif italic text-xl">£65</span>
+<span class="font-label uppercase text-[10px] tracking-widest text-stone-500">60 Mins</span>
+</div>
+</div>
+<!-- Service Card 2 -->
+<div class="bg-surface group p-12 hover:bg-surface-container-highest transition-all duration-500 relative">
+<div class="absolute left-0 top-0 bottom-0 w-0.5 bg-primary opacity-0 group-hover:opacity-100 transition-all"></div>
+<div class="mb-12">
+<span class="material-symbols-outlined text-4xl text-primary/40 group-hover:text-primary transition-colors" data-icon="face">face</span>
+</div>
+<h3 class="text-2xl font-serif mb-4">Straight Razor Shave</h3>
+<p class="text-on-surface-variant font-body mb-8 leading-relaxed">Traditional hot towel service with pre-shave oil, rich lather, and a cold towel finish with botanicals.</p>
+<div class="flex justify-between items-center">
+<span class="text-primary font-serif italic text-xl">£45</span>
+<span class="font-label uppercase text-[10px] tracking-widest text-stone-500">45 Mins</span>
+</div>
+</div>
+<!-- Service Card 3 -->
+<div class="bg-surface group p-12 hover:bg-surface-container-highest transition-all duration-500 relative">
+<div class="absolute left-0 top-0 bottom-0 w-0.5 bg-primary opacity-0 group-hover:opacity-100 transition-all"></div>
+<div class="mb-12">
+<span class="material-symbols-outlined text-4xl text-primary/40 group-hover:text-primary transition-colors" data-icon="brush">brush</span>
+</div>
+<h3 class="text-2xl font-serif mb-4">Beard Sculpting</h3>
+<p class="text-on-surface-variant font-body mb-8 leading-relaxed">Structural shaping and line-up with steam treatment and conditioning essential oils.</p>
+<div class="flex justify-between items-center">
+<span class="text-primary font-serif italic text-xl">£35</span>
+<span class="font-label uppercase text-[10px] tracking-widest text-stone-500">30 Mins</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Professionals Section (Asymmetric Layout) -->
+<section class="py-32 bg-surface-container-low">
+<div class="max-w-screen-2xl mx-auto px-8">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-16 items-start">
+<div class="md:col-span-5 sticky top-32">
+<span class="font-label uppercase tracking-widest text-primary text-xs mb-4 block">The Artisans</span>
+<h2 class="text-5xl font-serif mb-8 leading-tight">Masters of <br/>the <span class="italic">Craft</span></h2>
+<p class="text-on-surface-variant font-body leading-relaxed mb-8">
+                        Our team is composed of award-winning specialists with decades of collective experience in classic barbering and contemporary hair design.
+                    </p>
+<div class="p-8 border-l border-primary/20 bg-stone-900/50">
+<p class="font-serif italic text-xl text-stone-300">"Every head of hair is a canvas, and every cut is a signature of my respect for the client."</p>
+<p class="font-label uppercase text-[10px] tracking-widest mt-4 text-primary">— Julian Vane, Creative Director</p>
+</div>
+</div>
+<div class="md:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-8">
+<div class="space-y-4">
+<div class="aspect-[3/4] bg-stone-800 overflow-hidden rounded-lg">
+<img class="w-full h-full object-cover" data-alt="Monochrome close-up portrait of a male master barber with tattoos, focused expression, cinematic moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDY4usg3CbIJCKFcAiXWO-7_dvwRaqv5R-aC2_qeqZsYME9BtMcF0Fj-pW-0XKLOvyqcOYYpfH9oUXCPcPx29IAHyjmXpSztlDQMqaKeiBE3rNRnmAMrOJ0WhmAafKZFieJziorfOBf21lr0ohB15aip5iXFdI3lN0kNTtzczDcWj6aLsNZ2y6jEd_X6JHGSA-bpY_MFxQV8r3SrhZbfF1Bla9JEDwssY7sFQ43DzLA57OteY4f1EXkCtq7wNUaqhQP9uEYS8XGiXg"/>
+</div>
+<h4 class="text-xl font-serif">Marcus Thorne</h4>
+<p class="font-label uppercase text-[10px] tracking-widest text-primary">Senior Specialist</p>
+</div>
+<div class="space-y-4 mt-12">
+<div class="aspect-[3/4] bg-stone-800 overflow-hidden rounded-lg">
+<img class="w-full h-full object-cover" data-alt="Portrait of a young modern barber in a black denim apron, warm studio lighting, background of luxury barber tools" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHSbNS_IAMMlBZo-sWeQqnH6TJE9BO64uRjQSzTF8Yx15OVOMQ14f45lQ4K47tL1ae625tlLvfifFZ6GjihH2UEAjAfUliisMKILlpZOsL_FGQswS6Ad9l0PjQFIqcHo7cCOHX1uDhvJvvN7RGTcZfdY3jW58jZw3nU6m5ZRkCROZSSX32o2PfjiGgUdMFOl2U2IiFshu4Qry6pdk0y9KUBOYDLcTAzb6thKOTkVP7E94zG_RkPjFYbVCMgzh3L1hu53-OFVMlsOI"/>
+</div>
+<h4 class="text-xl font-serif">Elias Gray</h4>
+<p class="font-label uppercase text-[10px] tracking-widest text-primary">Precision Barber</p>
+</div>
+<div class="space-y-4">
+<div class="aspect-[3/4] bg-stone-800 overflow-hidden rounded-lg">
+<img class="w-full h-full object-cover" data-alt="Sophisticated barber smiling slightly, high-end professional atmosphere, dramatic chiaroscuro lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOCYbdR2n7-PhuYKzOIBX9jo3Z2orCxQCgPUjrBiKmJREF_dAgudjvjHAxR1NjOINMpKA72d_5WLpcq1MTpn5-TD1nd3Azrprj584wtmfN0qxFqN1VL-IBnfS5M77gMjM4SzRCHmdtNnk1ObE83JkY8PJ2LR2S6dr4gYTSmDy2bJCSN0EA1vRf3rqG1I_y1OUuFOdvtKi4UBN9ZF772v5VZm8rwLi0XNDRLxcZNff9JNQU-A68EMB9zXWigSFPievyKLLxtIODwXk"/>
+</div>
+<h4 class="text-xl font-serif">Nathaniel Reed</h4>
+<p class="font-label uppercase text-[10px] tracking-widest text-primary">Style Consultant</p>
+</div>
+<div class="space-y-4 mt-12">
+<div class="aspect-[3/4] bg-stone-800 overflow-hidden rounded-lg">
+<img class="w-full h-full object-cover" data-alt="Portrait of a senior master barber with grey beard, wearing a sharp vest, elegant and authoritative presence" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJRl5UspAiPwYHmI8Y1DZfMYn_4ZuBo1osfRdwJnaAvN8jvsxBfkic1YPVWhGjHbSE9GqmCNP0S5dcyRxuWal9ta7ENfk-lZWhkpuMbqTI-TsA7x3nXhuFSVYYLZzHoN7_qq5mZ4QK3ypVr7fCYfFALDh7A4vkU14JYu8RRoTyaC-eU-fGyt7nyPaqDmDPFOMbgUWAiWhRu9LQfx8LUlx0Wz_SMIBzxroozzj-Hy8ghTlaKxt2fHBevaBT8P_5KJcd_cjrTcJr_Dw"/>
+</div>
+<h4 class="text-xl font-serif">Julian Vane</h4>
+<p class="font-label uppercase text-[10px] tracking-widest text-primary">Creative Director</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonials Section -->
+<section class="py-32 overflow-hidden relative">
+<div class="max-w-screen-2xl mx-auto px-8 relative z-10">
+<h2 class="text-5xl font-serif mb-24 text-center">Client <span class="italic">Reflections</span></h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-16">
+<!-- Testimonial 1 -->
+<div class="flex gap-8 items-start">
+<span class="text-7xl font-serif text-primary/20 leading-none">“</span>
+<div>
+<p class="text-2xl font-serif text-stone-200 leading-relaxed mb-6">
+                            The attention to detail at The Modern Atelier is unmatched. It's not just a haircut; it's a meditative experience that makes me feel like a new man every time.
+                        </p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-0.5 bg-primary/40"></div>
+<span class="font-label uppercase tracking-widest text-xs">Alexander Wright</span>
+</div>
+</div>
+</div>
+<!-- Testimonial 2 -->
+<div class="flex gap-8 items-start">
+<span class="text-7xl font-serif text-primary/20 leading-none">“</span>
+<div>
+<p class="text-2xl font-serif text-stone-200 leading-relaxed mb-6">
+                            Finally, a place that understands the geometry of a beard. Elias took the time to understand my style and executed it with surgical precision.
+                        </p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-0.5 bg-primary/40"></div>
+<span class="font-label uppercase tracking-widest text-xs">James Sterling</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute -right-20 top-1/2 -translate-y-1/2 text-[20rem] font-serif italic text-stone-900/40 select-none pointer-events-none uppercase">
+            Art
+        </div>
+</section>
+<!-- Footer -->
+<footer class="bg-stone-950">
+<div class="flex flex-col md:flex-row justify-between items-center px-12 py-24 gap-12 border-t border-stone-900">
+<div class="flex flex-col items-center md:items-start gap-4">
+<div class="font-serif text-2xl text-stone-200">The Modern Atelier</div>
+<p class="font-sans text-stone-500 text-sm tracking-wide max-w-xs text-center md:text-left">
+                    Refined grooming for the modern individual. Experience the heritage of master barbering.
+                </p>
+</div>
+<div class="flex flex-wrap justify-center gap-12">
+<div class="flex flex-col gap-3">
+<span class="font-label text-stone-400 text-xs uppercase tracking-widest mb-2">Explore</span>
+<a class="font-sans text-stone-500 text-sm tracking-wide hover:text-stone-200 transition-colors" href="#">Privacy Policy</a>
+<a class="font-sans text-stone-500 text-sm tracking-wide hover:text-stone-200 transition-colors" href="#">Terms of Service</a>
+</div>
+<div class="flex flex-col gap-3">
+<span class="font-label text-stone-400 text-xs uppercase tracking-widest mb-2">Connect</span>
+<a class="font-sans text-stone-500 text-sm tracking-wide hover:text-stone-200 transition-colors" href="#">Contact Support</a>
+<a class="font-sans text-stone-500 text-sm tracking-wide hover:text-stone-200 transition-colors" href="#">Location</a>
+</div>
+</div>
+<div class="flex flex-col items-center md:items-end gap-6">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-stone-500 hover:text-primary cursor-pointer transition-colors" data-icon="public">public</span>
+<span class="material-symbols-outlined text-stone-500 hover:text-primary cursor-pointer transition-colors" data-icon="share">share</span>
+<span class="material-symbols-outlined text-stone-500 hover:text-primary cursor-pointer transition-colors" data-icon="mail">mail</span>
+</div>
+<div class="font-sans text-stone-500 text-sm tracking-wide">© 2024 The Modern Atelier. Meticulously Crafted.</div>
+</div>
+</div>
+</footer>
+<!-- FAB for Booking -->
+<div class="fixed bottom-8 right-8 z-50">
+<button class="gold-gradient w-16 h-16 rounded-lg flex items-center justify-center shadow-[0px_20px_40px_rgba(0,0,0,0.4)] hover:scale-105 transition-all group">
+<span class="material-symbols-outlined text-on-primary text-3xl" data-icon="calendar_month" data-weight="fill" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+</button>
+</div>
+</body></html>

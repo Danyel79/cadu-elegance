@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Control Panel | The Modern Atelier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@300;400;600;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline": "#99907c",
+                    "on-background": "#e5e2e1",
+                    "on-tertiary-container": "#454544",
+                    "on-primary-fixed": "#241a00",
+                    "on-primary-container": "#554300",
+                    "surface-dim": "#131313",
+                    "secondary": "#c8c6c6",
+                    "surface-container-high": "#2a2a2a",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-primary": "#3c2f00",
+                    "inverse-on-surface": "#313030",
+                    "tertiary": "#d0cdcd",
+                    "on-surface": "#e5e2e1",
+                    "surface-tint": "#e9c349",
+                    "on-secondary-fixed-variant": "#474747",
+                    "on-tertiary": "#313030",
+                    "background": "#131313",
+                    "inverse-primary": "#735c00",
+                    "surface-container": "#201f1f",
+                    "on-secondary-fixed": "#1b1c1c",
+                    "secondary-fixed-dim": "#c8c6c6",
+                    "outline-variant": "#4d4635",
+                    "tertiary-container": "#b4b2b2",
+                    "on-secondary-container": "#b6b5b4",
+                    "on-tertiary-fixed": "#1c1b1b",
+                    "surface": "#131313",
+                    "on-secondary": "#303030",
+                    "surface-variant": "#353534",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#c8c6c5",
+                    "on-primary-fixed-variant": "#574500",
+                    "surface-container-low": "#1c1b1b",
+                    "primary-fixed": "#ffe088",
+                    "surface-container-highest": "#353534",
+                    "tertiary-fixed": "#e5e2e1",
+                    "on-error": "#690005",
+                    "primary-fixed-dim": "#e9c349",
+                    "secondary-fixed": "#e4e2e1",
+                    "surface-bright": "#393939",
+                    "error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#474746",
+                    "secondary-container": "#474747",
+                    "error": "#ffb4ab",
+                    "primary": "#f2ca50",
+                    "primary-container": "#d4af37",
+                    "on-surface-variant": "#d0c5af",
+                    "inverse-surface": "#e5e2e1"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Noto Serif"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .font-serif { font-family: 'Noto Serif', serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-gold-gradient {
+            background: linear-gradient(135deg, #f2ca50 0%, #d4af37 100%);
+        }
+        .glass-panel {
+            background: rgba(19, 19, 19, 0.8);
+            backdrop-filter: blur(24px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen selection:bg-primary/30">
+<!-- SideNavBar Anchor -->
+<nav class="fixed left-0 top-0 h-full w-64 bg-stone-950 flex flex-col border-r border-stone-800/15 z-50">
+<div class="px-8 py-10">
+<h1 class="font-serif text-xl text-yellow-500">Atelier Admin</h1>
+<p class="font-sans uppercase tracking-widest text-[10px] text-stone-500 mt-1">Master Control</p>
+</div>
+<div class="flex-1 space-y-1">
+<!-- Active State Mapping: Admin Panel -->
+<a class="flex items-center gap-4 bg-stone-900 text-yellow-500 border-l-4 border-yellow-500 px-6 py-4 transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">admin_panel_settings</span>
+<span class="font-sans uppercase tracking-widest text-xs">Admin Panel</span>
+</a>
+<a class="flex items-center gap-4 text-stone-500 px-6 py-4 hover:bg-stone-900 hover:text-stone-200 transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">badge</span>
+<span class="font-sans uppercase tracking-widest text-xs">Manage Professionals</span>
+</a>
+<a class="flex items-center gap-4 text-stone-500 px-6 py-4 hover:bg-stone-900 hover:text-stone-200 transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">content_cut</span>
+<span class="font-sans uppercase tracking-widest text-xs">Service Menu</span>
+</a>
+<a class="flex items-center gap-4 text-stone-500 px-6 py-4 hover:bg-stone-900 hover:text-stone-200 transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="font-sans uppercase tracking-widest text-xs">Revenue Reports</span>
+</a>
+<a class="flex items-center gap-4 text-stone-500 px-6 py-4 hover:bg-stone-900 hover:text-stone-200 transition-all duration-300 ease-in-out" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-sans uppercase tracking-widest text-xs">Settings</span>
+</a>
+</div>
+<div class="p-6">
+<button class="w-full bg-gold-gradient text-on-primary py-4 rounded font-label text-xs uppercase tracking-widest font-bold shadow-[0px_20px_40px_rgba(0,0,0,0.4)]">
+                Create New Entry
+            </button>
+</div>
+<div class="p-6 mt-auto border-t border-stone-900 flex items-center gap-3">
+<img alt="Admin Profile" class="w-10 h-10 rounded-lg object-cover grayscale" data-alt="close up portrait of a sophisticated man with a groomed beard wearing a charcoal suit in a dimly lit luxury interior" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7gLiJdjOs0W5pnOC3u0iRgtfM_7THuyO2D43GjcRjERmhUbXA8x0Ej8lIwCnWMKev0dO0zNLaLgsg3zglxmMxMrrwPJdOgWfUfCGKD2YGtRszBNA-gWluxX8FlzuJWNT18DpDPu-ywqGhBSmk3CURUbiv8h0e79nOC1-Ad4a-t51Y3c52FoTQk_ZZUyTnqc4d155Ch63Xji6QfvuZUCsNlnJscf28sWQaARhOO8oLnywr9YUyiEcIrHRFU_FrgZdrY-_kGss54cU"/>
+<div>
+<p class="text-xs font-bold text-stone-200">Julian Vance</p>
+<p class="text-[10px] text-stone-500 uppercase tracking-tighter">Proprietor</p>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-64 p-12">
+<!-- Header & Stats Bento -->
+<header class="flex justify-between items-end mb-16">
+<div class="space-y-2">
+<span class="font-label text-xs uppercase tracking-[0.3em] text-primary">Overview</span>
+<h2 class="font-serif text-5xl font-bold tracking-tight text-on-surface">Business Performance</h2>
+</div>
+<div class="flex gap-4">
+<div class="px-6 py-3 bg-surface-container-low rounded-lg border border-outline-variant/10">
+<p class="text-[10px] uppercase tracking-widest text-stone-500">Period</p>
+<p class="text-sm font-bold text-on-surface">October 2023</p>
+</div>
+</div>
+</header>
+<!-- Metrics Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+<div class="p-8 bg-surface-container-low border-l-2 border-primary group hover:bg-surface-container-highest transition-all duration-300">
+<p class="font-label text-[10px] uppercase tracking-widest text-stone-500 mb-4">Total Revenue</p>
+<div class="flex items-baseline gap-2">
+<span class="font-serif text-4xl text-on-surface">$42,850</span>
+<span class="text-xs text-green-500 font-bold">+12%</span>
+</div>
+<div class="mt-8 h-1 w-full bg-stone-800 overflow-hidden">
+<div class="h-full bg-primary w-[75%]"></div>
+</div>
+</div>
+<div class="p-8 bg-surface-container-low group hover:bg-surface-container-highest transition-all duration-300">
+<p class="font-label text-[10px] uppercase tracking-widest text-stone-500 mb-4">Total Bookings</p>
+<div class="flex items-baseline gap-2">
+<span class="font-serif text-4xl text-on-surface">1,204</span>
+<span class="text-xs text-green-500 font-bold">+5.2%</span>
+</div>
+<div class="mt-8 h-1 w-full bg-stone-800 overflow-hidden">
+<div class="h-full bg-stone-400 w-[60%]"></div>
+</div>
+</div>
+<div class="p-8 bg-surface-container-low group hover:bg-surface-container-highest transition-all duration-300">
+<p class="font-label text-[10px] uppercase tracking-widest text-stone-500 mb-4">Avg. Ticket</p>
+<div class="flex items-baseline gap-2">
+<span class="font-serif text-4xl text-on-surface">$35.50</span>
+<span class="text-xs text-stone-500 font-bold">Stable</span>
+</div>
+<div class="mt-8 h-1 w-full bg-stone-800 overflow-hidden">
+<div class="h-full bg-stone-400 w-[45%]"></div>
+</div>
+</div>
+</section>
+<!-- Professional Management & Top Performers -->
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-12">
+<!-- Left: Top Performers (Asymmetric Column) -->
+<div class="lg:col-span-2 space-y-8">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-serif text-2xl text-on-surface">Top Artisans</h3>
+<a class="text-[10px] uppercase tracking-widest text-primary border-b border-primary/30 pb-1" href="#">View All</a>
+</div>
+<div class="space-y-6">
+<!-- Professional Card 1 -->
+<div class="flex items-center gap-6 p-4 bg-surface-container-low hover:bg-surface-container-highest transition-colors">
+<div class="relative">
+<img alt="Professional" class="w-16 h-16 object-cover rounded grayscale" data-alt="close up studio portrait of a male barber with intricate sleeve tattoos and a sharp undercut hairstyle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4MW9egAFjdaYD7tCrEWW4J0NsagSRBprbzyrtclcjRYt3-Twv10tNYbyjhgEyHMmNfec4PTumZpBLP0gxP1PtR0uY1R6GYABPRqvOxfh9bju_P_wRguMHca_UL8qhcroTKwiENPQeZ7fFcKLWY68njNnruD-9vKL4Q5-KbAlSpJYmeUMHHg98ABO1V8cthpzjMMqKd_4JW7W_3QCrNLWVqveaXFmXVHSmIpkpXSfLjKqZHGUpowyRO86HHdl0a1gwZvTh0vymikg"/>
+<div class="absolute -top-2 -right-2 w-6 h-6 bg-primary text-on-primary flex items-center justify-center text-[10px] font-bold rounded-sm">1</div>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-on-surface">Elias Thorne</p>
+<p class="text-[10px] uppercase tracking-widest text-stone-500">Master Barber</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-primary">$14,200</p>
+<p class="text-[10px] text-stone-600 uppercase tracking-tighter">248 Bookings</p>
+</div>
+</div>
+<!-- Professional Card 2 -->
+<div class="flex items-center gap-6 p-4 bg-surface-container-low hover:bg-surface-container-highest transition-colors">
+<div class="relative">
+<img alt="Professional" class="w-16 h-16 object-cover rounded grayscale" data-alt="high contrast studio portrait of a barber with slicked back hair and a handlebar mustache posing with grooming scissors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjWMHfZ9UKqm10VJ1F_1KT9lbk6Ww2xRyWkio3sYyI-curvPDG3Sik7FZOJhPeGmc1sxRmJp_rCkZz56LyXo304X9JGRsukIzJ18pOIO-rUvRn89sB1bt1t59xHBjEDpiEA8FLfVWDL8cWXP4aIOez5VMyCcIzpcL7oDf_5d5OYfXyJ1ALHqtvM6G-jI1EjOgksJqDfPqRwNpUUpUrdVattdm4PXGmdhKMobUeSRFgICHQawSNbWDSuomUX1WufkLtfEYj5cHhlMQ"/>
+<div class="absolute -top-2 -right-2 w-6 h-6 bg-stone-700 text-stone-200 flex items-center justify-center text-[10px] font-bold rounded-sm">2</div>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-on-surface">Marcus Reed</p>
+<p class="text-[10px] uppercase tracking-widest text-stone-500">Senior Stylist</p>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-primary">$11,850</p>
+<p class="text-[10px] text-stone-600 uppercase tracking-tighter">192 Bookings</p>
+</div>
+</div>
+</div>
+<div class="mt-12 p-10 bg-surface-container-highest border border-outline-variant/10 rounded-xl relative overflow-hidden">
+<div class="relative z-10">
+<h4 class="font-serif text-xl mb-4 italic text-primary">Artisan Recruitment</h4>
+<p class="text-stone-400 text-sm leading-relaxed mb-6">Expand your atelier with new talent. Quality over quantity is the foundation of our craft.</p>
+<button class="text-[10px] uppercase tracking-widest text-on-surface px-6 py-3 border border-outline-variant/30 hover:border-primary transition-all">Add Professional</button>
+</div>
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-stone-900/50 select-none">content_cut</span>
+</div>
+</div>
+<!-- Right: Service Menu Management -->
+<div class="lg:col-span-3 space-y-8">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-serif text-2xl text-on-surface">Service Categories</h3>
+<button class="flex items-center gap-2 text-[10px] uppercase tracking-widest text-stone-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">add</span> Add Category
+                    </button>
+</div>
+<div class="space-y-12">
+<!-- Category: Signature Grooming -->
+<div class="space-y-6">
+<div class="flex items-center gap-4">
+<span class="h-[1px] flex-1 bg-stone-800"></span>
+<span class="font-label text-[10px] uppercase tracking-[0.2em] text-stone-500">Signature Grooming</span>
+<span class="h-[1px] flex-1 bg-stone-800"></span>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<!-- Service Item -->
+<div class="flex items-center justify-between p-6 bg-surface-container-low border-l-2 border-transparent hover:border-primary group transition-all">
+<div>
+<h5 class="text-on-surface font-bold text-sm tracking-tight">The Royal Shave</h5>
+<p class="text-xs text-stone-500 mt-1">45 min • Hot towel, straight razor, essential oils</p>
+</div>
+<div class="flex items-center gap-8">
+<span class="font-serif text-lg text-primary">$65.00</span>
+<div class="flex gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="material-symbols-outlined text-stone-500 hover:text-on-surface text-lg">edit</button>
+<button class="material-symbols-outlined text-stone-500 hover:text-error text-lg">delete</button>
+</div>
+</div>
+</div>
+<!-- Service Item -->
+<div class="flex items-center justify-between p-6 bg-surface-container-low border-l-2 border-transparent hover:border-primary group transition-all">
+<div>
+<h5 class="text-on-surface font-bold text-sm tracking-tight">Executive Cut &amp; Style</h5>
+<p class="text-xs text-stone-500 mt-1">60 min • Consultation, precision cut, scalp massage</p>
+</div>
+<div class="flex items-center gap-8">
+<span class="font-serif text-lg text-primary">$85.00</span>
+<div class="flex gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="material-symbols-outlined text-stone-500 hover:text-on-surface text-lg">edit</button>
+<button class="material-symbols-outlined text-stone-500 hover:text-error text-lg">delete</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Category: Maintenance -->
+<div class="space-y-6">
+<div class="flex items-center gap-4">
+<span class="h-[1px] flex-1 bg-stone-800"></span>
+<span class="font-label text-[10px] uppercase tracking-[0.2em] text-stone-500">Maintenance</span>
+<span class="h-[1px] flex-1 bg-stone-800"></span>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<!-- Service Item -->
+<div class="flex items-center justify-between p-6 bg-surface-container-low border-l-2 border-transparent hover:border-primary group transition-all">
+<div>
+<h5 class="text-on-surface font-bold text-sm tracking-tight">Beard Sculpting</h5>
+<p class="text-xs text-stone-500 mt-1">30 min • Freehand clipper work and line up</p>
+</div>
+<div class="flex items-center gap-8">
+<span class="font-serif text-lg text-primary">$40.00</span>
+<div class="flex gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="material-symbols-outlined text-stone-500 hover:text-on-surface text-lg">edit</button>
+<button class="material-symbols-outlined text-stone-500 hover:text-error text-lg">delete</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Subtle Grid Accent -->
+<div class="pt-12 grid grid-cols-2 gap-8">
+<div class="p-8 border border-outline-variant/10 bg-stone-950/40 rounded-lg flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-stone-700 text-3xl mb-4">analytics</span>
+<p class="text-[10px] uppercase tracking-[0.2em] text-stone-600">Category Insights</p>
+<p class="text-xs text-stone-400 mt-2">"Grooming" accounts for 68% of bookings.</p>
+</div>
+<div class="p-8 border border-outline-variant/10 bg-stone-950/40 rounded-lg flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-stone-700 text-3xl mb-4">history_edu</span>
+<p class="text-[10px] uppercase tracking-[0.2em] text-stone-600">Price Log</p>
+<p class="text-xs text-stone-400 mt-2">Last price update: Sept 12, 2023.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Anchor -->
+<footer class="ml-64 bg-stone-950 border-t border-stone-900 py-12 px-12 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="text-stone-500 text-sm font-sans tracking-wide">
+            © 2024 The Modern Atelier. Meticulously Crafted.
+        </div>
+<div class="flex gap-8">
+<a class="text-stone-600 hover:text-stone-200 transition-colors text-sm font-sans uppercase tracking-widest" href="#">Privacy Policy</a>
+<a class="text-stone-600 hover:text-stone-200 transition-colors text-sm font-sans uppercase tracking-widest" href="#">Terms of Service</a>
+<a class="text-stone-600 hover:text-stone-200 transition-colors text-sm font-sans uppercase tracking-widest" href="#">Contact Support</a>
+<a class="text-stone-600 hover:text-stone-200 transition-colors text-sm font-sans uppercase tracking-widest" href="#">Location</a>
+</div>
+<div class="font-serif text-lg text-stone-200 italic">
+            The Modern Atelier
+        </div>
+</footer>
+</body></html>
