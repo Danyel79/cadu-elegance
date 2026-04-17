@@ -1355,3 +1355,622 @@
   text-transform: uppercase;
 }
 
+/* Admin Layout Styles */
+.atelier-admin {
+  min-height: 100vh;
+  background: #131313;
+  color: #e5e2e1;
+  font-family: 'Manrope', sans-serif;
+  display: flex;
+  overflow-x: hidden;
+}
+
+.atelier-admin-sidebar {
+  width: 256px;
+  background: #0f0f0f;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 40;
+}
+
+.atelier-admin-sidebar-header {
+  padding: 0 32px 24px;
+}
+
+.atelier-admin-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.atelier-admin-sidebar-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(242, 202, 80, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.atelier-admin-sidebar-logo-icon {
+  color: #f2ca50;
+  font-size: 20px;
+}
+
+.atelier-admin-sidebar-title {
+  font-family: 'Noto Serif', serif;
+  font-style: italic;
+  color: #f2ca50;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.atelier-admin-sidebar-subtitle {
+  font-family: 'Noto Serif', serif;
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+.atelier-admin-sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 0 32px;
+}
+
+.atelier-admin-sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px 12px 32px;
+  text-decoration: none;
+  color: #64748b;
+  transition: all 0.3s ease;
+  position: relative;
+  font-family: 'Noto Serif', serif;
+  font-size: 18px;
+  font-weight: 300;
+}
+
+.atelier-admin-sidebar-nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e5e2e1;
+  transform: translateX(4px);
+}
+
+.atelier-admin-sidebar-nav-item--active {
+  color: #f2ca50;
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid #f2ca50;
+  padding-left: 28px;
+}
+
+.atelier-admin-sidebar-nav-item--active:hover {
+  color: #f2ca50;
+}
+
+.atelier-admin-sidebar-nav-icon {
+  margin-right: 12px;
+  font-size: 20px;
+}
+
+.atelier-admin-sidebar-nav-text {
+  font-weight: 300;
+}
+
+.atelier-admin-sidebar-actions {
+  padding: 0 24px 32px;
+}
+
+.atelier-admin-btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(to-br, #f2ca50, #d4af37);
+  color: #241a00;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.atelier-admin-btn-primary:hover {
+  transform: scale(0.98);
+}
+
+.atelier-admin-btn-primary:active {
+  transform: scale(0.95);
+}
+
+.atelier-admin-btn-full {
+  width: 100%;
+}
+
+.atelier-admin-sidebar-footer {
+  padding: 0 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 24px;
+}
+
+.atelier-admin-sidebar-footer-link {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  color: #64748b;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.atelier-admin-sidebar-footer-link:hover {
+  color: #e5e2e1;
+}
+
+.atelier-admin-sidebar-footer-icon {
+  margin-right: 12px;
+  font-size: 18px;
+}
+
+.atelier-admin-sidebar-footer-text {
+  font-family: 'Noto Serif', serif;
+  font-weight: 300;
+}
+
+.atelier-admin-main {
+  margin-left: 256px;
+  min-height: 100vh;
+  padding: 48px;
+  background: #131313;
+}
+
+/* Admin Content Styles */
+.atelier-admin-header {
+  margin-bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.atelier-admin-header-content {
+  max-width: 512px;
+}
+
+.atelier-admin-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #f2ca50;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.atelier-admin-title {
+  font-family: 'Noto Serif', serif;
+  font-size: 48px;
+  font-weight: 300;
+  line-height: 1.2;
+  color: #e5e2e1;
+  margin: 0;
+}
+
+.atelier-admin-title em {
+  font-style: italic;
+  font-weight: 400;
+}
+
+.atelier-admin-subtitle {
+  font-size: 18px;
+  color: #d0c5af;
+  margin: 16px 0 0;
+  max-width: 416px;
+}
+
+.atelier-admin-header-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.atelier-admin-search-group {
+  position: relative;
+}
+
+.atelier-admin-search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #99907c;
+  font-size: 20px;
+  transition: color 0.2s ease;
+}
+
+.atelier-admin-search-input {
+  background: #1c1b1b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  color: #e5e2e1;
+  padding: 12px 16px 12px 48px;
+  border-radius: 0;
+  font-size: 16px;
+  width: 256px;
+  transition: all 0.2s ease;
+}
+
+.atelier-admin-search-input:focus {
+  outline: none;
+  border-bottom-color: #f2ca50;
+}
+
+.atelier-admin-search-input:focus + .atelier-admin-search-icon {
+  color: #f2ca50;
+}
+
+.atelier-admin-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #2a2a2a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e5e2e1;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.atelier-admin-filter-btn:hover {
+  background: #393939;
+}
+
+.atelier-admin-filter-icon {
+  color: #f2ca50;
+}
+
+/* Stats Grid */
+.atelier-admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.atelier-admin-stat-card {
+  background: #1c1b1b;
+  padding: 24px;
+  border-radius: 12px;
+  border-left: 3px solid #f2ca50;
+  position: relative;
+}
+
+.atelier-admin-stat-card--barber {
+  border-left-color: #d4af37;
+}
+
+.atelier-admin-stat-card--admin {
+  border-left-color: #64748b;
+}
+
+.atelier-admin-stat-card--new {
+  border-left-color: #e9c349;
+}
+
+.atelier-admin-stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #d0c5af;
+  margin-bottom: 8px;
+}
+
+.atelier-admin-stat-value {
+  font-family: 'Noto Serif', serif;
+  font-size: 36px;
+  font-weight: 300;
+  color: #e5e2e1;
+  margin: 0;
+}
+
+/* Table Styles */
+.atelier-admin-table-container {
+  background: #1c1b1b;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.atelier-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.atelier-admin-table thead {
+  background: rgba(15, 15, 15, 0.5);
+}
+
+.atelier-admin-table th {
+  padding: 24px 32px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #99907c;
+}
+
+.atelier-admin-table td {
+  padding: 24px 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+
+.atelier-admin-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.atelier-admin-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.atelier-admin-table-identity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.atelier-admin-table-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #2a2a2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.atelier-admin-table-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%);
+  transition: filter 0.5s ease;
+}
+
+.atelier-admin-table-avatar:hover img {
+  filter: grayscale(0%);
+}
+
+.atelier-admin-table-name {
+  font-family: 'Noto Serif', serif;
+  font-size: 18px;
+  color: #e5e2e1;
+}
+
+.atelier-admin-table-email {
+  font-size: 14px;
+  color: #d0c5af;
+}
+
+.atelier-admin-role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.atelier-admin-role-badge--admin {
+  background: rgba(242, 202, 80, 0.1);
+  color: #f2ca50;
+  border: 1px solid rgba(242, 202, 80, 0.2);
+}
+
+.atelier-admin-role-badge--barber {
+  background: rgba(212, 175, 55, 0.1);
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.atelier-admin-role-badge--client {
+  background: #2a2a2a;
+  color: #94a3b8;
+  border: 1px solid #475569;
+}
+
+.atelier-admin-table-last-access {
+  font-size: 14px;
+  color: #d0c5af;
+}
+
+.atelier-admin-table-actions {
+  text-align: right;
+}
+
+.atelier-admin-action-btn {
+  padding: 8px;
+  background: #2a2a2a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #e5e2e1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.atelier-admin-action-btn:hover {
+  color: #f2ca50;
+  background: #353534;
+}
+
+.atelier-admin-action-icon {
+  font-size: 18px;
+}
+
+/* Pagination */
+.atelier-admin-pagination {
+  padding: 24px 32px;
+  background: rgba(15, 15, 15, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.atelier-admin-pagination-info {
+  font-size: 12px;
+  color: #d0c5af;
+}
+
+.atelier-admin-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.atelier-admin-pagination-btn {
+  padding: 8px;
+  color: #99907c;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.atelier-admin-pagination-btn:hover {
+  color: #f2ca50;
+}
+
+.atelier-admin-pagination-current {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #f2ca50;
+  color: #241a00;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.atelier-admin-pagination-page {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  color: #d0c5af;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.atelier-admin-pagination-page:hover {
+  background: #2a2a2a;
+  color: #e5e2e1;
+}
+
+/* Quote */
+.atelier-admin-quote {
+  margin-top: 96px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  text-align: right;
+}
+
+.atelier-admin-quote-text {
+  max-width: 256px;
+  font-family: 'Noto Serif', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* FAB */
+.atelier-admin-fab {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: #f2ca50;
+  color: #241a00;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  transition: all 0.3s ease;
+  z-index: 50;
+}
+
+.atelier-admin-fab:hover {
+  transform: scale(1.1);
+}
+
+.atelier-admin-fab-icon {
+  font-size: 36px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .atelier-admin-sidebar {
+    width: 100%;
+    position: relative;
+    height: auto;
+    padding: 24px 0;
+  }
+
+  .atelier-admin-main {
+    margin-left: 0;
+    padding: 24px 16px;
+  }
+
+  .atelier-admin-header {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .atelier-admin-title {
+    font-size: 36px;
+  }
+
+  .atelier-admin-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .atelier-admin-table-container {
+    overflow-x: auto;
+  }
+
+  .atelier-admin-table th,
+  .atelier-admin-table td {
+    padding: 16px 16px;
+    min-width: 120px;
+  }
+}
+
