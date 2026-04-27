@@ -11,6 +11,11 @@ export default function Home() {
       <div className="login-form">
         <h1>Bem-vindo</h1>
         <p>Usuário: {user?.name || user?.email || "Usuário"}</p>
+        <p className="home-admin-link-wrap">
+          <Link className="home-admin-link" to="/client">
+            Área do cliente
+          </Link>
+        </p>
         {isAdmin && (
           <p className="home-admin-link-wrap">
             <Link className="home-admin-link" to="/admin">

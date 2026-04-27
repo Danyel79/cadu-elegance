@@ -10,11 +10,11 @@ const USER_PROFILE_COLLECTION_ID =
 const DEFAULT_APP_ROLE = "client";
 
 async function createUserProfileDocument(user, nickName) {
-  if (!DATABASE_ID || !USER_PROFILE_COLLECTION_ID) {
-    throw new Error(
-      "Defina VITE_APPWRITE_DATABASE_ID e VITE_APPWRITE_USER_PROFILE_COLLECTION_ID no .env."
-    );
-  }
+  // if (!DATABASE_ID || !USER_PROFILE_COLLECTION_ID) {
+  //   throw new Error(
+  //     "Defina VITE_APPWRITE_DATABASE_ID e VITE_APPWRITE_USER_PROFILE_COLLECTION_ID no .env."
+  //   );
+  // }
 
   const label = (nickName || user.name || "").trim();
 

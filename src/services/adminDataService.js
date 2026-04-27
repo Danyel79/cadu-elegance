@@ -11,6 +11,8 @@ const USER_PROFILE_COLLECTION_ID =
   import.meta.env.VITE_APPWRITE_USER_PROFILE_COLLECTION_ID || "";
 const SERVICES_COLLECTION_ID =
   import.meta.env.VITE_APPWRITE_SERVICES_COLLECTION_ID || "";
+const BOOKINGS_COLLECTION_ID =
+  import.meta.env.VITE_APPWRITE_BOOKINGS_COLLECTION_ID || "";
 
 const APP_ROLES = ["admin", "profissional", "client"];
 
@@ -58,7 +60,105 @@ export async function getMyUserProfile(userId) {
     };
   }
 }
+export function isProfessionalProfile(profile) {
+  if (!profile?.roles?.length) return false;
+  return profile.roles.some((r) => String(r).toLowerCase() === "profissional");
+}
 
+export async function listProfessionals() {
+  // if (!DATABASE_ID || !USER_PROFILE_COLLECTION_ID) {
+  //   return { success: false, error: "Defina VITE_APPWRITE_DATABASE_ID e VITE_APPWRITE_USER_PROFILE_COLLECTION_ID no .env.", data: [] };
+  // }
+  try {
+    const res = await databases.listDocuments(DATABASE_ID, USER_PROFILE_COLLECTION_ID, [
+      Query.equal("roles", "profissional"),
+      Query.orderAsc("nickName"),
+      Query.limit(500),
+    ]);
+    return { success: true, data: res.documents };
+  } catch (e) {
+    return { success: false, error: e.message || "Erro ao listar profissionais.", data: [] };
+  }
+}
+
+export async function listBookingsForUser(userId) {
+  // if (!DATABASE_ID || !BOOKINGS_COLLECTION_ID) {
+  //   return { success: false, error: "Defina VITE_APPWRITE_DATABASE_ID e VITE_APPWRITE_BOOKINGS_COLLECTION_ID no .env.", data: [] };
+  // }
+  try {
+    const res = await databases.listDocuments(DATABASE_ID, BOOKINGS_COLLECTION_ID, [
+      Query.equal("userId", userId),
+      Query.orderDesc("$createdAt"),
+      Query.limit(500),
+    ]);
+    return { success: true, data: res.documents };
+  } catch (e) {
+    return { success: false, error: e.message || "Erro ao listar agendamentos.", data: [] };
+  }
+}
+
+export async function listBookingsForProfessional(professionalProfileId, date) {
+  // if (!DATABASE_ID || !BOOKINGS_COLLECTION_ID) {
+  //   return { success: false, error: "Defina VITE_APPWRITE_DATABASE_ID e VITE_APPWRITE_BOOKINGS_COLLECTION_ID no .env.", data: [] };
+  // }
+  try {
+    const res = await databases.listDocuments(DATABASE_ID, BOOKINGS_COLLECTION_ID, [
+      Query.equal("professionalProfileId", professionalProfileId),
+      Query.equal("date", date),
+      Query.limit(500),
+    ]);
+    return { success: true, data: res.documents };
+  } catch (e) {
+    return { success: false, error: e.message || "Erro ao listar horários ocupados.", data: [] };
+  }
+}
+
+export async function createBookingRecord({
+  userId,
+  professionalProfileId,
+  professionalUserId,
+  professionalLabel,
+  serviceId,
+  serviceName,
+  servicePrice,
+  date,
+  time,
+}) {
+  // if (!DATABASE_ID || !BOOKINGS_COLLECTION_ID) {
+  //   return { success: false, error: "Defina VITE_APPWRITE_DATABASE_ID e VITE_APPWRITE_BOOKINGS_COLLECTION_ID no .env." };
+  // }
+
+  if (!userId || !professionalProfileId || !serviceId || !date || !time) {
+    return { success: false, error: "Dados incompletos para criar o agendamento." };
+  }
+
+  try {
+    const doc = await databases.createDocument(
+      DATABASE_ID,
+      BOOKINGS_COLLECTION_ID,
+      ID.unique(),
+      {
+        userId,
+        professionalProfileId,
+        professionalUserId,
+        professionalLabel,
+        serviceId,
+        serviceName,
+        servicePrice,
+        date,
+        time,
+        status: "confirmado",
+      },
+      [
+        Permission.read(Role.user(userId)),
+        Permission.write(Role.user(userId)),
+      ]
+    );
+    return { success: true, data: doc };
+  } catch (e) {
+    return { success: false, error: e.message || "Erro ao criar agendamento." };
+  }
+}
 export async function getUserProfileDocument(documentId) {
   if (!DATABASE_ID || !USER_PROFILE_COLLECTION_ID) {
     return { success: false, error: "Variáveis de base de dados em falta no .env." };
