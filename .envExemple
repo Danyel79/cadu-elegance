@@ -6,3 +6,17 @@ VITE_APPWRITE_ENDPOINT=https://sfo.cloud.appwrite.io/v1
 VITE_APPWRITE_DATABASE_ID=695191e800348139a325
 VITE_APPWRITE_USER_PROFILE_COLLECTION_ID=userprofile
 VITE_APPWRITE_SERVICES_COLLECTION_ID=services
+# ID da coleção em Appwrite (Settings → Name), ex.: agendamentos — tem de bater certo com a consola
+VITE_APPWRITE_BOOKINGS_COLLECTION_ID=agendamentos
+
+# Schema agendamentos (defeito no código): clienteId, profissionalId, servicoId, data, hora, status.
+# Valor do enum `status` ao criar (tem de coincidir com a consola, ex.: AGENDADO, CANCELADO, CONCLUIDO):
+# VITE_APPWRITE_BOOKINGS_STATUS_DEFAULT=AGENDADO
+#
+# Opcional: overrides se os keys na consola forem outros.
+# VITE_APPWRITE_BOOKINGS_FIELD_USER_ID=clienteId
+# VITE_APPWRITE_BOOKINGS_FIELD_PROFESSIONAL_PROFILE=profissionalId
+# VITE_APPWRITE_BOOKINGS_FIELD_SERVICE_ID=servicoId
+# VITE_APPWRITE_BOOKINGS_FIELD_DATE=data
+# VITE_APPWRITE_BOOKINGS_FIELD_TIME=hora
+# VITE_APPWRITE_BOOKINGS_FIELD_STATUS=status

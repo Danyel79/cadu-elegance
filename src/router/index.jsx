@@ -6,6 +6,11 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminUsers from "../pages/admin/AdminUsers";
 import AdminUserEdit from "../pages/admin/AdminUserEdit";
 import AdminServiceForm from "../pages/admin/AdminServiceForm";
+import ClientDashboard from "../pages/client/ClientDashboard";
+import ClientBookAppointment from "../pages/client/ClientBookAppointment";
+import ClientServices from "../pages/client/ClientServices";
+import ClientBookings from "../pages/client/ClientBookings";
+import ClientProfile from "../pages/client/ClientProfile";
 import { useAuth } from "../context/AuthContext";
 import { useUserProfile } from "../hooks/useUserProfile";
 
@@ -49,6 +54,46 @@ export default function AppRouter() {
           element={
             <PrivateRoute>
               <Home />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/client"
+          element={
+            <PrivateRoute>
+              <ClientDashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/client/book"
+          element={
+            <PrivateRoute>
+              <ClientBookAppointment />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/client/services"
+          element={
+            <PrivateRoute>
+              <ClientServices />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/client/bookings"
+          element={
+            <PrivateRoute>
+              <ClientBookings />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/client/profile"
+          element={
+            <PrivateRoute>
+              <ClientProfile />
             </PrivateRoute>
           }
         />
