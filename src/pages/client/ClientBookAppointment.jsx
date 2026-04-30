@@ -7,6 +7,7 @@ import {
   listBookingsForProfessional,
   createBookingRecord,
 } from "../../services/adminDataService";
+import { CLIENT_AREA_INNER_STYLE, CLIENT_AREA_MAIN_STYLE } from "./clientAreaLayout";
 
 const AVAILABLE_TIMES = ["09:00", "10:30", "12:00", "14:30", "16:00", "17:30"];
 const DAYS_AHEAD = 14;
@@ -132,11 +133,7 @@ export default function ClientBookAppointment() {
     const res = await createBookingRecord({
       userId: user.$id,
       professionalProfileId: selectedProfessional.$id,
-      professionalUserId: selectedProfessional.userId,
-      professionalLabel: selectedProfessional.nickName || selectedProfessional.userId,
       serviceId: selectedService.$id,
-      serviceName: selectedService.name,
-      servicePrice: selectedService.price,
       date: selectedDate,
       time: selectedTime,
     });
@@ -160,14 +157,22 @@ export default function ClientBookAppointment() {
     }
   }
 
+  const sectionHeadingStyle = { margin: 0, color: "#d1b76b" };
+
   return (
-    <main style={{ padding: "32px", minHeight: "100vh", background: "#070707", color: "#f6f2e8" }}>
-      <div style={{ maxWidth: "1180px", margin: "0 auto" }}>
-        <header style={{ marginBottom: "32px" }}>
-          <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: "12px" }}>
+    <main style={CLIENT_AREA_MAIN_STYLE}>
+      <div style={CLIENT_AREA_INNER_STYLE}>
+        <header style={{ marginBottom: "42px" }}>
+          <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.24em", marginBottom: "12px" }}>
             Agendamento exclusivo
           </p>
-          <h1 style={{ fontSize: "clamp(2rem, 2.8vw, 3.4rem)", marginBottom: "14px" }}>
+          <h1
+            style={{
+              fontSize: "clamp(2rem, 2.8vw, 3.4rem)",
+              marginBottom: "14px",
+              color: "#f6f2e8",
+            }}
+          >
             Marcar horário com profissional
           </h1>
           <p style={{ maxWidth: "740px", lineHeight: 1.8, color: "#beb7a3" }}>
@@ -179,7 +184,7 @@ export default function ClientBookAppointment() {
           <section style={{ display: "grid", gap: "18px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "14px" }}>
               <div>
-                <h2 style={{ margin: 0 }}>1. Selecione um profissional</h2>
+                <h2 style={sectionHeadingStyle}>1. Selecione um profissional</h2>
                 <p style={{ margin: "8px 0 0", color: "#beb7a3" }}>
                   Profissionais com serviços cadastrados aparecem aqui para agendar.
                 </p>
@@ -215,7 +220,7 @@ export default function ClientBookAppointment() {
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
                       <div>
-                        <h3 style={{ margin: 0 }}>{professional.nickName || professional.userId}</h3>
+                        <h3 style={{ margin: 0, color: "#d1b76b" }}>{professional.nickName || professional.userId}</h3>
                         <p style={{ margin: "6px 0 0", color: "#beb7a3" }}>
                           {availableServices} serviço(s) atribuídos
                         </p>
@@ -225,8 +230,7 @@ export default function ClientBookAppointment() {
                       </span>
                     </div>
                     <p style={{ margin: 0, color: "#beb7a3" }}>
-                      {/* {professional.roles?.join(", ")} */}
-                      {console.log(professional.roles)  }
+                      {professional.roles?.length ? professional.roles.join(", ") : null}
                     </p>
                   </button>
                 );
@@ -238,7 +242,7 @@ export default function ClientBookAppointment() {
             <section style={{ display: "grid", gap: "18px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "14px" }}>
                 <div>
-                  <h2 style={{ margin: 0 }}>2. Selecione o serviço</h2>
+                  <h2 style={sectionHeadingStyle}>2. Selecione o serviço</h2>
                   <p style={{ margin: "8px 0 0", color: "#beb7a3" }}>
                     Apenas serviços atribuídos ao profissional aparecem aqui.
                   </p>
@@ -283,7 +287,7 @@ export default function ClientBookAppointment() {
                         }}
                       >
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                          <h3 style={{ margin: 0 }}>{service.name}</h3>
+                          <h3 style={{ margin: 0, color: "#d1b76b" }}>{service.name}</h3>
                           <strong style={{ color: "#d1b76b" }}>
                             {Number(service.price).toFixed(2).replace(".", ",")} €
                           </strong>
@@ -301,7 +305,7 @@ export default function ClientBookAppointment() {
 
           {selectedService && (
             <section style={{ display: "grid", gap: "18px" }}>
-              <h2 style={{ margin: 0 }}>3. Selecione data e horário</h2>
+              <h2 style={sectionHeadingStyle}>3. Selecione data e horário</h2>
               <p style={{ margin: "8px 0 0", color: "#beb7a3" }}>
                 Escolha o dia e horário disponíveis para o profissional.
               </p>
@@ -371,7 +375,7 @@ export default function ClientBookAppointment() {
 
           {selectedDate && selectedTime && (
             <section style={{ padding: "24px", borderRadius: "24px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(209, 183, 107, 0.18)" }}>
-              <h2 style={{ margin: 0 }}>4. Confirme o agendamento</h2>
+              <h2 style={sectionHeadingStyle}>4. Confirme o agendamento</h2>
               <div style={{ display: "grid", gap: "10px", marginTop: "18px", color: "#beb7a3" }}>
                 <span>Profissional: {selectedProfessional.nickName || selectedProfessional.userId}</span>
                 <span>Serviço: {selectedService.name}</span>

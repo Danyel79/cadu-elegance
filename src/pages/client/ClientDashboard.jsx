@@ -1,27 +1,26 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useUserProfile } from "../../hooks/useUserProfile";
+import { CLIENT_AREA_INNER_STYLE, CLIENT_AREA_MAIN_STYLE } from "./clientAreaLayout";
 
 export default function ClientDashboard() {
   const { user, signOut } = useAuth();
   const { isAdmin } = useUserProfile();
 
   return (
-    <main
-      className="client-dashboard"
-      style={{
-        minHeight: "100vh",
-        padding: "36px 24px",
-        background: "#080808",
-        color: "#f6f2e8",
-      }}
-    >
-      <div style={{ maxWidth: "1180px", margin: "0 auto" }}>
+    <main className="client-dashboard" style={CLIENT_AREA_MAIN_STYLE}>
+      <div style={CLIENT_AREA_INNER_STYLE}>
         <header style={{ marginBottom: "42px" }}>
           <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.24em", marginBottom: "10px" }}>
             Área do cliente
           </p>
-          <h1 style={{ fontSize: "clamp(2rem, 3vw, 3.4rem)", marginBottom: "16px" }}>
+          <h1
+            style={{
+              fontSize: "clamp(2rem, 3vw, 3.4rem)",
+              marginBottom: "16px",
+              color: "#f6f2e8",
+            }}
+          >
             Olá, {user?.name || user?.email || "cliente"}
           </h1>
           <p style={{ maxWidth: "700px", lineHeight: 1.8, color: "#beb7a3" }}>
@@ -33,32 +32,32 @@ export default function ClientDashboard() {
           <Link to="/client/book" style={cardStyle}>
             <span className="material-symbols-outlined" style={iconStyle}>calendar_month</span>
             <div>
-              <h2>Agendar</h2>
-              <p>Escolha profissional, serviço, data e horário.</p>
+              <h2 style={cardHeadingStyle}>Agendar</h2>
+              <p style={{ color: "#beb7a3", lineHeight: 1.55 }}>Escolha profissional, serviço, data e horário.</p>
             </div>
           </Link>
 
           <Link to="/client/bookings" style={cardStyle}>
             <span className="material-symbols-outlined" style={iconStyle}>event_available</span>
             <div>
-              <h2>Meus agendamentos</h2>
-              <p>Veja seus compromissos confirmados e históricos.</p>
+              <h2 style={cardHeadingStyle}>Meus agendamentos</h2>
+              <p style={{ color: "#beb7a3", lineHeight: 1.55 }}>Veja seus compromissos confirmados e históricos.</p>
             </div>
           </Link>
 
           <Link to="/client/services" style={cardStyle}>
             <span className="material-symbols-outlined" style={iconStyle}>inventory_2</span>
             <div>
-              <h2>Serviços</h2>
-              <p>Veja apenas os serviços cadastrados pela barbearia.</p>
+              <h2 style={cardHeadingStyle}>Serviços</h2>
+              <p style={{ color: "#beb7a3", lineHeight: 1.55 }}>Veja apenas os serviços cadastrados pela barbearia.</p>
             </div>
           </Link>
 
           <Link to="/client/profile" style={cardStyle}>
             <span className="material-symbols-outlined" style={iconStyle}>person</span>
             <div>
-              <h2>Perfil</h2>
-              <p>Atualize seus dados pessoais e preferências.</p>
+              <h2 style={cardHeadingStyle}>Perfil</h2>
+              <p style={{ color: "#beb7a3", lineHeight: 1.55 }}>Atualize seus dados pessoais e preferências.</p>
             </div>
           </Link>
 
@@ -66,8 +65,8 @@ export default function ClientDashboard() {
             <Link to="/admin" style={cardStyle}>
               <span className="material-symbols-outlined" style={iconStyle}>admin_panel_settings</span>
               <div>
-                <h2>Painel admin</h2>
-                <p>Acesse o painel de administração quando precisar.</p>
+                <h2 style={cardHeadingStyle}>Painel admin</h2>
+                <p style={{ color: "#beb7a3", lineHeight: 1.55 }}>Acesse o painel de administração quando precisar.</p>
               </div>
             </Link>
           )}
@@ -105,6 +104,12 @@ const cardStyle = {
   background: "rgba(255, 255, 255, 0.03)",
   boxShadow: "0 28px 80px rgba(0,0,0,0.25)",
   color: "inherit",
+};
+
+/** Sobrepõe h2 global (index.css usa --text-h) para alinhar ao dourado dos ícones */
+const cardHeadingStyle = {
+  margin: "0 0 8px",
+  color: "#d1b76b",
 };
 
 const iconStyle = {

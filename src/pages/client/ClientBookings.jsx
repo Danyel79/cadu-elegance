@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { listBookingsForUser } from "../../services/adminDataService";
+import { CLIENT_AREA_INNER_STYLE, CLIENT_AREA_MAIN_STYLE } from "./clientAreaLayout";
 
 export default function ClientBookings() {
   const { user } = useAuth();
@@ -27,12 +28,19 @@ export default function ClientBookings() {
   }, [user]);
 
   return (
-    <main style={{ padding: "32px", maxWidth: "1080px", margin: "0 auto", minHeight: "100vh", color: "#f6f2e8", background: "#080808" }}>
-      <header style={{ marginBottom: "32px" }}>
-        <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: "12px" }}>
+    <main style={CLIENT_AREA_MAIN_STYLE}>
+      <div style={CLIENT_AREA_INNER_STYLE}>
+      <header style={{ marginBottom: "42px" }}>
+        <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.24em", marginBottom: "12px" }}>
           Meus agendamentos
         </p>
-        <h1 style={{ fontSize: "clamp(2rem, 2.5vw, 3rem)", marginBottom: "12px" }}>
+        <h1
+          style={{
+            fontSize: "clamp(2rem, 2.5vw, 3rem)",
+            marginBottom: "12px",
+            color: "#f6f2e8",
+          }}
+        >
           Seus horários confirmados
         </h1>
         <p style={{ maxWidth: "700px", lineHeight: 1.75, color: "#beb7a3" }}>
@@ -82,8 +90,8 @@ export default function ClientBookings() {
           >
             <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", marginBottom: "14px" }}>
               <div>
-                <p style={{ margin: 0, color: "#d1b76b", fontWeight: 700 }}>Serviço</p>
-                <h2 style={{ margin: "6px 0 0" }}>{booking.serviceName}</h2>
+                <p style={{ margin: 0, color: "#d1b76b", fontWeight: 700, letterSpacing: "0.02em" }}>Serviço</p>
+                <h2 style={{ margin: "6px 0 0", color: "#d1b76b" }}>{booking.serviceName}</h2>
               </div>
               <div style={{ textAlign: "right" }}>
                 <p style={{ margin: 0, color: "#beb7a3" }}>{booking.date}</p>
@@ -93,7 +101,7 @@ export default function ClientBookings() {
             <div style={{ display: "grid", gap: "8px", color: "#beb7a3" }}>
               <span>Profissional: {booking.professionalLabel || "—"}</span>
               <span>Preço: {booking.servicePrice != null ? `${Number(booking.servicePrice).toFixed(2).replace(".", ",")} €` : "—"}</span>
-              <span>Status: {booking.status || "confirmado"}</span>
+              <span>Status: {booking.status || "—"}</span>
             </div>
           </article>
         ))}
@@ -110,6 +118,7 @@ export default function ClientBookings() {
         >
           ← Voltar para área do cliente
         </Link>
+      </div>
       </div>
     </main>
   );

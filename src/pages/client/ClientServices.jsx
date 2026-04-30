@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { listServicesCatalog } from "../../services/adminDataService";
+import { CLIENT_AREA_INNER_STYLE, CLIENT_AREA_MAIN_STYLE } from "./clientAreaLayout";
 
 export default function ClientServices() {
   const [services, setServices] = useState([]);
@@ -21,12 +22,19 @@ export default function ClientServices() {
   }, []);
 
   return (
-    <main style={{ padding: "32px", maxWidth: "1080px", margin: "0 auto", color: "#f6f2e8", background: "#080808", minHeight: "100vh" }}>
-      <header style={{ marginBottom: "32px" }}>
-        <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: "12px" }}>
+    <main style={CLIENT_AREA_MAIN_STYLE}>
+      <div style={CLIENT_AREA_INNER_STYLE}>
+      <header style={{ marginBottom: "42px" }}>
+        <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.24em", marginBottom: "12px" }}>
           Serviços cadastrados
         </p>
-        <h1 style={{ fontSize: "clamp(2rem, 2.5vw, 3rem)", marginBottom: "12px" }}>
+        <h1
+          style={{
+            fontSize: "clamp(2rem, 2.5vw, 3rem)",
+            marginBottom: "12px",
+            color: "#f6f2e8",
+          }}
+        >
           Serviços disponíveis
         </h1>
         <p style={{ maxWidth: "700px", lineHeight: 1.75, color: "#beb7a3" }}>
@@ -57,7 +65,7 @@ export default function ClientServices() {
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
               <div>
-                <h2 style={{ margin: 0 }}>{service.name}</h2>
+                <h2 style={{ margin: 0, color: "#d1b76b" }}>{service.name}</h2>
                 <p style={{ margin: 0, color: "#beb7a3" }}>{service.description || "Serviço registrado pelo administrador."}</p>
               </div>
               <strong style={{ color: "#d1b76b" }}>
@@ -79,6 +87,7 @@ export default function ClientServices() {
         >
           ← Voltar para área do cliente
         </Link>
+      </div>
       </div>
     </main>
   );
