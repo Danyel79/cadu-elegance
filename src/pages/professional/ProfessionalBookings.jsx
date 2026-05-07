@@ -13,7 +13,7 @@ export default function ProfessionalBookings() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!profile?._id) return;
+    if (!profile?.$id) return;
 
     async function loadBookings() {
       setLoading(true);

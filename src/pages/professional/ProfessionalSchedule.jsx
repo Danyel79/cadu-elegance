@@ -49,7 +49,7 @@ export default function ProfessionalSchedule() {
 
   useEffect(() => {
     async function loadBlocks() {
-      if (!profile?._id) return;
+      if (!profile?.$id) return;
       const res = await listUpcomingProfessionalBlocks(profile.$id);
       if (res.success) {
         setBlockedSlots(res.data);
@@ -78,7 +78,7 @@ export default function ProfessionalSchedule() {
   }
 
   async function refreshBlocks() {
-    if (!profile?._id) return;
+    if (!profile?.$id) return;
     const res = await listUpcomingProfessionalBlocks(profile.$id);
     if (res.success) {
       setBlockedSlots(res.data);
