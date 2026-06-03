@@ -187,6 +187,10 @@ export async function getMyUserProfile(userId) {
     };
   }
 }
+export function isProfessionalProfile(profile) {
+  if (!profile?.roles?.length) return false;
+  return profile.roles.some((r) => String(r).toLowerCase() === "profissional");
+}
 
 export async function listProfessionals() {
   // if (!DATABASE_ID || !USER_PROFILE_COLLECTION_ID) {
