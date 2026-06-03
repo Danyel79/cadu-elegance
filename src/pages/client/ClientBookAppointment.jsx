@@ -5,11 +5,27 @@ import {
   listProfessionals,
   listServicesCatalog,
   listBookingsForProfessional,
+  listProfessionalBlocksForDate,
   createBookingRecord,
 } from "../../services/adminDataService";
 import { CLIENT_AREA_INNER_STYLE, CLIENT_AREA_MAIN_STYLE } from "./clientAreaLayout";
 
-const AVAILABLE_TIMES = ["09:00", "10:30", "12:00", "14:30", "16:00", "17:30"];
+const AVAILABLE_TIMES = [
+  "08:00",
+  "09:00",
+  "10:00",
+  "11:00",
+  "12:00",
+  "13:00",
+  "14:00",
+  "15:00",
+  "16:00",
+  "17:00",
+  "18:00",
+  "19:00",
+  "20:00",
+  "21:00",
+];
 const DAYS_AHEAD = 14;
 
 function formatPtBrDate(date) {
@@ -37,7 +53,7 @@ function buildDays() {
 }
 
 export default function ClientBookAppointment() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const [professionals, setProfessionals] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,23 +91,41 @@ export default function ClientBookAppointment() {
     loadData();
   }, []);
 
+  const [blockedSlots, setBlockedSlots] = useState([]);
+
+  function timeToMinutes(value) {
+    const [hours, minutes] = String(value).split(":").map((v) => Number(v) || 0);
+    return hours * 60 + minutes;
+  }
+
   useEffect(() => {
     if (!selectedProfessional || !selectedDate) {
       setBookedSlots([]);
+      setBlockedSlots([]);
       return;
     }
 
-    async function loadBookedSlots() {
+    async function loadBusyTimes() {
       setError("");
-      const res = await listBookingsForProfessional(selectedProfessional.$id, selectedDate);
-      if (res.success) {
-        setBookedSlots(res.data.map((booking) => booking.time));
+      const [bookingRes, blockRes] = await Promise.all([
+        listBookingsForProfessional(selectedProfessional.$id, selectedDate),
+        listProfessionalBlocksForDate(selectedProfessional.$id, selectedDate),
+      ]);
+
+      if (bookingRes.success) {
+        setBookedSlots(bookingRes.data.map((booking) => booking.time));
       } else {
-        setError(res.error || "Erro ao carregar horários ocupados.");
+        setError(bookingRes.error || "Erro ao carregar horários ocupados.");
+      }
+
+      if (blockRes.success) {
+        setBlockedSlots(blockRes.data);
+      } else {
+        setError((prev) => prev || blockRes.error || "Erro ao carregar bloqueios.");
       }
     }
 
-    loadBookedSlots();
+    loadBusyTimes();
   }, [selectedProfessional, selectedDate]);
 
   const professionalServices = useMemo(() => {
@@ -100,9 +134,31 @@ export default function ClientBookAppointment() {
     return services.filter((svc) => allowedIds.has(String(svc.$id)));
   }, [selectedProfessional, services]);
 
+  const blockedRanges = useMemo(() => {
+    if (!blockedSlots || !selectedDate) return [];
+    return blockedSlots
+      .filter((slot) => slot.date === selectedDate && slot.startTime && slot.endTime)
+      .map((slot) => ({
+        start: timeToMinutes(slot.startTime),
+        end: timeToMinutes(slot.endTime),
+      }));
+  }, [blockedSlots, selectedDate]);
+
+  const fullDayBlocked = useMemo(() => {
+    return Boolean(
+      blockedSlots?.some(
+        (slot) => slot.date === selectedDate && slot.startTime === "00:00" && slot.endTime === "23:59"
+      )
+    );
+  }, [blockedSlots, selectedDate]);
+
   const availableTimes = useMemo(() => {
-    return AVAILABLE_TIMES.filter((time) => !bookedSlots.includes(time));
-  }, [bookedSlots]);
+    return AVAILABLE_TIMES.filter((time) => {
+      if (bookedSlots.includes(time) || fullDayBlocked) return false;
+      const minutes = timeToMinutes(time);
+      return !blockedRanges.some((range) => range.start <= minutes && minutes <= range.end);
+    });
+  }, [bookedSlots, blockedRanges, fullDayBlocked]);
 
   const days = useMemo(buildDays, []);
 
@@ -437,6 +493,22 @@ export default function ClientBookAppointment() {
             >
               ← Voltar para área do cliente
             </Link>
+          </div>
+          <div style={{ marginTop: "20px" }}>
+            <button
+              type="button"
+              onClick={() => signOut()}
+              style={{
+                border: "1px solid #d1b76b",
+                background: "transparent",
+                color: "#f6f2e8",
+                padding: "12px 22px",
+                borderRadius: "12px",
+                cursor: "pointer",
+              }}
+            >
+              Sair
+            </button>
           </div>
         </div>
       </div>

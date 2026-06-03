@@ -1,21 +1,24 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { listBookingsForUser } from "../../services/adminDataService";
-import { CLIENT_AREA_INNER_STYLE, CLIENT_AREA_MAIN_STYLE } from "./clientAreaLayout";
+import { useUserProfile } from "../../hooks/useUserProfile";
+import { listBookingsForProfessionalSchedule } from "../../services/adminDataService";
+import ProfessionalLayout from "./ProfessionalLayout";
 
-export default function ClientBookings() {
-  const { user, signOut } = useAuth();
+export default function ProfessionalBookings() {
+  const { signOut } = useAuth();
+  const { profile } = useUserProfile();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!user) return;
+    if (!profile?.$id) return;
 
     async function loadBookings() {
       setLoading(true);
-      const res = await listBookingsForUser(user.$id);
+      setError("");
+      const res = await listBookingsForProfessionalSchedule(profile.$id);
       if (res.success) {
         setBookings(res.data);
       } else {
@@ -25,14 +28,13 @@ export default function ClientBookings() {
     }
 
     loadBookings();
-  }, [user]);
+  }, [profile]);
 
   return (
-    <main style={CLIENT_AREA_MAIN_STYLE}>
-      <div style={CLIENT_AREA_INNER_STYLE}>
+    <ProfessionalLayout>
       <header style={{ marginBottom: "42px" }}>
         <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.24em", marginBottom: "12px" }}>
-          Meus agendamentos
+          Agendamentos futuros
         </p>
         <h1
           style={{
@@ -41,38 +43,18 @@ export default function ClientBookings() {
             color: "#f6f2e8",
           }}
         >
-          Seus horários confirmados
+          Clientes agendados
         </h1>
         <p style={{ maxWidth: "700px", lineHeight: 1.75, color: "#beb7a3" }}>
-          Aqui estão os seus agendamentos criados pelo app. Se quiser marcar um novo horário, clique no botão abaixo.
+          Veja os horários confirmados com você e a situação de cada reserva.
         </p>
       </header>
 
-      <div style={{ marginBottom: "24px" }}>
-        <Link
-          to="/client/book"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "10px",
-            padding: "14px 22px",
-            borderRadius: "14px",
-            background: "#d1b76b",
-            color: "#080808",
-            textDecoration: "none",
-            fontWeight: "600",
-          }}
-        >
-          Agendar novo horário
-        </Link>
-      </div>
-
       {loading && <p>Carregando agendamentos…</p>}
       {error && <p style={{ color: "#f18f01" }}>{error}</p>}
-
       {!loading && bookings.length === 0 && !error && (
         <p style={{ color: "#beb7a3" }}>
-          Você ainda não tem agendamentos. Comece escolhendo um profissional e um serviço.
+          Nenhum agendamento encontrado. Use a agenda para bloquear horários ou verifique se há reservas futuras.
         </p>
       )}
 
@@ -99,7 +81,7 @@ export default function ClientBookings() {
               </div>
             </div>
             <div style={{ display: "grid", gap: "8px", color: "#beb7a3" }}>
-              <span>Profissional: {booking.professionalLabel || "—"}</span>
+              <span>Cliente: {booking.userId || "—"}</span>
               <span>Preço: {booking.servicePrice != null ? `${Number(booking.servicePrice).toFixed(2).replace(".", ",")} €` : "—"}</span>
               <span>Status: {booking.status || "—"}</span>
             </div>
@@ -109,16 +91,15 @@ export default function ClientBookings() {
 
       <div style={{ marginTop: "30px" }}>
         <Link
-          to="/client"
+          to="/professional"
           style={{
             color: "#d1b76b",
             textDecoration: "none",
             fontWeight: "600",
           }}
         >
-          ← Voltar para área do cliente
+          ← Voltar para área do profissional
         </Link>
-      </div>
       </div>
       <div style={{ marginTop: "20px" }}>
         <button
@@ -136,6 +117,6 @@ export default function ClientBookings() {
           Sair
         </button>
       </div>
-    </main>
+    </ProfessionalLayout>
   );
 }

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { createServiceRecord } from "../../services/adminDataService";
 
 export default function AdminServiceForm() {
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -78,6 +80,23 @@ export default function AdminServiceForm() {
           {error && <p className="admin-banner admin-banner-error">{error}</p>}
           {success && <p className="admin-banner admin-banner-success">{success}</p>}
         </form>
+
+        <div style={{ marginTop: "20px" }}>
+          <button
+            type="button"
+            onClick={() => signOut()}
+            style={{
+              border: "1px solid #d1b76b",
+              background: "transparent",
+              color: "#f6f2e8",
+              padding: "12px 22px",
+              borderRadius: "12px",
+              cursor: "pointer",
+            }}
+          >
+            Sair
+          </button>
+        </div>
 
         <nav className="admin-footer-nav">
           <Link to="/admin">← Painel admin</Link>

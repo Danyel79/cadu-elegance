@@ -5,7 +5,7 @@ import { CLIENT_AREA_INNER_STYLE, CLIENT_AREA_MAIN_STYLE } from "./clientAreaLay
 
 export default function ClientDashboard() {
   const { user, signOut } = useAuth();
-  const { isAdmin } = useUserProfile();
+  const { isAdmin, isProfessional } = useUserProfile();
 
   return (
     <main className="client-dashboard" style={CLIENT_AREA_MAIN_STYLE}>
@@ -61,6 +61,16 @@ export default function ClientDashboard() {
             </div>
           </Link>
 
+          {isProfessional && (
+            <Link to="/professional" style={cardStyle}>
+              <span className="material-symbols-outlined" style={iconStyle}>work</span>
+              <div>
+                <h2 style={cardHeadingStyle}>Área profissional</h2>
+                <p style={{ color: "#beb7a3", lineHeight: 1.55 }}>Acesse seus agendamentos e bloqueie horários.</p>
+              </div>
+            </Link>
+          )}
+
           {isAdmin && (
             <Link to="/admin" style={cardStyle}>
               <span className="material-symbols-outlined" style={iconStyle}>admin_panel_settings</span>
@@ -72,7 +82,17 @@ export default function ClientDashboard() {
           )}
         </div>
 
-        <footer style={{ marginTop: "42px" }}>
+        <footer style={{ marginTop: "42px", display: "flex", flexDirection: "column", gap: "14px" }}>
+          <Link
+            to="/home"
+            style={{
+              color: "#d1b76b",
+              textDecoration: "none",
+              fontWeight: "600",
+            }}
+          >
+            ← Voltar para a página inicial
+          </Link>
           <button
             type="button"
             onClick={signOut}

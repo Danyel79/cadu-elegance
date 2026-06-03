@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { CLIENT_AREA_INNER_STYLE, CLIENT_AREA_MAIN_STYLE } from "./clientAreaLayout";
 
 export default function ClientProfile() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   return (
     <main style={CLIENT_AREA_MAIN_STYLE}>
@@ -65,6 +65,22 @@ export default function ClientProfile() {
           >
             ← Voltar para área do cliente
           </Link>
+        </div>
+        <div style={{ marginTop: "20px" }}>
+          <button
+            type="button"
+            onClick={() => signOut()}
+            style={{
+              border: "1px solid #d1b76b",
+              background: "transparent",
+              color: "#f6f2e8",
+              padding: "12px 22px",
+              borderRadius: "12px",
+              cursor: "pointer",
+            }}
+          >
+            Sair
+          </button>
         </div>
       </div>
     </main>

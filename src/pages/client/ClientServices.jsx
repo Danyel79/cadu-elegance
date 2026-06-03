@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { listServicesCatalog } from "../../services/adminDataService";
 import { CLIENT_AREA_INNER_STYLE, CLIENT_AREA_MAIN_STYLE } from "./clientAreaLayout";
 
 export default function ClientServices() {
+  const { signOut } = useAuth();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -88,6 +90,22 @@ export default function ClientServices() {
           ← Voltar para área do cliente
         </Link>
       </div>
+      </div>
+      <div style={{ marginTop: "20px" }}>
+        <button
+          type="button"
+          onClick={() => signOut()}
+          style={{
+            border: "1px solid #d1b76b",
+            background: "transparent",
+            color: "#f6f2e8",
+            padding: "12px 22px",
+            borderRadius: "12px",
+            cursor: "pointer",
+          }}
+        >
+          Sair
+        </button>
       </div>
     </main>
   );

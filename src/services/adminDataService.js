@@ -13,6 +13,18 @@ const SERVICES_COLLECTION_ID =
   import.meta.env.VITE_APPWRITE_SERVICES_COLLECTION_ID || "";
 const BOOKINGS_COLLECTION_ID =
   import.meta.env.VITE_APPWRITE_BOOKINGS_COLLECTION_ID || "";
+const BLOCKS_COLLECTION_ID =
+  import.meta.env.VITE_APPWRITE_BLOCKS_COLLECTION_ID || "bloqueios";
+const BLOCKS_FIELDS = {
+  professionalProfileId:
+    import.meta.env.VITE_APPWRITE_BLOCKS_FIELD_PROFESSIONAL_PROFILE || "profissionalId",
+  professionalUserId:
+    import.meta.env.VITE_APPWRITE_BLOCKS_FIELD_PROFESSIONAL_USER || null,
+  date: import.meta.env.VITE_APPWRITE_BLOCKS_FIELD_DATE || "data",
+  startTime: import.meta.env.VITE_APPWRITE_BLOCKS_FIELD_START_TIME || "horaInicio",
+  endTime: import.meta.env.VITE_APPWRITE_BLOCKS_FIELD_END_TIME || "horaFim",
+  reason: import.meta.env.VITE_APPWRITE_BLOCKS_FIELD_REASON || "motivo",
+};
 
 /**
  * Nomes dos atributos na coleção de agendamentos (Console → Attributes).
@@ -59,6 +71,7 @@ function mapBookingDocument(doc) {
   if (!doc) return doc;
   const rawDt = doc[BOOKING_FIELDS.date];
   let dateForUi = rawDt;
+  let dateIso = rawDt;
   if (rawDt != null && rawDt !== "") {
     const parsed = new Date(rawDt);
     if (!Number.isNaN(parsed.getTime())) {
@@ -67,6 +80,7 @@ function mapBookingDocument(doc) {
         month: "short",
         weekday: "short",
       });
+      dateIso = parsed.toISOString().slice(0, 10);
     }
   }
   const sid = doc[BOOKING_FIELDS.serviceId];
@@ -81,8 +95,25 @@ function mapBookingDocument(doc) {
     serviceName: doc[BOOKING_FIELDS.serviceName] ?? (sid != null ? String(sid) : undefined),
     servicePrice: doc[BOOKING_FIELDS.servicePrice],
     date: dateForUi,
+    dateIso,
     time: doc[BOOKING_FIELDS.time],
     status: doc[BOOKING_FIELDS.status],
+  };
+}
+
+function mapBlockDocument(doc) {
+  if (!doc) return doc;
+  return {
+    ...doc,
+    professionalProfileId: doc[BLOCKS_FIELDS.professionalProfileId],
+    professionalUserId:
+      BLOCKS_FIELDS.professionalUserId != null
+        ? doc[BLOCKS_FIELDS.professionalUserId]
+        : undefined,
+    date: doc[BLOCKS_FIELDS.date],
+    startTime: doc[BLOCKS_FIELDS.startTime],
+    endTime: doc[BLOCKS_FIELDS.endTime],
+    reason: doc[BLOCKS_FIELDS.reason],
   };
 }
 
@@ -130,6 +161,11 @@ export function rolesSelectionEqual(storedRoles, draftRoles) {
 export function isAdminProfile(profile) {
   if (!profile?.roles?.length) return false;
   return profile.roles.some((r) => String(r).toLowerCase() === "admin");
+}
+
+export function isProfessionalProfile(profile) {
+  if (!profile?.roles?.length) return false;
+  return profile.roles.some((r) => String(r).toLowerCase() === "profissional");
 }
 
 export async function getMyUserProfile(userId) {
@@ -211,6 +247,145 @@ export async function listBookingsForProfessional(professionalProfileId, date) {
       error: formatBookingsListError(e, "Erro ao listar horários ocupados."),
       data: [],
     };
+  }
+}
+
+export async function listBookingsForProfessionalSchedule(professionalProfileId) {
+  if (!DATABASE_ID || !BOOKINGS_COLLECTION_ID) {
+    return { success: false, error: "Variáveis de base de dados em falta no .env.", data: [] };
+  }
+
+  try {
+    const res = await databases.listDocuments(DATABASE_ID, BOOKINGS_COLLECTION_ID, [
+      Query.equal(BOOKING_FIELDS.professionalProfileId, professionalProfileId),
+      Query.greaterThanEqual(BOOKING_FIELDS.date, new Date().toISOString()),
+      Query.orderAsc(BOOKING_FIELDS.date),
+      Query.limit(500),
+    ]);
+    return { success: true, data: res.documents.map(mapBookingDocument) };
+  } catch (e) {
+    return {
+      success: false,
+      error: formatBookingsListError(e, "Erro ao listar agendamentos do profissional."),
+      data: [],
+    };
+  }
+}
+
+export async function listAllBookings() {
+  if (!DATABASE_ID || !BOOKINGS_COLLECTION_ID) {
+    return { success: false, error: "Variáveis de base de dados em falta no .env.", data: [] };
+  }
+
+  try {
+    const res = await databases.listDocuments(DATABASE_ID, BOOKINGS_COLLECTION_ID, [
+      Query.orderDesc(BOOKING_FIELDS.date),
+      Query.limit(500),
+    ]);
+    return { success: true, data: res.documents.map(mapBookingDocument) };
+  } catch (e) {
+    return {
+      success: false,
+      error: formatBookingsListError(e, "Erro ao listar todos os agendamentos."),
+      data: [],
+    };
+  }
+}
+
+export async function listProfessionalBlocksForDate(professionalProfileId, date) {
+  if (!DATABASE_ID || !BLOCKS_COLLECTION_ID) {
+    return { success: false, error: "Variáveis de base de dados em falta no .env.", data: [] };
+  }
+
+  try {
+    const res = await databases.listDocuments(DATABASE_ID, BLOCKS_COLLECTION_ID, [
+      Query.equal(BLOCKS_FIELDS.professionalProfileId, professionalProfileId),
+      Query.equal(BLOCKS_FIELDS.date, date),
+      Query.limit(500),
+    ]);
+    return { success: true, data: res.documents.map(mapBlockDocument) };
+  } catch (e) {
+    return {
+      success: false,
+      error: e.message || "Erro ao listar bloqueios do profissional.",
+      data: [],
+    };
+  }
+}
+
+export async function listUpcomingProfessionalBlocks(professionalProfileId) {
+  if (!DATABASE_ID || !BLOCKS_COLLECTION_ID) {
+    return { success: false, error: "Variáveis de base de dados em falta no .env.", data: [] };
+  }
+
+  try {
+    const todaysDate = new Date().toISOString().slice(0, 10);
+    const res = await databases.listDocuments(DATABASE_ID, BLOCKS_COLLECTION_ID, [
+      Query.equal(BLOCKS_FIELDS.professionalProfileId, professionalProfileId),
+      Query.greaterThanEqual(BLOCKS_FIELDS.date, todaysDate),
+      Query.orderAsc(BLOCKS_FIELDS.date),
+      Query.limit(500),
+    ]);
+    return { success: true, data: res.documents.map(mapBlockDocument) };
+  } catch (e) {
+    return {
+      success: false,
+      error: e.message || "Erro ao listar bloqueios do profissional.",
+      data: [],
+    };
+  }
+}
+
+export async function createProfessionalBlock({ professionalProfileId, professionalUserId, date, startTime, endTime, reason }) {
+  if (!DATABASE_ID || !BLOCKS_COLLECTION_ID) {
+    return { success: false, error: "Variáveis de base de dados em falta no .env." };
+  }
+
+  if (!professionalProfileId || !professionalUserId || !date || !startTime || !endTime) {
+    return { success: false, error: "Dados incompletos para criar bloqueio." };
+  }
+
+  try {
+    const docData = {
+      [BLOCKS_FIELDS.professionalProfileId]: professionalProfileId,
+      [BLOCKS_FIELDS.date]: date,
+      [BLOCKS_FIELDS.startTime]: startTime,
+      [BLOCKS_FIELDS.endTime]: endTime,
+      [BLOCKS_FIELDS.reason]: reason,
+    };
+
+    if (BLOCKS_FIELDS.professionalUserId) {
+      docData[BLOCKS_FIELDS.professionalUserId] = professionalUserId;
+    }
+
+    const doc = await databases.createDocument(
+      DATABASE_ID,
+      BLOCKS_COLLECTION_ID,
+      ID.unique(),
+      docData,
+      [
+        Permission.read(Role.users()),
+        Permission.write(Role.user(professionalUserId)),
+        Permission.update(Role.user(professionalUserId)),
+        Permission.delete(Role.user(professionalUserId)),
+      ]
+    );
+    return { success: true, data: mapBlockDocument(doc) };
+  } catch (e) {
+    return { success: false, error: e.message || "Erro ao criar bloqueio." };
+  }
+}
+
+export async function deleteProfessionalBlock(blockId, professionalUserId) {
+  if (!DATABASE_ID || !BLOCKS_COLLECTION_ID) {
+    return { success: false, error: "Variáveis de base de dados em falta no .env." };
+  }
+
+  try {
+    await databases.deleteDocument(DATABASE_ID, BLOCKS_COLLECTION_ID, blockId);
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message || "Erro ao remover bloqueio." };
   }
 }
 
@@ -308,22 +483,29 @@ export async function listUserProfiles() {
   }
 }
 
-export async function updateUserProfileRoles(documentId, roles, { services } = {}) {
+export async function updateUserProfileRoles(documentId, roles, { services, nickName, phone } = {}) {
   if (!DATABASE_ID || !USER_PROFILE_COLLECTION_ID) {
     return { success: false, error: "Variáveis de base de dados em falta no .env." };
   }
   const normalized = normalizeRolesSelection(roles);
   const hasProfissional = normalized.includes("profissional");
   const nextServices = hasProfissional ? (Array.isArray(services) ? services : []) : [];
+  const data = {
+    roles: normalized,
+    services: nextServices,
+  };
+  if (typeof nickName === "string") {
+    data.nickName = nickName.trim();
+  }
+  if (typeof phone === "string") {
+    data.phone = phone.trim();
+  }
   try {
     await databases.updateDocument(
       DATABASE_ID,
       USER_PROFILE_COLLECTION_ID,
       documentId,
-      {
-        roles: normalized,
-        services: nextServices,
-      }
+      data
     );
     return { success: true };
   } catch (e) {

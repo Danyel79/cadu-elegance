@@ -109,6 +109,19 @@ export default function AdminUsers() {
         </div>
       </header>
 
+      <div style={{ marginBottom: '24px' }}>
+        <Link
+          to="/admin"
+          style={{
+            color: '#d1b76b',
+            textDecoration: 'none',
+            fontWeight: '600',
+          }}
+        >
+          ← Voltar para painel admin
+        </Link>
+      </div>
+
       {/* Bento Stats Grid */}
       <div className="atelier-admin-stats">
         <div className="atelier-admin-stat-card">

@@ -1,7 +1,8 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const navigation = [
-  { name: "Lista de Clientes", href: "/admin/users", icon: "group", current: true },
+  { name: "Lista de Clientes", href: "/admin/users", icon: "group", current: false },
   { name: "Gestão de Equipe", href: "/admin/staff", icon: "content_cut", current: false },
   { name: "Inventário", href: "/admin/inventory", icon: "inventory_2", current: false },
   { name: "Análises", href: "/admin/analytics", icon: "insights", current: false },
@@ -10,6 +11,14 @@ const navigation = [
 
 function AdminLayout({ children }) {
   const location = useLocation();
+
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
+
+  async function handleLogout() {
+    await signOut();
+    navigate("/login", { replace: true });
+  }
 
   return (
     <div className="atelier-admin">
@@ -27,7 +36,7 @@ function AdminLayout({ children }) {
 
         <nav className="atelier-admin-sidebar-nav">
           {navigation.map((item) => {
-            const isActive = location.pathname === item.href;
+            const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + "/");
             return (
               <Link
                 key={item.name}
@@ -52,10 +61,10 @@ function AdminLayout({ children }) {
             <span className="material-symbols-outlined atelier-admin-sidebar-footer-icon">help</span>
             <span className="atelier-admin-sidebar-footer-text">Support</span>
           </a>
-          <a className="atelier-admin-sidebar-footer-link" href="#">
+          <button type="button" className="atelier-admin-sidebar-footer-link" onClick={handleLogout}>
             <span className="material-symbols-outlined atelier-admin-sidebar-footer-icon">logout</span>
             <span className="atelier-admin-sidebar-footer-text">Log Out</span>
-          </a>
+          </button>
         </div>
       </aside>
 

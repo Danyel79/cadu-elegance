@@ -5,12 +5,18 @@ import Home from "../pages/Home";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminUsers from "../pages/admin/AdminUsers";
 import AdminUserEdit from "../pages/admin/AdminUserEdit";
+import AdminStaff from "../pages/admin/AdminStaff";
+import AdminStaffEdit from "../pages/admin/AdminStaffEdit";
 import AdminServiceForm from "../pages/admin/AdminServiceForm";
+import AdminAnalytics from "../pages/admin/AdminAnalytics";
 import ClientDashboard from "../pages/client/ClientDashboard";
 import ClientBookAppointment from "../pages/client/ClientBookAppointment";
 import ClientServices from "../pages/client/ClientServices";
 import ClientBookings from "../pages/client/ClientBookings";
 import ClientProfile from "../pages/client/ClientProfile";
+import ProfessionalDashboard from "../pages/professional/ProfessionalDashboard";
+import ProfessionalBookings from "../pages/professional/ProfessionalBookings";
+import ProfessionalSchedule from "../pages/professional/ProfessionalSchedule";
 import { useAuth } from "../context/AuthContext";
 import { useUserProfile } from "../hooks/useUserProfile";
 
@@ -43,6 +49,35 @@ function AdminRoute({ children }) {
   return children;
 }
 
+function ProfessionalRoute({ children }) {
+  const { user, loading: authLoading } = useAuth();
+  const { isProfessional, loading: profileLoading } = useUserProfile();
+
+  if (authLoading || (user && profileLoading)) {
+    return <div>Carregando...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!isProfessional) {
+    return <Navigate to="/home" replace />;
+  }
+
+  return children;
+}
+
+function ClientRoute({ children }) {
+  const { user, loading: authLoading } = useAuth();
+
+  if (authLoading) {
+    return <div>Carregando...</div>;
+  }
+
+  return user ? children : <Navigate to="/login" replace />;
+}
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
@@ -60,41 +95,41 @@ export default function AppRouter() {
         <Route
           path="/client"
           element={
-            <PrivateRoute>
+            <ClientRoute>
               <ClientDashboard />
-            </PrivateRoute>
+            </ClientRoute>
           }
         />
         <Route
           path="/client/book"
           element={
-            <PrivateRoute>
+            <ClientRoute>
               <ClientBookAppointment />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/client/services"
-          element={
-            <PrivateRoute>
-              <ClientServices />
-            </PrivateRoute>
+            </ClientRoute>
           }
         />
         <Route
           path="/client/bookings"
           element={
-            <PrivateRoute>
+            <ClientRoute>
               <ClientBookings />
-            </PrivateRoute>
+            </ClientRoute>
+          }
+        />
+        <Route
+          path="/client/services"
+          element={
+            <ClientRoute>
+              <ClientServices />
+            </ClientRoute>
           }
         />
         <Route
           path="/client/profile"
           element={
-            <PrivateRoute>
+            <ClientRoute>
               <ClientProfile />
-            </PrivateRoute>
+            </ClientRoute>
           }
         />
         <Route
@@ -114,6 +149,22 @@ export default function AppRouter() {
           }
         />
         <Route
+          path="/admin/staff"
+          element={
+            <AdminRoute>
+              <AdminStaff />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/staff/:profileId/edit"
+          element={
+            <AdminRoute>
+              <AdminStaffEdit />
+            </AdminRoute>
+          }
+        />
+        <Route
           path="/admin/users/:profileId/edit"
           element={
             <AdminRoute>
@@ -127,6 +178,38 @@ export default function AppRouter() {
             <AdminRoute>
               <AdminServiceForm />
             </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/analytics"
+          element={
+            <AdminRoute>
+              <AdminAnalytics />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/professional"
+          element={
+            <ProfessionalRoute>
+              <ProfessionalDashboard />
+            </ProfessionalRoute>
+          }
+        />
+        <Route
+          path="/professional/bookings"
+          element={
+            <ProfessionalRoute>
+              <ProfessionalBookings />
+            </ProfessionalRoute>
+          }
+        />
+        <Route
+          path="/professional/schedule"
+          element={
+            <ProfessionalRoute>
+              <ProfessionalSchedule />
+            </ProfessionalRoute>
           }
         />
         <Route path="/" element={<Navigate to="/home" replace />} />
