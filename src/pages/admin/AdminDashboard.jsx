@@ -5,6 +5,7 @@ import {
   listAllBookings,
   listProfessionals,
   listUserProfiles,
+  listServicesCatalog,
 } from "../../services/adminDataService";
 import { listAllProductsAdmin } from "../../services/storeService";
 
@@ -134,21 +135,24 @@ export default function AdminDashboard() {
   const [professionals, setProfessionals] = useState([]);
   const [users, setUsers] = useState([]);
   const [products, setProducts] = useState([]);
+  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const [bookRes, profRes, userRes, prodRes] = await Promise.all([
+      const [bookRes, profRes, userRes, prodRes, svcRes] = await Promise.all([
         listAllBookings(),
         listProfessionals(),
         listUserProfiles(),
         listAllProductsAdmin(),
+        listServicesCatalog(),
       ]);
       if (bookRes.success) setBookings(bookRes.data);
       if (profRes.success) setProfessionals(profRes.data);
       if (userRes.success) setUsers(userRes.data);
       if (prodRes.success) setProducts(prodRes.data);
+      if (svcRes.success) setServices(svcRes.data);
       setLoading(false);
     }
     load();
@@ -164,22 +168,42 @@ export default function AdminDashboard() {
     [bookings]
   );
 
+  const servicePriceMap = useMemo(
+    () => new Map(services.map((s) => [s.$id, Number(s.price) || 0])),
+    [services]
+  );
+
   const thisMonthRevenue = useMemo(
     () =>
-      thisMonthBookings.reduce(
-        (sum, b) => sum + (Number(b.servicePrice) || 0),
-        0
-      ),
-    [thisMonthBookings]
+      thisMonthBookings
+        .filter((b) => (b.status || "").toUpperCase() === "CONCLUIDO")
+        .reduce((sum, b) => {
+          const p = Number(b.servicePrice ?? servicePriceMap.get(b.serviceId) ?? 0);
+          return sum + (Number.isNaN(p) ? 0 : p);
+        }, 0),
+    [thisMonthBookings, servicePriceMap]
   );
 
   const lastMonthRevenue = useMemo(
     () =>
-      lastMonthBookings.reduce(
-        (sum, b) => sum + (Number(b.servicePrice) || 0),
-        0
-      ),
-    [lastMonthBookings]
+      lastMonthBookings
+        .filter((b) => (b.status || "").toUpperCase() === "CONCLUIDO")
+        .reduce((sum, b) => {
+          const p = Number(b.servicePrice ?? servicePriceMap.get(b.serviceId) ?? 0);
+          return sum + (Number.isNaN(p) ? 0 : p);
+        }, 0),
+    [lastMonthBookings, servicePriceMap]
+  );
+
+  const thisMonthFutureRevenue = useMemo(
+    () =>
+      thisMonthBookings
+        .filter((b) => (b.status || "").toUpperCase() !== "CONCLUIDO")
+        .reduce((sum, b) => {
+          const p = Number(b.servicePrice ?? servicePriceMap.get(b.serviceId) ?? 0);
+          return sum + (Number.isNaN(p) ? 0 : p);
+        }, 0),
+    [thisMonthBookings, servicePriceMap]
   );
 
   const totalClients = useMemo(
@@ -193,6 +217,11 @@ export default function AdminDashboard() {
   const profMap = useMemo(
     () => new Map(professionals.map((p) => [p.$id, p.nickName || p.$id])),
     [professionals]
+  );
+
+  const serviceMap = useMemo(
+    () => new Map(services.map((s) => [s.$id, s.name || s.$id])),
+    [services]
   );
 
   const professionalStats = useMemo(() => {
@@ -218,10 +247,11 @@ export default function AdminDashboard() {
         };
       }
       stats[pid].bookings += 1;
-      stats[pid].revenue += Number(b.servicePrice) || 0;
+      const p = Number(b.servicePrice ?? servicePriceMap.get(b.serviceId) ?? 0);
+      stats[pid].revenue += Number.isNaN(p) ? 0 : p;
     });
     return Object.values(stats).sort((a, b) => b.bookings - a.bookings);
-  }, [bookings, professionals, profMap]);
+  }, [bookings, professionals, profMap, servicePriceMap]);
 
   const bookingDelta = thisMonthBookings.length - lastMonthBookings.length;
   const revenueDelta = thisMonthRevenue - lastMonthRevenue;
@@ -333,7 +363,7 @@ export default function AdminDashboard() {
               />
               <KpiCard
                 icon="payments"
-                label="Receita Estimada"
+                label="Receita Realizada"
                 value={formatCurrency(thisMonthRevenue)}
                 sub={`mês anterior: ${formatCurrency(lastMonthRevenue)}`}
                 delta={
@@ -341,6 +371,12 @@ export default function AdminDashboard() {
                     ? `${((revenueDelta / lastMonthRevenue) * 100).toFixed(1)}%`
                     : null
                 }
+              />
+              <KpiCard
+                icon="pending_actions"
+                label="Receita Futura"
+                value={formatCurrency(thisMonthFutureRevenue)}
+                sub="agendamentos pendentes"
               />
               <KpiCard
                 icon="group"
@@ -550,7 +586,7 @@ export default function AdminDashboard() {
                             whiteSpace: "nowrap",
                           }}
                         >
-                          {b.serviceName || "Serviço"}
+                          {serviceMap.get(b.serviceId) || b.serviceName || "Serviço"}
                         </p>
                         <p
                           style={{
@@ -559,7 +595,7 @@ export default function AdminDashboard() {
                             color: "#99907c",
                           }}
                         >
-                          {b.professionalLabel || "—"} · {b.date || "—"} {b.time || ""}
+                          {profMap.get(b.professionalProfileId) || b.professionalLabel || "—"} · {b.date || "—"} {b.time || ""}
                         </p>
                       </div>
                       <div style={{ textAlign: "right", flexShrink: 0 }}>

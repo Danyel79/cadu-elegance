@@ -11,6 +11,7 @@ import AdminServiceForm from "../pages/admin/AdminServiceForm";
 import AdminAnalytics from "../pages/admin/AdminAnalytics";
 import AdminStore from "../pages/admin/AdminStore";
 import AdminUserNew from "../pages/admin/AdminUserNew";
+import AdminFinancial from "../pages/admin/AdminFinancial";
 import ClientDashboard from "../pages/client/ClientDashboard";
 import ClientBookAppointment from "../pages/client/ClientBookAppointment";
 import ClientServices from "../pages/client/ClientServices";
@@ -205,6 +206,14 @@ export default function AppRouter() {
           element={
             <AdminRoute>
               <AdminStore />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/financial"
+          element={
+            <AdminRoute>
+              <AdminFinancial />
             </AdminRoute>
           }
         />

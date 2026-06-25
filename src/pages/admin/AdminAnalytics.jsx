@@ -189,7 +189,7 @@ export default function AdminAnalytics() {
       if (!stats[serviceId]) {
         stats[serviceId] = {
           serviceId,
-          name: booking.serviceName || servicesMap.get(serviceId)?.name || "Serviço desconhecido",
+          name: servicesMap.get(serviceId)?.name || booking.serviceName || "Serviço desconhecido",
           count: 0,
           revenue: 0,
         };

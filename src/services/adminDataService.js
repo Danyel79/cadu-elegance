@@ -390,6 +390,20 @@ export async function deleteProfessionalBlock(blockId, professionalUserId) {
   }
 }
 
+export async function updateBookingStatus(bookingId, status) {
+  if (!DATABASE_ID || !BOOKINGS_COLLECTION_ID) {
+    return { success: false, error: "Variáveis de base de dados em falta no .env." };
+  }
+  try {
+    await databases.updateDocument(DATABASE_ID, BOOKINGS_COLLECTION_ID, bookingId, {
+      [BOOKING_FIELDS.status]: status,
+    });
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message || "Erro ao atualizar status do agendamento." };
+  }
+}
+
 export async function createBookingRecord({ userId, professionalProfileId, serviceId, date, time }) {
   if (!userId || !professionalProfileId || !serviceId || !date || !time) {
     return { success: false, error: "Dados incompletos para criar o agendamento." };
@@ -452,6 +466,38 @@ export async function listServicesCatalog() {
       error: e.message || "Erro ao listar serviços.",
       data: [],
     };
+  }
+}
+
+export async function updateServiceRecord(documentId, { name, description, price }) {
+  if (!DATABASE_ID || !SERVICES_COLLECTION_ID) {
+    return { success: false, error: "Defina VITE_APPWRITE_SERVICES_COLLECTION_ID no .env." };
+  }
+  const p = typeof price === "number" ? price : Number(String(price).replace(",", "."));
+  if (!name?.trim() || !description?.trim() || Number.isNaN(p)) {
+    return { success: false, error: "Preencha nome, descrição e preço válido." };
+  }
+  try {
+    await databases.updateDocument(DATABASE_ID, SERVICES_COLLECTION_ID, documentId, {
+      name: name.trim(),
+      description: description.trim(),
+      price: p,
+    });
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message || "Erro ao atualizar serviço." };
+  }
+}
+
+export async function deleteServiceRecord(documentId) {
+  if (!DATABASE_ID || !SERVICES_COLLECTION_ID) {
+    return { success: false, error: "Defina VITE_APPWRITE_SERVICES_COLLECTION_ID no .env." };
+  }
+  try {
+    await databases.deleteDocument(DATABASE_ID, SERVICES_COLLECTION_ID, documentId);
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message || "Erro ao excluir serviço." };
   }
 }
 

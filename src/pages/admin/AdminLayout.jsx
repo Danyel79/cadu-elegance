@@ -8,6 +8,7 @@ const navigation = [
   { name: "Serviços", href: "/admin/services/new", icon: "inventory_2" },
   { name: "Análises", href: "/admin/analytics", icon: "insights" },
   { name: "Loja", href: "/admin/store", icon: "storefront" },
+  { name: "Financeiro", href: "/admin/financial", icon: "account_balance" },
 ];
 
 function AdminLayout({ children }) {
