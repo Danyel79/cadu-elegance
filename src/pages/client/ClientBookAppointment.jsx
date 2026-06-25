@@ -8,7 +8,7 @@ import {
   listProfessionalBlocksForDate,
   createBookingRecord,
 } from "../../services/adminDataService";
-import { CLIENT_AREA_INNER_STYLE, CLIENT_AREA_MAIN_STYLE } from "./clientAreaLayout";
+import ClientLayout from "./ClientLayout";
 
 const AVAILABLE_TIMES = [
   "08:00",
@@ -53,7 +53,7 @@ function buildDays() {
 }
 
 export default function ClientBookAppointment() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const [professionals, setProfessionals] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +63,7 @@ export default function ClientBookAppointment() {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [bookedSlots, setBookedSlots] = useState([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
   const [creating, setCreating] = useState(false);
   const [confirmation, setConfirmation] = useState(null);
 
@@ -107,6 +108,7 @@ export default function ClientBookAppointment() {
 
     async function loadBusyTimes() {
       setError("");
+      setSlotsLoading(true);
       const [bookingRes, blockRes] = await Promise.all([
         listBookingsForProfessional(selectedProfessional.$id, selectedDate),
         listProfessionalBlocksForDate(selectedProfessional.$id, selectedDate),
@@ -123,6 +125,7 @@ export default function ClientBookAppointment() {
       } else {
         setError((prev) => prev || blockRes.error || "Erro ao carregar bloqueios.");
       }
+      setSlotsLoading(false);
     }
 
     loadBusyTimes();
@@ -137,7 +140,7 @@ export default function ClientBookAppointment() {
   const blockedRanges = useMemo(() => {
     if (!blockedSlots || !selectedDate) return [];
     return blockedSlots
-      .filter((slot) => slot.date === selectedDate && slot.startTime && slot.endTime)
+      .filter((slot) => slot.startTime && slot.endTime)
       .map((slot) => ({
         start: timeToMinutes(slot.startTime),
         end: timeToMinutes(slot.endTime),
@@ -147,7 +150,7 @@ export default function ClientBookAppointment() {
   const fullDayBlocked = useMemo(() => {
     return Boolean(
       blockedSlots?.some(
-        (slot) => slot.date === selectedDate && slot.startTime === "00:00" && slot.endTime === "23:59"
+        (slot) => slot.startTime === "00:00" && slot.endTime === "23:59"
       )
     );
   }, [blockedSlots, selectedDate]);
@@ -216,8 +219,7 @@ export default function ClientBookAppointment() {
   const sectionHeadingStyle = { margin: 0, color: "#d1b76b" };
 
   return (
-    <main style={CLIENT_AREA_MAIN_STYLE}>
-      <div style={CLIENT_AREA_INNER_STYLE}>
+    <ClientLayout backTo="/client" backLabel="← Área do cliente">
         <header style={{ marginBottom: "42px" }}>
           <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.24em", marginBottom: "12px" }}>
             Agendamento exclusivo
@@ -345,7 +347,7 @@ export default function ClientBookAppointment() {
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
                           <h3 style={{ margin: 0, color: "#d1b76b" }}>{service.name}</h3>
                           <strong style={{ color: "#d1b76b" }}>
-                            {Number(service.price).toFixed(2).replace(".", ",")} €
+                            {Number(service.price).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                           </strong>
                         </div>
                         <p style={{ margin: 0, color: "#beb7a3" }}>
@@ -373,16 +375,8 @@ export default function ClientBookAppointment() {
                     <button
                       key={day.value}
                       type="button"
-                      onClick={() => setSelectedDate(day.value)}
-                      style={{
-                        borderRadius: "16px",
-                        border: isSelected ? "1px solid #d1b76b" : "1px solid rgba(209, 183, 107, 0.18)",
-                        background: isSelected ? "rgba(209, 183, 107, 0.08)" : "rgba(255,255,255,0.03)",
-                        padding: "14px",
-                        color: "inherit",
-                        cursor: "pointer",
-                        textAlign: "left",
-                      }}
+                      onClick={() => { setSelectedDate(day.value); setSelectedTime(""); }}
+                      className={`day-btn${isSelected ? " day-btn--selected" : ""}`}
                     >
                       <span style={{ display: "block", color: "#beb7a3", marginBottom: "6px" }}>{day.label}</span>
                       <strong>{day.date.toLocaleDateString("pt-BR")}</strong>
@@ -396,32 +390,24 @@ export default function ClientBookAppointment() {
                   <p style={{ margin: "18px 0 8px", color: "#beb7a3" }}>
                     Horários disponíveis em {selectedDate}
                   </p>
-                  {availableTimes.length === 0 ? (
+                  {slotsLoading ? (
+                    <p style={{ color: "#beb7a3" }}>Verificando horários…</p>
+                  ) : availableTimes.length === 0 ? (
                     <p style={{ color: "#f18f01" }}>
                       Nenhum horário livre para este dia. Escolha outra data.
                     </p>
                   ) : (
-                    <div style={{ display: "grid", gap: "12px", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))" }}>
-                      {availableTimes.map((time) => {
-                        const isSelected = selectedTime === time;
-                        return (
-                          <button
-                            key={time}
-                            type="button"
-                            onClick={() => setSelectedTime(time)}
-                            style={{
-                              borderRadius: "16px",
-                              border: isSelected ? "1px solid #d1b76b" : "1px solid rgba(209, 183, 107, 0.18)",
-                              background: isSelected ? "rgba(209, 183, 107, 0.08)" : "rgba(255,255,255,0.03)",
-                              padding: "16px",
-                              color: "inherit",
-                              cursor: "pointer",
-                            }}
-                          >
-                            {time}
-                          </button>
-                        );
-                      })}
+                    <div style={{ display: "grid", gap: "12px", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))" }}>
+                      {availableTimes.map((time) => (
+                        <button
+                          key={time}
+                          type="button"
+                          onClick={() => setSelectedTime(time)}
+                          className={`time-slot-btn${selectedTime === time ? " time-slot-btn--selected" : ""}`}
+                        >
+                          {time}
+                        </button>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -482,36 +468,7 @@ export default function ClientBookAppointment() {
             </section>
           )}
 
-          <div style={{ marginTop: "18px" }}>
-            <Link
-              to="/client"
-              style={{
-                color: "#d1b76b",
-                textDecoration: "none",
-                fontWeight: "600",
-              }}
-            >
-              ← Voltar para área do cliente
-            </Link>
-          </div>
-          <div style={{ marginTop: "20px" }}>
-            <button
-              type="button"
-              onClick={() => signOut()}
-              style={{
-                border: "1px solid #d1b76b",
-                background: "transparent",
-                color: "#f6f2e8",
-                padding: "12px 22px",
-                borderRadius: "12px",
-                cursor: "pointer",
-              }}
-            >
-              Sair
-            </button>
-          </div>
         </div>
-      </div>
-    </main>
+    </ClientLayout>
   );
 }

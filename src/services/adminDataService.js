@@ -3,7 +3,7 @@
  * Permissões de documentos usam apenas roles suportadas pelo projeto (ex.: users, user:id).
  * `Role.label()` não está disponível em todos os planos/configurações — evitar nesse cliente.
  */
-import { databases } from "../context/appwriteConfig";
+import { account, databases } from "../context/appwriteConfig";
 import { ID, Permission, Query, Role } from "appwrite";
 
 const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID || "";
@@ -101,6 +101,11 @@ function mapBookingDocument(doc) {
   };
 }
 
+function normalizeBlockDate(value) {
+  if (!value) return value;
+  return String(value).slice(0, 10);
+}
+
 function mapBlockDocument(doc) {
   if (!doc) return doc;
   return {
@@ -110,7 +115,7 @@ function mapBlockDocument(doc) {
       BLOCKS_FIELDS.professionalUserId != null
         ? doc[BLOCKS_FIELDS.professionalUserId]
         : undefined,
-    date: doc[BLOCKS_FIELDS.date],
+    date: normalizeBlockDate(doc[BLOCKS_FIELDS.date]),
     startTime: doc[BLOCKS_FIELDS.startTime],
     endTime: doc[BLOCKS_FIELDS.endTime],
     reason: doc[BLOCKS_FIELDS.reason],
@@ -187,15 +192,8 @@ export async function getMyUserProfile(userId) {
     };
   }
 }
-export function isProfessionalProfile(profile) {
-  if (!profile?.roles?.length) return false;
-  return profile.roles.some((r) => String(r).toLowerCase() === "profissional");
-}
 
 export async function listProfessionals() {
-  // if (!DATABASE_ID || !USER_PROFILE_COLLECTION_ID) {
-  //   return { success: false, error: "Defina VITE_APPWRITE_DATABASE_ID e VITE_APPWRITE_USER_PROFILE_COLLECTION_ID no .env.", data: [] };
-  // }
   try {
     const res = await databases.listDocuments(DATABASE_ID, USER_PROFILE_COLLECTION_ID, [
       Query.contains("roles", "profissional"),
@@ -209,9 +207,6 @@ export async function listProfessionals() {
 }
 
 export async function listBookingsForUser(userId) {
-  // if (!DATABASE_ID || !BOOKINGS_COLLECTION_ID) {
-  //   return { success: false, error: "Defina VITE_APPWRITE_DATABASE_ID e VITE_APPWRITE_BOOKINGS_COLLECTION_ID no .env.", data: [] };
-  // }
   try {
     const res = await databases.listDocuments(DATABASE_ID, BOOKINGS_COLLECTION_ID, [
       Query.equal(BOOKING_FIELDS.userId, userId),
@@ -229,9 +224,6 @@ export async function listBookingsForUser(userId) {
 }
 
 export async function listBookingsForProfessional(professionalProfileId, date) {
-  // if (!DATABASE_ID || !BOOKINGS_COLLECTION_ID) {
-  //   return { success: false, error: "Defina VITE_APPWRITE_DATABASE_ID e VITE_APPWRITE_BOOKINGS_COLLECTION_ID no .env.", data: [] };
-  // }
   try {
     const [dayStart, dayEnd] = localDayRangeIso(date);
     const res = await databases.listDocuments(DATABASE_ID, BOOKINGS_COLLECTION_ID, [
@@ -258,7 +250,7 @@ export async function listBookingsForProfessionalSchedule(professionalProfileId)
   try {
     const res = await databases.listDocuments(DATABASE_ID, BOOKINGS_COLLECTION_ID, [
       Query.equal(BOOKING_FIELDS.professionalProfileId, professionalProfileId),
-      Query.greaterThanEqual(BOOKING_FIELDS.date, new Date().toISOString()),
+      Query.greaterThanEqual(BOOKING_FIELDS.date, (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.toISOString(); })()),
       Query.orderAsc(BOOKING_FIELDS.date),
       Query.limit(500),
     ]);
@@ -298,9 +290,18 @@ export async function listProfessionalBlocksForDate(professionalProfileId, date)
   }
 
   try {
+    const [y, m, d] = date.split("-").map(Number);
+    const next = new Date(y, m - 1, d + 1);
+    const nextDayStr = [
+      next.getFullYear(),
+      String(next.getMonth() + 1).padStart(2, "0"),
+      String(next.getDate()).padStart(2, "0"),
+    ].join("-");
+
     const res = await databases.listDocuments(DATABASE_ID, BLOCKS_COLLECTION_ID, [
       Query.equal(BLOCKS_FIELDS.professionalProfileId, professionalProfileId),
-      Query.equal(BLOCKS_FIELDS.date, date),
+      Query.greaterThanEqual(BLOCKS_FIELDS.date, date),
+      Query.lessThan(BLOCKS_FIELDS.date, nextDayStr),
       Query.limit(500),
     ]);
     return { success: true, data: res.documents.map(mapBlockDocument) };
@@ -390,10 +391,6 @@ export async function deleteProfessionalBlock(blockId, professionalUserId) {
 }
 
 export async function createBookingRecord({ userId, professionalProfileId, serviceId, date, time }) {
-  // if (!DATABASE_ID || !BOOKINGS_COLLECTION_ID) {
-  //   return { success: false, error: "Defina VITE_APPWRITE_DATABASE_ID e VITE_APPWRITE_BOOKINGS_COLLECTION_ID no .env." };
-  // }
-
   if (!userId || !professionalProfileId || !serviceId || !date || !time) {
     return { success: false, error: "Dados incompletos para criar o agendamento." };
   }
@@ -462,6 +459,47 @@ export function serviceIdsEqual(a, b) {
   const na = [...(a || [])].map(String).sort().join("|");
   const nb = [...(b || [])].map(String).sort().join("|");
   return na === nb;
+}
+
+export async function adminCreateUser({ name, email, password, role }) {
+  if (!name?.trim() || !email?.trim() || !password?.trim()) {
+    return { success: false, error: "Nome, email e senha são obrigatórios." };
+  }
+  if (!DATABASE_ID || !USER_PROFILE_COLLECTION_ID) {
+    return { success: false, error: "Variáveis de base de dados em falta no .env." };
+  }
+
+  const normalizedRole =
+    role === "admin" ? "admin" : role === "profissional" ? "profissional" : "client";
+
+  try {
+    const newUser = await account.create({
+      userId: ID.unique(),
+      email: email.trim(),
+      password: password.trim(),
+      name: name.trim(),
+    });
+
+    await databases.createDocument(
+      DATABASE_ID,
+      USER_PROFILE_COLLECTION_ID,
+      ID.unique(),
+      {
+        userId: newUser.$id,
+        nickName: name.trim(),
+        roles: [normalizedRole],
+        services: [],
+      },
+      [
+        Permission.read(Role.user(newUser.$id)),
+        Permission.update(Role.user(newUser.$id)),
+      ]
+    );
+
+    return { success: true, data: newUser };
+  } catch (e) {
+    return { success: false, error: e.message || "Erro ao criar usuário." };
+  }
 }
 
 export async function listUserProfiles() {

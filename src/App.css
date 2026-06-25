@@ -877,6 +877,9 @@
   word-wrap: normal;
   direction: ltr;
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'liga' 1;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
 }
 
 .atelier-auth {
@@ -2431,5 +2434,162 @@
     padding: 16px 16px;
     min-width: 120px;
   }
+}
+
+/* ── Select / option dark theme ── */
+select option {
+  background: #1a1a1a;
+  color: #f6f2e8;
+}
+
+/* ── Admin sidebar responsiva para notebook / tablet ── */
+@media (max-width: 1024px) {
+  .atelier-admin-sidebar {
+    width: 200px;
+  }
+
+  .atelier-admin-main {
+    margin-left: 200px;
+    padding: 32px 24px;
+  }
+
+  .atelier-admin-sidebar-nav-item {
+    font-size: 15px;
+    padding: 10px 12px 10px 20px;
+  }
+
+  .atelier-admin-title {
+    font-size: 36px;
+  }
+}
+
+/* ── Área do cliente — responsividade ── */
+.client-area-page {
+  min-height: 100vh;
+  padding: clamp(20px, 4vw, 48px) clamp(16px, 4vw, 32px);
+  background: #080808;
+  color: #f6f2e8;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.client-area-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+/* ── Área profissional — layout do schedule ── */
+.professional-schedule-form {
+  display: grid;
+  gap: 18px;
+}
+
+@media (min-width: 768px) {
+  .professional-schedule-form {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ── Time slot buttons na seleção de agendamento ── */
+.time-slot-btn {
+  border-radius: 16px;
+  border: 1px solid rgba(209, 183, 107, 0.18);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 16px;
+  color: #f6f2e8;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: border-color 0.18s, background 0.18s, color 0.18s;
+}
+
+.time-slot-btn:hover:not(.time-slot-btn--selected) {
+  border-color: rgba(209, 183, 107, 0.5);
+  background: rgba(209, 183, 107, 0.06);
+  color: #d1b76b;
+}
+
+.time-slot-btn--selected {
+  border-color: #d1b76b;
+  background: rgba(209, 183, 107, 0.14);
+  color: #d1b76b;
+}
+
+/* ── Day buttons no agendamento ── */
+.day-btn {
+  border-radius: 16px;
+  border: 1px solid rgba(209, 183, 107, 0.18);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 14px;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.18s, background 0.18s;
+}
+
+.day-btn:hover:not(.day-btn--selected) {
+  border-color: rgba(209, 183, 107, 0.45);
+  background: rgba(209, 183, 107, 0.05);
+}
+
+.day-btn--selected {
+  border-color: #d1b76b;
+  background: rgba(209, 183, 107, 0.1);
+}
+
+/* ── Toggle bloqueio dia inteiro ── */
+.block-toggle {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(209, 183, 107, 0.22);
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  color: #beb7a3;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: border-color 0.18s, background 0.18s, color 0.18s;
+  width: 100%;
+  text-align: left;
+}
+
+.block-toggle:hover {
+  border-color: rgba(209, 183, 107, 0.45);
+  background: rgba(209, 183, 107, 0.04);
+}
+
+.block-toggle--active {
+  border-color: #d1b76b;
+  background: rgba(209, 183, 107, 0.12);
+  color: #d1b76b;
+}
+
+.block-toggle__indicator {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.18s;
+}
+
+.block-toggle--active .block-toggle__indicator {
+  background: #d1b76b;
+  border-color: #d1b76b;
+}
+
+.block-toggle--active .block-toggle__indicator::after {
+  content: '';
+  width: 10px;
+  height: 6px;
+  border-left: 2px solid #080808;
+  border-bottom: 2px solid #080808;
+  transform: rotate(-45deg) translateY(-1px);
+  display: block;
 }
 

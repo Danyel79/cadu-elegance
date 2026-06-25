@@ -60,7 +60,7 @@ function Login() {
       <main className="atelier-auth-login-main">
         <header className="atelier-auth-brand">
           <h1 className="atelier-auth-logo">Cadu Ellegance</h1>
-          <p className="atelier-auth-tagline">Barbearia e grooming</p>
+          <p className="atelier-auth-tagline">Barbearia &amp; elegância em um só lugar</p>
         </header>
 
         <div className="atelier-auth-card">

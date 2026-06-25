@@ -1,121 +1,189 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useEffect, useState, useMemo } from "react";
 import { useUserProfile } from "../../hooks/useUserProfile";
-import { listBookingsForProfessionalSchedule } from "../../services/adminDataService";
+import {
+  listBookingsForProfessionalSchedule,
+  listUserProfiles,
+} from "../../services/adminDataService";
 import ProfessionalLayout from "./ProfessionalLayout";
 
+const STATUS_LABEL = {
+  confirmado: "Confirmado",
+  pendente: "Pendente",
+  cancelado: "Cancelado",
+  concluido: "Concluído",
+};
+
+const STATUS_COLOR = {
+  confirmado: "#4caf84",
+  pendente: "#d1b76b",
+  cancelado: "#e05252",
+  concluido: "#7b8fa1",
+};
+
+function formatDate(dateStr) {
+  if (!dateStr) return "—";
+  const d = new Date(dateStr);
+  if (isNaN(d)) return dateStr;
+  return d.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" });
+}
+
+function groupByDate(bookings) {
+  const map = new Map();
+  for (const b of bookings) {
+    const key = b.dateIso ? b.dateIso.slice(0, 10) : (b.date || "");
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(b);
+  }
+  return [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
+}
+
 export default function ProfessionalBookings() {
-  const { signOut } = useAuth();
   const { profile } = useUserProfile();
   const [bookings, setBookings] = useState([]);
+  const [clientMap, setClientMap] = useState(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (!profile?.$id) return;
 
-    async function loadBookings() {
+    async function load() {
       setLoading(true);
       setError("");
-      const res = await listBookingsForProfessionalSchedule(profile.$id);
-      if (res.success) {
-        setBookings(res.data);
+
+      const [bookingsRes, profilesRes] = await Promise.all([
+        listBookingsForProfessionalSchedule(profile.$id),
+        listUserProfiles(),
+      ]);
+
+      if (bookingsRes.success) {
+        setBookings(bookingsRes.data);
       } else {
-        setError(res.error || "Erro ao carregar agendamentos.");
+        setError(bookingsRes.error || "Erro ao carregar agendamentos.");
       }
+
+      if (profilesRes.success) {
+        const map = new Map();
+        profilesRes.data.forEach((p) => {
+          if (p.userId) {
+            map.set(p.userId, p.nickName || p.name || p.email || p.userId);
+          }
+        });
+        setClientMap(map);
+      }
+
       setLoading(false);
     }
 
-    loadBookings();
+    load();
   }, [profile]);
+
+  const groups = useMemo(() => groupByDate(bookings), [bookings]);
 
   return (
     <ProfessionalLayout>
       <header style={{ marginBottom: "42px" }}>
-        <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.24em", marginBottom: "12px" }}>
-          Agendamentos futuros
+        <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.24em", marginBottom: "12px", fontSize: "11px" }}>
+          A partir de hoje
         </p>
-        <h1
-          style={{
-            fontSize: "clamp(2rem, 2.5vw, 3rem)",
-            marginBottom: "12px",
-            color: "#f6f2e8",
-          }}
-        >
+        <h1 style={{ fontSize: "clamp(2rem, 2.5vw, 3rem)", marginBottom: "12px", color: "#f6f2e8" }}>
           Clientes agendados
         </h1>
-        <p style={{ maxWidth: "700px", lineHeight: 1.75, color: "#beb7a3" }}>
-          Veja os horários confirmados com você e a situação de cada reserva.
+        <p style={{ maxWidth: "700px", lineHeight: 1.75, color: "#beb7a3", margin: 0 }}>
+          Horários confirmados com você por dia, com nome do cliente e serviço.
         </p>
       </header>
 
-      {loading && <p>Carregando agendamentos…</p>}
-      {error && <p style={{ color: "#f18f01" }}>{error}</p>}
+      {loading && (
+        <p style={{ color: "#beb7a3" }}>Carregando agendamentos…</p>
+      )}
+      {error && (
+        <p style={{ color: "#e05252" }}>{error}</p>
+      )}
       {!loading && bookings.length === 0 && !error && (
         <p style={{ color: "#beb7a3" }}>
-          Nenhum agendamento encontrado. Use a agenda para bloquear horários ou verifique se há reservas futuras.
+          Nenhum agendamento encontrado a partir de hoje.
         </p>
       )}
 
-      <div style={{ display: "grid", gap: "18px" }}>
-        {bookings.map((booking) => (
-          <article
-            key={booking.$id}
-            style={{
-              padding: "24px",
-              borderRadius: "18px",
-              border: "1px solid rgba(209, 183, 107, 0.18)",
-              background: "rgba(255, 255, 255, 0.04)",
-              boxShadow: "0 18px 40px rgba(0,0,0,0.24)",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", marginBottom: "14px" }}>
-              <div>
-                <p style={{ margin: 0, color: "#d1b76b", fontWeight: 700, letterSpacing: "0.02em" }}>Serviço</p>
-                <h2 style={{ margin: "6px 0 0", color: "#d1b76b" }}>{booking.serviceName}</h2>
-              </div>
-              <div style={{ textAlign: "right" }}>
-                <p style={{ margin: 0, color: "#beb7a3" }}>{booking.date}</p>
-                <strong style={{ color: "#f6f2e8", fontSize: "1.1rem" }}>{booking.time}</strong>
-              </div>
-            </div>
-            <div style={{ display: "grid", gap: "8px", color: "#beb7a3" }}>
-              <span>Cliente: {booking.userId || "—"}</span>
-              <span>Preço: {booking.servicePrice != null ? `${Number(booking.servicePrice).toFixed(2).replace(".", ",")} €` : "—"}</span>
-              <span>Status: {booking.status || "—"}</span>
-            </div>
-          </article>
-        ))}
-      </div>
+      <div style={{ display: "grid", gap: "36px" }}>
+        {groups.map(([dateKey, dayBookings]) => (
+          <section key={dateKey}>
+            <p style={{
+              color: "#d1b76b",
+              fontSize: "11px",
+              textTransform: "uppercase",
+              letterSpacing: "0.2em",
+              margin: "0 0 14px",
+              paddingBottom: "8px",
+              borderBottom: "1px solid rgba(209,183,107,0.18)",
+            }}>
+              {formatDate(dayBookings[0]?.dateIso || dayBookings[0]?.date)}
+            </p>
 
-      <div style={{ marginTop: "30px" }}>
-        <Link
-          to="/professional"
-          style={{
-            color: "#d1b76b",
-            textDecoration: "none",
-            fontWeight: "600",
-          }}
-        >
-          ← Voltar para área do profissional
-        </Link>
-      </div>
-      <div style={{ marginTop: "20px" }}>
-        <button
-          type="button"
-          onClick={() => signOut()}
-          style={{
-            border: "1px solid #d1b76b",
-            background: "transparent",
-            color: "#f6f2e8",
-            padding: "12px 22px",
-            borderRadius: "12px",
-            cursor: "pointer",
-          }}
-        >
-          Sair
-        </button>
+            <div style={{ display: "grid", gap: "14px" }}>
+              {dayBookings.map((booking) => {
+                const clientName = clientMap.get(booking.userId) || booking.userId || "Cliente";
+                const status = (booking.status || "").toLowerCase();
+                const statusColor = STATUS_COLOR[status] || "#beb7a3";
+                const statusLabel = STATUS_LABEL[status] || booking.status || "—";
+
+                return (
+                  <article
+                    key={booking.$id}
+                    style={{
+                      padding: "20px 24px",
+                      borderRadius: "16px",
+                      border: "1px solid rgba(209,183,107,0.14)",
+                      background: "rgba(255,255,255,0.03)",
+                      display: "grid",
+                      gridTemplateColumns: "64px 1fr auto",
+                      gap: "16px",
+                      alignItems: "center",
+                    }}
+                  >
+                    {/* Hora */}
+                    <div style={{ textAlign: "center" }}>
+                      <strong style={{ display: "block", color: "#f2ca50", fontSize: "1.2rem", fontVariantNumeric: "tabular-nums" }}>
+                        {booking.time || "—"}
+                      </strong>
+                    </div>
+
+                    {/* Info */}
+                    <div style={{ overflow: "hidden" }}>
+                      <p style={{ margin: "0 0 4px", color: "#f6f2e8", fontWeight: 700, fontSize: "15px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {clientName}
+                      </p>
+                      <p style={{ margin: "0 0 2px", color: "#beb7a3", fontSize: "13px" }}>
+                        {booking.serviceName || "—"}
+                      </p>
+                      {booking.servicePrice != null && (
+                        <p style={{ margin: 0, color: "#99907c", fontSize: "12px" }}>
+                          R$ {Number(booking.servicePrice).toFixed(2).replace(".", ",")}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Status */}
+                    <span style={{
+                      display: "inline-block",
+                      padding: "4px 12px",
+                      borderRadius: "999px",
+                      fontSize: "11px",
+                      fontWeight: 600,
+                      color: statusColor,
+                      background: `${statusColor}18`,
+                      border: `1px solid ${statusColor}40`,
+                      whiteSpace: "nowrap",
+                    }}>
+                      {statusLabel}
+                    </span>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        ))}
       </div>
     </ProfessionalLayout>
   );

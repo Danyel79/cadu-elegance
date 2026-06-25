@@ -2,11 +2,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const navigation = [
-  { name: "Lista de Clientes", href: "/admin/users", icon: "group", current: false },
-  { name: "Gestão de Equipe", href: "/admin/staff", icon: "content_cut", current: false },
-  { name: "Inventário", href: "/admin/inventory", icon: "inventory_2", current: false },
-  { name: "Análises", href: "/admin/analytics", icon: "insights", current: false },
-  { name: "Arquivo", href: "/admin/archive", icon: "history", current: false },
+  { name: "Painel", href: "/admin", icon: "dashboard" },
+  { name: "Clientes", href: "/admin/users", icon: "group" },
+  { name: "Profissionais", href: "/admin/staff", icon: "content_cut" },
+  { name: "Serviços", href: "/admin/services/new", icon: "inventory_2" },
+  { name: "Análises", href: "/admin/analytics", icon: "insights" },
+  { name: "Loja", href: "/admin/store", icon: "storefront" },
 ];
 
 function AdminLayout({ children }) {
@@ -36,7 +37,9 @@ function AdminLayout({ children }) {
 
         <nav className="atelier-admin-sidebar-nav">
           {navigation.map((item) => {
-            const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + "/");
+            const isActive = item.href === "/admin"
+              ? location.pathname === "/admin"
+              : location.pathname === item.href || location.pathname.startsWith(item.href + "/");
             return (
               <Link
                 key={item.name}
@@ -50,20 +53,14 @@ function AdminLayout({ children }) {
           })}
         </nav>
 
-        <div className="atelier-admin-sidebar-actions">
-          <button className="atelier-admin-btn-primary atelier-admin-btn-full">
-            Quick Consultation
-          </button>
-        </div>
-
         <div className="atelier-admin-sidebar-footer">
-          <a className="atelier-admin-sidebar-footer-link" href="#">
-            <span className="material-symbols-outlined atelier-admin-sidebar-footer-icon">help</span>
-            <span className="atelier-admin-sidebar-footer-text">Support</span>
-          </a>
+          <Link to="/home" className="atelier-admin-sidebar-footer-link">
+            <span className="material-symbols-outlined atelier-admin-sidebar-footer-icon">arrow_back</span>
+            <span className="atelier-admin-sidebar-footer-text">Voltar</span>
+          </Link>
           <button type="button" className="atelier-admin-sidebar-footer-link" onClick={handleLogout}>
             <span className="material-symbols-outlined atelier-admin-sidebar-footer-icon">logout</span>
-            <span className="atelier-admin-sidebar-footer-text">Log Out</span>
+            <span className="atelier-admin-sidebar-footer-text">Sair</span>
           </button>
         </div>
       </aside>

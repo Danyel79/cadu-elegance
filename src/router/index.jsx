@@ -9,6 +9,8 @@ import AdminStaff from "../pages/admin/AdminStaff";
 import AdminStaffEdit from "../pages/admin/AdminStaffEdit";
 import AdminServiceForm from "../pages/admin/AdminServiceForm";
 import AdminAnalytics from "../pages/admin/AdminAnalytics";
+import AdminStore from "../pages/admin/AdminStore";
+import AdminUserNew from "../pages/admin/AdminUserNew";
 import ClientDashboard from "../pages/client/ClientDashboard";
 import ClientBookAppointment from "../pages/client/ClientBookAppointment";
 import ClientServices from "../pages/client/ClientServices";
@@ -17,6 +19,7 @@ import ClientProfile from "../pages/client/ClientProfile";
 import ProfessionalDashboard from "../pages/professional/ProfessionalDashboard";
 import ProfessionalBookings from "../pages/professional/ProfessionalBookings";
 import ProfessionalSchedule from "../pages/professional/ProfessionalSchedule";
+import StorePage from "../pages/store/StorePage";
 import { useAuth } from "../context/AuthContext";
 import { useUserProfile } from "../hooks/useUserProfile";
 
@@ -70,8 +73,9 @@ function ProfessionalRoute({ children }) {
 
 function ClientRoute({ children }) {
   const { user, loading: authLoading } = useAuth();
+  const { loading: profileLoading } = useUserProfile();
 
-  if (authLoading) {
+  if (authLoading || (user && profileLoading)) {
     return <div>Carregando...</div>;
   }
 
@@ -149,6 +153,14 @@ export default function AppRouter() {
           }
         />
         <Route
+          path="/admin/users/new"
+          element={
+            <AdminRoute>
+              <AdminUserNew />
+            </AdminRoute>
+          }
+        />
+        <Route
           path="/admin/staff"
           element={
             <AdminRoute>
@@ -186,6 +198,22 @@ export default function AppRouter() {
             <AdminRoute>
               <AdminAnalytics />
             </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/store"
+          element={
+            <AdminRoute>
+              <AdminStore />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/store"
+          element={
+            <PrivateRoute>
+              <StorePage />
+            </PrivateRoute>
           }
         />
         <Route

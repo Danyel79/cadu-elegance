@@ -1,13 +1,11 @@
-import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { CLIENT_AREA_INNER_STYLE, CLIENT_AREA_MAIN_STYLE } from "./clientAreaLayout";
+import ClientLayout from "./ClientLayout";
 
 export default function ClientProfile() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
 
   return (
-    <main style={CLIENT_AREA_MAIN_STYLE}>
-      <div style={CLIENT_AREA_INNER_STYLE}>
+    <ClientLayout backTo="/client" backLabel="← Área do cliente">
         <header style={{ marginBottom: "42px" }}>
           <p
             style={{
@@ -54,36 +52,7 @@ export default function ClientProfile() {
           </div>
         </section>
 
-        <div style={{ marginTop: "30px" }}>
-          <Link
-            to="/client"
-            style={{
-              color: "#d1b76b",
-              textDecoration: "none",
-              fontWeight: "600",
-            }}
-          >
-            ← Voltar para área do cliente
-          </Link>
-        </div>
-        <div style={{ marginTop: "20px" }}>
-          <button
-            type="button"
-            onClick={() => signOut()}
-            style={{
-              border: "1px solid #d1b76b",
-              background: "transparent",
-              color: "#f6f2e8",
-              padding: "12px 22px",
-              borderRadius: "12px",
-              cursor: "pointer",
-            }}
-          >
-            Sair
-          </button>
-        </div>
-      </div>
-    </main>
+    </ClientLayout>
   );
 }
 

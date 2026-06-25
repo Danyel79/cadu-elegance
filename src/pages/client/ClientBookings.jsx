@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { listBookingsForUser } from "../../services/adminDataService";
-import { CLIENT_AREA_INNER_STYLE, CLIENT_AREA_MAIN_STYLE } from "./clientAreaLayout";
+import ClientLayout from "./ClientLayout";
 
 export default function ClientBookings() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -28,8 +28,7 @@ export default function ClientBookings() {
   }, [user]);
 
   return (
-    <main style={CLIENT_AREA_MAIN_STYLE}>
-      <div style={CLIENT_AREA_INNER_STYLE}>
+    <ClientLayout backTo="/client" backLabel="← Área do cliente">
       <header style={{ marginBottom: "42px" }}>
         <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.24em", marginBottom: "12px" }}>
           Meus agendamentos
@@ -100,42 +99,13 @@ export default function ClientBookings() {
             </div>
             <div style={{ display: "grid", gap: "8px", color: "#beb7a3" }}>
               <span>Profissional: {booking.professionalLabel || "—"}</span>
-              <span>Preço: {booking.servicePrice != null ? `${Number(booking.servicePrice).toFixed(2).replace(".", ",")} €` : "—"}</span>
+              <span>Preço: {booking.servicePrice != null ? `R$ ${Number(booking.servicePrice).toFixed(2).replace(".", ",")}` : "—"}</span>
               <span>Status: {booking.status || "—"}</span>
             </div>
           </article>
         ))}
       </div>
 
-      <div style={{ marginTop: "30px" }}>
-        <Link
-          to="/client"
-          style={{
-            color: "#d1b76b",
-            textDecoration: "none",
-            fontWeight: "600",
-          }}
-        >
-          ← Voltar para área do cliente
-        </Link>
-      </div>
-      </div>
-      <div style={{ marginTop: "20px" }}>
-        <button
-          type="button"
-          onClick={() => signOut()}
-          style={{
-            border: "1px solid #d1b76b",
-            background: "transparent",
-            color: "#f6f2e8",
-            padding: "12px 22px",
-            borderRadius: "12px",
-            cursor: "pointer",
-          }}
-        >
-          Sair
-        </button>
-      </div>
-    </main>
+    </ClientLayout>
   );
 }
