@@ -1519,6 +1519,10 @@
 }
 
 .atelier-auth-legal-link {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
   font-size: 0.5625rem;
   font-weight: 600;
   letter-spacing: 0.2em;
@@ -1781,6 +1785,11 @@
 }
 
 .atelier-auth-inline-link {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
   color: var(--a-primary);
   text-decoration: none;
 }

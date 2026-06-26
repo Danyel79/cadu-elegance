@@ -3,6 +3,7 @@ import { useUserProfile } from "../../hooks/useUserProfile";
 import {
   listBookingsForProfessionalSchedule,
   listUserProfiles,
+  listServicesCatalog,
   updateBookingStatus,
 } from "../../services/adminDataService";
 import ProfessionalLayout from "./ProfessionalLayout";
@@ -48,9 +49,15 @@ export default function ProfessionalBookings() {
   const { profile } = useUserProfile();
   const [bookings, setBookings] = useState([]);
   const [clientMap, setClientMap] = useState(new Map());
+  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [completingId, setCompletingId] = useState(null);
+
+  const serviceMap = useMemo(
+    () => new Map(services.map((s) => [s.$id, s.name])),
+    [services]
+  );
 
   useEffect(() => {
     if (!profile?.$id) return;
@@ -59,9 +66,10 @@ export default function ProfessionalBookings() {
       setLoading(true);
       setError("");
 
-      const [bookingsRes, profilesRes] = await Promise.all([
+      const [bookingsRes, profilesRes, servicesRes] = await Promise.all([
         listBookingsForProfessionalSchedule(profile.$id),
         listUserProfiles(),
+        listServicesCatalog(),
       ]);
 
       if (bookingsRes.success) {
@@ -79,6 +87,8 @@ export default function ProfessionalBookings() {
         });
         setClientMap(map);
       }
+
+      if (servicesRes.success) setServices(servicesRes.data);
 
       setLoading(false);
     }
@@ -115,13 +125,13 @@ export default function ProfessionalBookings() {
     <ProfessionalLayout>
       <header style={{ marginBottom: "32px" }}>
         <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.24em", marginBottom: "12px", fontSize: "11px" }}>
-          A partir de hoje
+          Últimos 30 dias e futuros
         </p>
         <h1 style={{ fontSize: "clamp(2rem, 2.5vw, 3rem)", marginBottom: "12px", color: "#f6f2e8" }}>
           Clientes agendados
         </h1>
         <p style={{ maxWidth: "700px", lineHeight: 1.75, color: "#beb7a3", margin: 0 }}>
-          Horários confirmados com você por dia. Marque o atendimento como concluído ao finalizar.
+          Seus agendamentos por dia. Marque o atendimento como concluído ao finalizar.
         </p>
       </header>
 
@@ -167,7 +177,7 @@ export default function ProfessionalBookings() {
       {loading && <p style={{ color: "#beb7a3" }}>Carregando agendamentos…</p>}
       {error && <p style={{ color: "#e05252" }}>{error}</p>}
       {!loading && bookings.length === 0 && !error && (
-        <p style={{ color: "#beb7a3" }}>Nenhum agendamento encontrado a partir de hoje.</p>
+        <p style={{ color: "#beb7a3" }}>Nenhum agendamento encontrado nos últimos 30 dias.</p>
       )}
 
       <div style={{ display: "grid", gap: "36px" }}>
@@ -227,7 +237,7 @@ export default function ProfessionalBookings() {
                         {clientName}
                       </p>
                       <p style={{ margin: "0 0 2px", color: "#beb7a3", fontSize: "13px" }}>
-                        {booking.serviceName || "—"}
+                        {serviceMap.get(booking.serviceId) || booking.serviceName || "—"}
                       </p>
                       {booking.servicePrice != null && (
                         <p style={{ margin: 0, color: "#99907c", fontSize: "12px" }}>

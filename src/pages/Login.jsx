@@ -1,53 +1,74 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { requestPasswordRecovery } from "../context/authService";
+import TermsModal from "../components/TermsModal";
 
 const LOGIN_BG =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuBqOwE08MCgq-xekfOc-gIfbZ31tiORjGl4hvGHSkXrh1njETLXXe5ZU3_RsIZBZPYBD1vPi4Il9SfcvU5lZzu71kfz5E-w4Nm6lBn8IeIu3Ohs-3OKxclfBgd_zVAD5Y9TZUejvM7ehb2y4SvgrJSPydcYohgvnAqndUzqqVjlDNbVXTmUyQrJoM3aHnk-sy0MYt8KTK_M_HJhlFWcqZxY39-y-0mBNxB8r2LSrDUVdjXoDaSrdX7t5n-PISPPGGiRDuEMA9rfGuM";
 
+// mode: "login" | "forgot" | "forgot_sent"
 function Login() {
+  const [mode, setMode] = useState("login");
+  const [modalType, setModalType] = useState(null);
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [recoveryEmail, setRecoveryEmail] = useState("");
   const [error, setError] = useState("");
-  const [hint, setHint] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const { user, signIn } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      navigate("/home", { replace: true });
-    }
+    if (user) navigate("/home", { replace: true });
   }, [user, navigate]);
 
-  async function handleSubmit(e) {
+  function openForgot() {
+    setMode("forgot");
+    setError("");
+    setSuccess("");
+    setRecoveryEmail(email); // pré-preenche com o email já digitado
+  }
+
+  function backToLogin() {
+    setMode("login");
+    setError("");
+    setSuccess("");
+  }
+
+  async function handleLogin(e) {
     e.preventDefault();
     setError("");
-    setHint("");
     setSuccess("");
-
     if (!email.trim() || !senha.trim()) {
       setError("Preencha email e senha.");
       return;
     }
-
     setLoading(true);
-
     const result = await signIn(email.trim(), senha.trim());
-
     setLoading(false);
-
-    if (result.success) {
-      setSuccess("Login efetuado com sucesso!");
-      setError("");
-    } else {
+    if (!result.success) {
       setError(result.error || "Erro ao autenticar.");
-      setSuccess("");
+    }
+  }
+
+  async function handleRecovery(e) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    const result = await requestPasswordRecovery(recoveryEmail.trim());
+    setLoading(false);
+    if (result.success) {
+      setMode("forgot_sent");
+    } else {
+      setError(result.error || "Erro ao enviar e-mail de recuperação.");
     }
   }
 
   return (
+    <>
+    {modalType && <TermsModal type={modalType} onClose={() => setModalType(null)} />}
     <div className="atelier-auth atelier-auth--login">
       <div className="atelier-auth-login-bg" aria-hidden="true">
         <div
@@ -64,110 +85,167 @@ function Login() {
         </header>
 
         <div className="atelier-auth-card">
-          <div className="atelier-auth-card-head">
-            <span className="atelier-auth-eyebrow">Bem-vindo de volta</span>
-            <h2 className="atelier-auth-title">Acesso de cliente</h2>
-          </div>
 
-          <form className="atelier-auth-form" onSubmit={handleSubmit}>
-            <div className="atelier-auth-stack">
-              <div className="atelier-auth-field-group">
-                <label className="atelier-auth-label" htmlFor="email">
-                  Email
-                </label>
-                <input
-                  id="email"
-                  className="atelier-auth-input-line"
-                  type="email"
-                  value={email}
-                  onChange={(ev) => setEmail(ev.target.value)}
-                  placeholder="seu@email.com"
-                  autoComplete="email"
-                  required
-                />
+          {/* ─── MODO LOGIN ─── */}
+          {mode === "login" && (
+            <>
+              <div className="atelier-auth-card-head">
+                <span className="atelier-auth-eyebrow">Bem-vindo de volta</span>
+                <h2 className="atelier-auth-title">Acesso de cliente</h2>
               </div>
 
-              <div className="atelier-auth-field-group">
-                <div className="atelier-auth-label-row">
-                  <label className="atelier-auth-label" htmlFor="senha">
-                    Senha
-                  </label>
-                  <button
-                    type="button"
-                    className="atelier-auth-text-btn"
-                    onClick={() => {
-                      setHint("Recuperação de senha em breve.");
-                      setError("");
-                    }}
-                  >
-                    Esqueceu?
-                  </button>
+              <form className="atelier-auth-form" onSubmit={handleLogin}>
+                <div className="atelier-auth-stack">
+                  <div className="atelier-auth-field-group">
+                    <label className="atelier-auth-label" htmlFor="email">Email</label>
+                    <input
+                      id="email"
+                      className="atelier-auth-input-line"
+                      type="email"
+                      value={email}
+                      onChange={(ev) => setEmail(ev.target.value)}
+                      placeholder="seu@email.com"
+                      autoComplete="email"
+                      required
+                    />
+                  </div>
+
+                  <div className="atelier-auth-field-group">
+                    <div className="atelier-auth-label-row">
+                      <label className="atelier-auth-label" htmlFor="senha">Senha</label>
+                      <button type="button" className="atelier-auth-text-btn" onClick={openForgot}>
+                        Esqueceu?
+                      </button>
+                    </div>
+                    <input
+                      id="senha"
+                      className="atelier-auth-input-line"
+                      type="password"
+                      value={senha}
+                      onChange={(ev) => setSenha(ev.target.value)}
+                      placeholder="••••••••"
+                      autoComplete="current-password"
+                      required
+                    />
+                  </div>
                 </div>
-                <input
-                  id="senha"
-                  className="atelier-auth-input-line"
-                  type="password"
-                  value={senha}
-                  onChange={(ev) => setSenha(ev.target.value)}
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                  required
-                />
+
+                <button type="submit" className="atelier-auth-btn-gold" disabled={loading}>
+                  {loading ? "Aguarde…" : "Entrar na Cadu Ellegance"}
+                  {!loading && (
+                    <span className="material-symbols-outlined atelier-auth-btn-icon" aria-hidden>
+                      arrow_forward
+                    </span>
+                  )}
+                </button>
+
+                {error && <p className="atelier-auth-alert atelier-auth-alert--error">{error}</p>}
+                {success && <p className="atelier-auth-alert atelier-auth-alert--success">{success}</p>}
+              </form>
+
+            </>
+          )}
+
+          {/* ─── MODO ESQUECI A SENHA ─── */}
+          {mode === "forgot" && (
+            <>
+              <div className="atelier-auth-card-head">
+                <span className="atelier-auth-eyebrow">Recuperar acesso</span>
+                <h2 className="atelier-auth-title">Esqueceu a senha?</h2>
+                <p style={{ color: "#beb7a3", fontSize: "13px", marginTop: "8px", lineHeight: 1.6 }}>
+                  Informe o e-mail da sua conta. Enviaremos um link para você criar uma nova senha.
+                </p>
               </div>
-            </div>
 
-            <button
-              type="submit"
-              className="atelier-auth-btn-gold"
-              disabled={loading}
-            >
-              {loading ? "Aguarde…" : "Entrar na Cadu Ellegance"}
-              {!loading && (
-                <span className="material-symbols-outlined atelier-auth-btn-icon" aria-hidden>
-                  arrow_forward
-                </span>
-              )}
-            </button>
+              <form className="atelier-auth-form" onSubmit={handleRecovery}>
+                <div className="atelier-auth-field-group">
+                  <label className="atelier-auth-label" htmlFor="recovery-email">Email</label>
+                  <input
+                    id="recovery-email"
+                    className="atelier-auth-input-line"
+                    type="email"
+                    value={recoveryEmail}
+                    onChange={(ev) => setRecoveryEmail(ev.target.value)}
+                    placeholder="seu@email.com"
+                    autoComplete="email"
+                    required
+                    autoFocus
+                  />
+                </div>
 
-            {error && <p className="atelier-auth-alert atelier-auth-alert--error">{error}</p>}
-            {hint && !error && (
-              <p className="atelier-auth-alert atelier-auth-alert--hint">{hint}</p>
-            )}
-            {success && (
-              <p className="atelier-auth-alert atelier-auth-alert--success">{success}</p>
-            )}
-          </form>
+                <button type="submit" className="atelier-auth-btn-gold" disabled={loading}>
+                  {loading ? "Enviando…" : "Enviar link de recuperação"}
+                  {!loading && (
+                    <span className="material-symbols-outlined atelier-auth-btn-icon" aria-hidden>
+                      send
+                    </span>
+                  )}
+                </button>
 
-          <div className="atelier-auth-divider" aria-hidden="true">
-            <span className="atelier-auth-divider-line" />
-            <span className="atelier-auth-divider-label">Acesso seguro</span>
-            <span className="atelier-auth-divider-line" />
-          </div>
+                {error && <p className="atelier-auth-alert atelier-auth-alert--error">{error}</p>}
 
-          <div className="atelier-auth-social-row">
-            <button
-              type="button"
-              className="atelier-auth-social-btn"
-              disabled
-              title="Em breve"
-            >
-              <span className="material-symbols-outlined" aria-hidden>
-                google
-              </span>
-              <span>Google</span>
-            </button>
-            <button
-              type="button"
-              className="atelier-auth-social-btn"
-              disabled
-              title="Em breve"
-            >
-              <span className="material-symbols-outlined" aria-hidden>
-                ios
-              </span>
-              <span>Apple</span>
-            </button>
-          </div>
+                <button type="button" className="atelier-auth-text-btn" onClick={backToLogin}
+                  style={{ display: "block", margin: "4px auto 0", fontSize: "13px" }}>
+                  ← Voltar para o login
+                </button>
+              </form>
+            </>
+          )}
+
+          {/* ─── MODO ENVIADO ─── */}
+          {mode === "forgot_sent" && (
+            <>
+              <div className="atelier-auth-card-head">
+                <span className="atelier-auth-eyebrow">E-mail enviado</span>
+                <h2 className="atelier-auth-title">Verifique sua caixa</h2>
+              </div>
+
+              <div style={{ padding: "8px 0 16px", display: "grid", gap: "16px" }}>
+                <div style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "14px",
+                  padding: "16px",
+                  borderRadius: "10px",
+                  background: "rgba(16,185,129,0.08)",
+                  border: "1px solid rgba(16,185,129,0.25)",
+                }}>
+                  <span className="material-symbols-outlined" style={{ color: "#10b981", fontSize: "28px", flexShrink: 0 }}>
+                    mark_email_read
+                  </span>
+                  <p style={{ margin: 0, color: "#beb7a3", fontSize: "13px", lineHeight: 1.65 }}>
+                    Enviamos um link para <strong style={{ color: "#f6f2e8" }}>{recoveryEmail}</strong>.
+                    Clique no link dentro de 1 hora para criar uma nova senha.
+                  </p>
+                </div>
+
+                <p style={{ color: "#99907c", fontSize: "12px", textAlign: "center", margin: 0 }}>
+                  Não recebeu? Verifique o spam ou tente novamente.
+                </p>
+
+                <button
+                  type="button"
+                  className="atelier-auth-btn-gold"
+                  onClick={backToLogin}
+                >
+                  Voltar para o login
+                  <span className="material-symbols-outlined atelier-auth-btn-icon" aria-hidden>
+                    arrow_forward
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  className="atelier-auth-text-btn"
+                  onClick={() => { setMode("forgot"); setError(""); }}
+                  style={{ fontSize: "12px" }}
+                >
+                  Reenviar para outro e-mail
+                </button>
+              </div>
+            </>
+          )}
+
         </div>
 
         <footer className="atelier-auth-login-footer">
@@ -178,12 +256,12 @@ function Login() {
             </Link>
           </p>
           <div className="atelier-auth-legal">
-            <a className="atelier-auth-legal-link" href="#" onClick={(e) => e.preventDefault()}>
+            <button type="button" className="atelier-auth-legal-link" onClick={() => setModalType("terms")}>
               Termos de utilização
-            </a>
-            <a className="atelier-auth-legal-link" href="#" onClick={(e) => e.preventDefault()}>
+            </button>
+            <button type="button" className="atelier-auth-legal-link" onClick={() => setModalType("privacy")}>
               Política de privacidade
-            </a>
+            </button>
           </div>
         </footer>
       </main>
@@ -193,6 +271,7 @@ function Login() {
         <span className="atelier-auth-floating-text">A arte do cuidado masculino</span>
       </aside>
     </div>
+    </>
   );
 }
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import TermsModal from "../components/TermsModal";
 
 const REGISTER_SIDE_IMG =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuCfKkAwh3a8huXqZuRekC6cYqy01XPFGmMiqDbMCpoRWqh0t7r38gXe53J3q4sJ_f1lk8W_pZ3NWbM7R_8s5Ipm1mFKWrn1P1x8baYJ-ubfpUiPpDjYw3IBAzEBSIv4bxvZ-AeqRXfedS_062qCWXXKxbEg7XWObcPkXjDMNVSwBNYSL7qoe3xTLKkRM1DTju9n_fDYudDpEVz1Xibe9SesIaDyo-BFQ6h9ETtjAq5WpaYuXNi1Wm4XIu_JFu9N4TR3ee_fZbdjrNQ";
@@ -11,6 +12,7 @@ function Register() {
   const [senha, setSenha] = useState("");
   const [senhaConfirm, setSenhaConfirm] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [modalType, setModalType] = useState(null); // "terms" | "privacy" | null
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -60,6 +62,8 @@ function Register() {
   }
 
   return (
+    <>
+    {modalType && <TermsModal type={modalType} onClose={() => setModalType(null)} />}
     <div className="atelier-auth atelier-auth--register">
       <main className="atelier-auth-register-shell">
         <section className="atelier-auth-register-visual" aria-hidden="true">
@@ -179,13 +183,13 @@ function Register() {
                 />
                 <label className="atelier-auth-terms-label" htmlFor="terms">
                   Concordo com os{" "}
-                  <a className="atelier-auth-inline-link" href="#" onClick={(e) => e.preventDefault()}>
+                  <button type="button" className="atelier-auth-inline-link" onClick={() => setModalType("terms")}>
                     Termos de utilização
-                  </a>{" "}
+                  </button>{" "}
                   e com a{" "}
-                  <a className="atelier-auth-inline-link" href="#" onClick={(e) => e.preventDefault()}>
+                  <button type="button" className="atelier-auth-inline-link" onClick={() => setModalType("privacy")}>
                     Política de privacidade
-                  </a>
+                  </button>
                   .
                 </label>
               </div>
@@ -228,6 +232,7 @@ function Register() {
         </section>
       </main>
     </div>
+    </>
   );
 }
 

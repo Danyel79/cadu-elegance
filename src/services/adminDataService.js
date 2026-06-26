@@ -225,14 +225,20 @@ export async function listBookingsForUser(userId) {
 
 export async function listBookingsForProfessional(professionalProfileId, date) {
   try {
+    // Usa apenas greaterThanEqual para evitar índice composto no Appwrite.
+    // O filtro de fim de dia é feito no cliente.
     const [dayStart, dayEnd] = localDayRangeIso(date);
+    const dayEndDt = new Date(dayEnd);
     const res = await databases.listDocuments(DATABASE_ID, BOOKINGS_COLLECTION_ID, [
       Query.equal(BOOKING_FIELDS.professionalProfileId, professionalProfileId),
       Query.greaterThanEqual(BOOKING_FIELDS.date, dayStart),
-      Query.lessThanEqual(BOOKING_FIELDS.date, dayEnd),
-      Query.limit(500),
+      Query.limit(100),
     ]);
-    return { success: true, data: res.documents.map(mapBookingDocument) };
+    const filtered = res.documents.filter((doc) => {
+      const dt = new Date(doc[BOOKING_FIELDS.date]);
+      return !isNaN(dt) && dt <= dayEndDt;
+    });
+    return { success: true, data: filtered.map(mapBookingDocument) };
   } catch (e) {
     return {
       success: false,
@@ -248,9 +254,15 @@ export async function listBookingsForProfessionalSchedule(professionalProfileId)
   }
 
   try {
+    // Mostra agendamentos dos últimos 30 dias + futuros para que o profissional
+    // possa ver e marcar como atendido qualquer pendência recente
+    const since = new Date();
+    since.setDate(since.getDate() - 30);
+    since.setHours(0, 0, 0, 0);
+
     const res = await databases.listDocuments(DATABASE_ID, BOOKINGS_COLLECTION_ID, [
       Query.equal(BOOKING_FIELDS.professionalProfileId, professionalProfileId),
-      Query.greaterThanEqual(BOOKING_FIELDS.date, (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.toISOString(); })()),
+      Query.greaterThanEqual(BOOKING_FIELDS.date, since.toISOString()),
       Query.orderAsc(BOOKING_FIELDS.date),
       Query.limit(500),
     ]);
@@ -286,26 +298,25 @@ export async function listAllBookings() {
 
 export async function listProfessionalBlocksForDate(professionalProfileId, date) {
   if (!DATABASE_ID || !BLOCKS_COLLECTION_ID) {
+    console.warn("[BLOCKS] env vars missing — DATABASE_ID:", DATABASE_ID, "BLOCKS_COLLECTION_ID:", BLOCKS_COLLECTION_ID);
     return { success: false, error: "Variáveis de base de dados em falta no .env.", data: [] };
   }
 
-  try {
-    const [y, m, d] = date.split("-").map(Number);
-    const next = new Date(y, m - 1, d + 1);
-    const nextDayStr = [
-      next.getFullYear(),
-      String(next.getMonth() + 1).padStart(2, "0"),
-      String(next.getDate()).padStart(2, "0"),
-    ].join("-");
+  console.log("[BLOCKS] query — profId:", professionalProfileId, "date:", date, "collection:", BLOCKS_COLLECTION_ID);
 
+  try {
     const res = await databases.listDocuments(DATABASE_ID, BLOCKS_COLLECTION_ID, [
       Query.equal(BLOCKS_FIELDS.professionalProfileId, professionalProfileId),
-      Query.greaterThanEqual(BLOCKS_FIELDS.date, date),
-      Query.lessThan(BLOCKS_FIELDS.date, nextDayStr),
       Query.limit(500),
     ]);
-    return { success: true, data: res.documents.map(mapBlockDocument) };
+    const all = res.documents.map(mapBlockDocument);
+    console.log("[BLOCKS] total docs returned:", res.total, "mapped:", all.length);
+    all.forEach((b, i) => console.log(`[BLOCKS] doc[${i}] date="${b.date}" start="${b.startTime}" end="${b.endTime}" profId="${b.professionalProfileId}"`));
+    const forDay = all.filter((b) => b.date === date);
+    console.log("[BLOCKS] forDay (date==='" + date + "'):", forDay.length);
+    return { success: true, data: forDay };
   } catch (e) {
+    console.error("[BLOCKS] query error:", e.message, e);
     return {
       success: false,
       error: e.message || "Erro ao listar bloqueios do profissional.",
@@ -423,8 +434,12 @@ export async function createBookingRecord({ userId, professionalProfileId, servi
         [BOOKING_FIELDS.status]: BOOKING_STATUS_CREATE,
       },
       [
-        Permission.read(Role.user(userId)),
+        // Qualquer usuário autenticado pode LER para verificar horários ocupados
+        Permission.read(Role.users()),
+        // Somente o dono pode escrever/cancelar o próprio agendamento
         Permission.write(Role.user(userId)),
+        Permission.update(Role.user(userId)),
+        Permission.delete(Role.user(userId)),
       ]
     );
     return { success: true, data: mapBookingDocument(doc) };

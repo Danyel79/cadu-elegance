@@ -37,7 +37,10 @@ function formatPtBrDate(date) {
 }
 
 function formatDateInput(date) {
-  return date.toISOString().slice(0, 10);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 function buildDays() {
@@ -109,13 +112,20 @@ export default function ClientBookAppointment() {
     async function loadBusyTimes() {
       setError("");
       setSlotsLoading(true);
+      console.log("[BOOK] loading busy times — profId:", selectedProfessional.$id, "date:", selectedDate);
       const [bookingRes, blockRes] = await Promise.all([
         listBookingsForProfessional(selectedProfessional.$id, selectedDate),
         listProfessionalBlocksForDate(selectedProfessional.$id, selectedDate),
       ]);
 
+      console.log("[BOOK] blockRes.success:", blockRes.success, "data:", blockRes.data, "error:", blockRes.error);
+
       if (bookingRes.success) {
-        setBookedSlots(bookingRes.data.map((booking) => booking.time));
+        setBookedSlots(
+          bookingRes.data
+            .filter((b) => (b.status || "").toUpperCase() !== "CANCELADO")
+            .map((b) => b.time)
+        );
       } else {
         setError(bookingRes.error || "Erro ao carregar horários ocupados.");
       }

@@ -184,4 +184,40 @@ async function register(name, email, senha) {
   }
 }
 
-export { login, logout, getCurrentUser, updateUserProfile, register };
+async function requestPasswordRecovery(email) {
+  if (!email || !email.trim()) {
+    return { success: false, error: "Informe o e-mail cadastrado." };
+  }
+  try {
+    const redirectUrl = `${window.location.origin}/reset-password`;
+    await account.createRecovery(email.trim(), redirectUrl);
+    return { success: true };
+  } catch (error) {
+    const message =
+      (error && error.message) ||
+      (error && error.response && error.response.message) ||
+      "Erro ao enviar e-mail de recuperação.";
+    return { success: false, error: message, raw: error };
+  }
+}
+
+async function confirmPasswordRecovery(userId, secret, newPassword) {
+  if (!userId || !secret || !newPassword) {
+    return { success: false, error: "Dados incompletos para redefinição de senha." };
+  }
+  if (newPassword.length < 8) {
+    return { success: false, error: "A senha deve ter pelo menos 8 caracteres." };
+  }
+  try {
+    await account.updateRecovery(userId, secret, newPassword);
+    return { success: true };
+  } catch (error) {
+    const message =
+      (error && error.message) ||
+      (error && error.response && error.response.message) ||
+      "Erro ao redefinir a senha. O link pode ter expirado.";
+    return { success: false, error: message, raw: error };
+  }
+}
+
+export { login, logout, getCurrentUser, updateUserProfile, register, requestPasswordRecovery, confirmPasswordRecovery };

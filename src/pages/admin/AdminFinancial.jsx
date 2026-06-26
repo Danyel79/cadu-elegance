@@ -181,6 +181,23 @@ export default function AdminFinancial() {
     }
   }
 
+  // ─── Calculadora de precificação ───
+  const [calcCusto, setCalcCusto] = useState("");
+  const [calcQtd, setCalcQtd] = useState("");
+  const [calcMargem, setCalcMargem] = useState("");
+
+  const calcResult = useMemo(() => {
+    const custo = parseFloat(calcCusto);
+    const qtd = parseInt(calcQtd, 10);
+    const margem = parseFloat(calcMargem);
+    if (!custo || !qtd || !margem || custo <= 0 || qtd <= 0 || margem <= 0) return null;
+    const custoPorUnidade = custo / qtd;
+    const precoSugerido = custoPorUnidade * (1 + margem / 100);
+    const lucroPorUnidade = precoSugerido - custoPorUnidade;
+    const lucroTotal = lucroPorUnidade * qtd;
+    return { custoPorUnidade, precoSugerido, lucroPorUnidade, lucroTotal };
+  }, [calcCusto, calcQtd, calcMargem]);
+
   const years = [];
   for (let y = now.getFullYear(); y >= now.getFullYear() - 3; y--) years.push(y);
 
@@ -579,6 +596,126 @@ export default function AdminFinancial() {
           )}
         </div>
       </div>
+
+      {/* ─── Calculadora de precificação ─── */}
+      <section style={{ marginTop: "40px" }}>
+        <div style={cardStyle}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "22px" }}>
+            <span className="material-symbols-outlined" style={{ color: "#d1b76b", fontSize: "20px" }}>
+              calculate
+            </span>
+            <p style={{ margin: 0, color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.18em", fontSize: "11px" }}>
+              Calculadora de precificação
+            </p>
+          </div>
+
+          <p style={{ margin: "0 0 20px", color: "#beb7a3", fontSize: "13px", lineHeight: 1.6 }}>
+            Informe o custo do fardo/pacote, a quantidade de unidades e a margem de lucro desejada.
+            O sistema sugere automaticamente o preço de venda por unidade.
+          </p>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "16px", marginBottom: "24px" }}>
+            <div>
+              <label style={labelStyle}>Custo total do fardo (R$)</label>
+              <input
+                type="number"
+                min="0.01"
+                step="0.01"
+                placeholder="ex: 30,00"
+                value={calcCusto}
+                onChange={(e) => setCalcCusto(e.target.value)}
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Qtd. de unidades</label>
+              <input
+                type="number"
+                min="1"
+                step="1"
+                placeholder="ex: 12"
+                value={calcQtd}
+                onChange={(e) => setCalcQtd(e.target.value)}
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Margem de lucro (%)</label>
+              <input
+                type="number"
+                min="1"
+                step="0.5"
+                placeholder="ex: 50"
+                value={calcMargem}
+                onChange={(e) => setCalcMargem(e.target.value)}
+                style={inputStyle}
+              />
+            </div>
+          </div>
+
+          {/* Resultado */}
+          {calcResult ? (
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+              gap: "14px",
+            }}>
+              {[
+                { label: "Custo por unidade", value: formatCurrency(calcResult.custoPorUnidade), color: "#f87171", icon: "inventory_2" },
+                { label: "Preço sugerido / unid.", value: formatCurrency(calcResult.precoSugerido), color: "#d1b76b", icon: "sell", highlight: true },
+                { label: "Lucro por unidade", value: formatCurrency(calcResult.lucroPorUnidade), color: "#10b981", icon: "trending_up" },
+                { label: "Lucro total (fardo)", value: formatCurrency(calcResult.lucroTotal), color: "#10b981", icon: "payments" },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  style={{
+                    padding: "16px",
+                    borderRadius: "12px",
+                    background: item.highlight
+                      ? "rgba(209,183,107,0.08)"
+                      : "rgba(255,255,255,0.03)",
+                    border: item.highlight
+                      ? "1px solid rgba(209,183,107,0.3)"
+                      : "1px solid rgba(255,255,255,0.05)",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px" }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: "15px", color: item.color }}>
+                      {item.icon}
+                    </span>
+                    <p style={{ margin: 0, fontSize: "10px", color: "#99907c", textTransform: "uppercase", letterSpacing: "0.14em" }}>
+                      {item.label}
+                    </p>
+                  </div>
+                  <strong style={{ fontSize: item.highlight ? "1.3rem" : "1.1rem", color: item.color }}>
+                    {item.value}
+                  </strong>
+                  {item.highlight && (
+                    <p style={{ margin: "4px 0 0", fontSize: "10px", color: "#6b6359" }}>
+                      sugestão com {calcMargem}% de margem
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{
+              padding: "20px",
+              borderRadius: "10px",
+              background: "rgba(255,255,255,0.02)",
+              border: "1px dashed rgba(209,183,107,0.15)",
+              textAlign: "center",
+            }}>
+              <span className="material-symbols-outlined" style={{ color: "#4a4540", fontSize: "28px", display: "block", marginBottom: "8px" }}>
+                calculate
+              </span>
+              <p style={{ margin: 0, color: "#4a4540", fontSize: "13px" }}>
+                Preencha os campos acima para ver a sugestão de preço.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
 
       <div className="atelier-admin-quote" style={{ marginTop: "40px" }}>
         <p className="atelier-admin-quote-text">
