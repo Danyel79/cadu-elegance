@@ -19,22 +19,34 @@ const PROF_COLORS = [
   "#f87171", "#fbbf24", "#e879f9", "#2dd4bf",
 ];
 
-function ColumnChart({ data, valueKey, labelKey, color, formatValue }) {
+function HorizontalBarChart({ data, valueKey, labelKey, formatValue }) {
   if (!data.length) return null;
   const max = Math.max(...data.map((d) => d[valueKey] || 0), 1);
   return (
-    <div style={{ display: "flex", gap: "8px", alignItems: "flex-end", height: "140px", paddingBottom: "4px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
       {data.map((item, i) => {
         const pct = Math.max(((item[valueKey] || 0) / max) * 100, 3);
         return (
-          <div key={item[labelKey] || i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%", gap: "4px" }}>
-            <span style={{ fontSize: "10px", color: "#d1b76b", fontWeight: "700" }}>
-              {formatValue ? formatValue(item[valueKey]) : item[valueKey]}
-            </span>
-            <div style={{ width: "100%", height: `${pct}%`, background: color || "#2563eb", borderRadius: "4px 4px 0 0", transition: "height 0.6s ease" }} />
-            <p style={{ fontSize: "10px", color: "#beb7a3", margin: 0, textAlign: "center", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%", width: "100%" }}>
-              {item[labelKey]}
-            </p>
+          <div key={item[labelKey] || i} style={{ display: "grid", gap: "6px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px" }}>
+              <span style={{ fontSize: "12px", color: "#beb7a3", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
+                {item[labelKey]}
+              </span>
+              <strong style={{ fontSize: "12px", color: "#60a5fa", flexShrink: 0 }}>
+                {formatValue ? formatValue(item[valueKey]) : item[valueKey]}
+              </strong>
+            </div>
+            <div style={{ background: "rgba(255,255,255,0.07)", borderRadius: "999px", height: "6px" }}>
+              <div
+                style={{
+                  width: `${pct}%`,
+                  height: "6px",
+                  borderRadius: "999px",
+                  background: "linear-gradient(90deg, #60a5fa, #2563eb)",
+                  transition: "width 0.6s ease",
+                }}
+              />
+            </div>
           </div>
         );
       })}
@@ -438,12 +450,11 @@ export default function AdminAnalytics() {
                       <p style={{ color: "#60a5fa", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 16px" }}>
                         Volume de agendamentos
                       </p>
-                      <ColumnChart
+                      <HorizontalBarChart
                         data={professionalStats}
                         valueKey="bookings"
                         labelKey="name"
-                        color="linear-gradient(180deg, #60a5fa 0%, #2563eb 100%)"
-                        formatValue={(v) => String(v)}
+                        formatValue={(v) => `${v} ag.`}
                       />
                     </div>
                     <div style={{ padding: "20px", borderRadius: "14px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
