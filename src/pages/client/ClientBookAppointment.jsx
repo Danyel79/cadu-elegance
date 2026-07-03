@@ -7,6 +7,8 @@ import {
   listBookingsForProfessional,
   listProfessionalBlocksForDate,
   createBookingRecord,
+  getStaffPhotoUrl,
+  getServicePhotoUrl,
 } from "../../services/adminDataService";
 import ClientLayout from "./ClientLayout";
 
@@ -267,39 +269,56 @@ export default function ClientBookAppointment() {
 
             <div style={{ display: "grid", gap: "18px", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
               {professionals.map((professional) => {
-                const availableServices = Array.isArray(professional.services)
-                  ? professional.services.length
-                  : 0;
                 const active = selectedProfessional?.$id === professional.$id;
+                const photoUrl = getStaffPhotoUrl(professional.fotoFileId);
                 return (
                   <button
                     key={professional.$id}
                     type="button"
                     onClick={() => selectProfessional(professional)}
                     style={{
-                      textAlign: "left",
+                      textAlign: "center",
                       borderRadius: "22px",
                       border: active ? "1px solid #d1b76b" : "1px solid rgba(209, 183, 107, 0.18)",
                       background: active ? "rgba(209, 183, 107, 0.08)" : "rgba(255,255,255,0.03)",
                       color: "inherit",
                       padding: "22px",
                       cursor: "pointer",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: "12px",
                     }}
                   >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-                      <div>
-                        <h3 style={{ margin: 0, color: "#d1b76b" }}>{professional.nickName || professional.userId}</h3>
-                        <p style={{ margin: "6px 0 0", color: "#beb7a3" }}>
-                          {availableServices} serviço(s) atribuídos
-                        </p>
-                      </div>
-                      <span className="material-symbols-outlined" style={{ color: "#d1b76b", fontSize: "28px" }}>
-                        person
-                      </span>
+                    <div
+                      style={{
+                        width: "72px",
+                        height: "72px",
+                        borderRadius: "50%",
+                        overflow: "hidden",
+                        border: "1px solid rgba(209, 183, 107, 0.4)",
+                        background: "rgba(209, 183, 107, 0.12)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {photoUrl ? (
+                        <img
+                          src={photoUrl}
+                          alt={professional.nickName || "Profissional"}
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                      ) : (
+                        <span className="material-symbols-outlined" style={{ color: "#d1b76b", fontSize: "34px" }}>
+                          person
+                        </span>
+                      )}
                     </div>
-                    <p style={{ margin: 0, color: "#beb7a3" }}>
-                      {professional.roles?.length ? professional.roles.join(", ") : null}
-                    </p>
+                    <h3 style={{ margin: 0, color: "#d1b76b", fontFamily: "'Noto Serif', serif" }}>
+                      {professional.nickName || professional.userId}
+                    </h3>
                   </button>
                 );
               })}
@@ -339,6 +358,7 @@ export default function ClientBookAppointment() {
                 <div style={{ display: "grid", gap: "18px", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
                   {professionalServices.map((service) => {
                     const active = selectedService?.$id === service.$id;
+                    const servicePhotoUrl = getServicePhotoUrl(service.fotoFileId);
                     return (
                       <button
                         key={service.$id}
@@ -354,8 +374,33 @@ export default function ClientBookAppointment() {
                           cursor: "pointer",
                         }}
                       >
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                          <h3 style={{ margin: 0, color: "#d1b76b" }}>{service.name}</h3>
+                        <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "10px" }}>
+                          <div
+                            style={{
+                              width: "44px",
+                              height: "44px",
+                              borderRadius: "10px",
+                              overflow: "hidden",
+                              flexShrink: 0,
+                              background: "rgba(209, 183, 107, 0.1)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            {servicePhotoUrl ? (
+                              <img
+                                src={servicePhotoUrl}
+                                alt={service.name}
+                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                              />
+                            ) : (
+                              <span className="material-symbols-outlined" style={{ color: "#d1b76b", fontSize: "22px" }}>
+                                content_cut
+                              </span>
+                            )}
+                          </div>
+                          <h3 style={{ margin: 0, color: "#d1b76b", flex: 1 }}>{service.name}</h3>
                           <strong style={{ color: "#d1b76b" }}>
                             {Number(service.price).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                           </strong>

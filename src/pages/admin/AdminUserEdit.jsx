@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import AdminLayout from "./AdminLayout";
 import {
   getUserProfileDocument,
   listServicesCatalog,
@@ -121,30 +122,36 @@ export default function AdminUserEdit() {
 
   if (loading) {
     return (
-      <main className="admin-screen">
-        <div className="admin-panel admin-panel-wide">
+      <AdminLayout>
+        <div className="admin-staff-edit-panel">
           <p className="admin-muted">A carregar…</p>
         </div>
-      </main>
+      </AdminLayout>
     );
   }
 
   if (!doc) {
     return (
-      <main className="admin-screen">
-        <div className="admin-panel admin-panel-wide">
+      <AdminLayout>
+        <div className="admin-staff-edit-panel">
           <p className="admin-banner admin-banner-error">{error || "Perfil inválido."}</p>
           <nav className="admin-footer-nav">
             <Link to="/admin/users">← Lista de utilizadores</Link>
           </nav>
         </div>
-      </main>
+      </AdminLayout>
     );
   }
 
   return (
-    <main className="admin-screen">
-      <div className="admin-panel admin-panel-wide">
+    <AdminLayout>
+      <div style={{ marginBottom: "24px" }}>
+        <Link to="/admin/users" style={{ color: "#d1b76b", textDecoration: "none", fontWeight: "600" }}>
+          ← Lista de utilizadores
+        </Link>
+      </div>
+
+      <div className="admin-staff-edit-panel">
         <header className="admin-header">
           <h1>Editar utilizador</h1>
           <p className="admin-subtitle">Permissões e serviços do profissional</p>
@@ -192,7 +199,7 @@ export default function AdminUserEdit() {
               {servicesCatalog.length === 0 ? (
                 <p className="admin-muted">
                   Nenhum serviço na base de dados.{" "}
-                  <Link to="/admin/services/new">Criar serviço</Link>
+                  <Link to="/admin/services/new" style={{ color: "#d1b76b" }}>Criar serviço</Link>
                 </p>
               ) : (
                 <ul className="admin-services-pick-list">
@@ -212,7 +219,7 @@ export default function AdminUserEdit() {
                             {svc.price != null && (
                               <span className="admin-svc-price">
                                 {" "}
-                                — {Number(svc.price).toFixed(2)} €
+                                — {Number(svc.price).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                               </span>
                             )}
                           </span>
@@ -241,11 +248,7 @@ export default function AdminUserEdit() {
             </button>
           </div>
         </form>
-
-        <nav className="admin-footer-nav">
-          <Link to="/admin/users">← Lista de utilizadores</Link>
-        </nav>
       </div>
-    </main>
+    </AdminLayout>
   );
 }

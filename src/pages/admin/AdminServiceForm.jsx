@@ -5,6 +5,8 @@ import {
   updateServiceRecord,
   deleteServiceRecord,
   listServicesCatalog,
+  uploadServicePhoto,
+  getServicePhotoUrl,
 } from "../../services/adminDataService";
 
 function formatCurrency(value) {
@@ -53,6 +55,9 @@ export default function AdminServiceForm() {
   const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -70,6 +75,8 @@ export default function AdminServiceForm() {
       description: service.description || "",
       price: service.price != null ? String(service.price) : "",
     });
+    setPhotoFile(null);
+    setPhotoPreview(getServicePhotoUrl(service.fotoFileId));
     setError("");
     setSuccess("");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -78,8 +85,17 @@ export default function AdminServiceForm() {
   function handleCancel() {
     setEditingId(null);
     setForm(EMPTY_FORM);
+    setPhotoFile(null);
+    setPhotoPreview(null);
     setError("");
     setSuccess("");
+  }
+
+  function handlePhotoChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
   }
 
   async function handleSubmit(e) {
@@ -88,9 +104,23 @@ export default function AdminServiceForm() {
     setSuccess("");
     setSubmitting(true);
 
+    let fotoFileId;
+    if (photoFile) {
+      setUploadingPhoto(true);
+      const uploadRes = await uploadServicePhoto(photoFile);
+      setUploadingPhoto(false);
+      if (!uploadRes.success) {
+        setSubmitting(false);
+        setError(uploadRes.error || "Falha ao enviar a foto.");
+        return;
+      }
+      fotoFileId = uploadRes.fileId;
+    }
+
+    const payload = { ...form, ...(fotoFileId ? { fotoFileId } : {}) };
     const res = editingId
-      ? await updateServiceRecord(editingId, form)
-      : await createServiceRecord(form);
+      ? await updateServiceRecord(editingId, payload)
+      : await createServiceRecord(payload);
 
     setSubmitting(false);
 
@@ -102,6 +132,8 @@ export default function AdminServiceForm() {
     setSuccess(editingId ? "Serviço atualizado com sucesso!" : "Serviço criado com sucesso!");
     setForm(EMPTY_FORM);
     setEditingId(null);
+    setPhotoFile(null);
+    setPhotoPreview(null);
     load();
   }
 
@@ -191,6 +223,49 @@ export default function AdminServiceForm() {
                 style={inputStyle}
                 required
               />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Foto do serviço</label>
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  cursor: "pointer",
+                }}
+              >
+                <div
+                  style={{
+                    width: "56px",
+                    height: "56px",
+                    borderRadius: "10px",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(209,183,107,0.25)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {photoPreview ? (
+                    <img
+                      src={photoPreview}
+                      alt="Foto do serviço"
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  ) : (
+                    <span className="material-symbols-outlined" style={{ color: "#99907c", fontSize: "22px" }}>
+                      add_a_photo
+                    </span>
+                  )}
+                </div>
+                <span style={{ color: "#beb7a3", fontSize: "13px" }}>
+                  {uploadingPhoto ? "Enviando…" : photoPreview ? "Trocar foto" : "Escolher foto"}
+                </span>
+                <input type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: "none" }} />
+              </label>
             </div>
 
             {error && (
@@ -291,6 +366,34 @@ export default function AdminServiceForm() {
                       transition: "all 0.2s",
                     }}
                   >
+                    {/* Foto */}
+                    <div
+                      style={{
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "8px",
+                        overflow: "hidden",
+                        flexShrink: 0,
+                        background: "rgba(255,255,255,0.05)",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {getServicePhotoUrl(service.fotoFileId) ? (
+                        <img
+                          src={getServicePhotoUrl(service.fotoFileId)}
+                          alt={service.name}
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                      ) : (
+                        <span className="material-symbols-outlined" style={{ color: "#6b6359", fontSize: "18px" }}>
+                          content_cut
+                        </span>
+                      )}
+                    </div>
+
                     {/* Info */}
                     <div style={{ minWidth: 0, flex: 1 }}>
                       <p

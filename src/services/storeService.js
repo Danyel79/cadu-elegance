@@ -142,14 +142,15 @@ export async function uploadProductImage(file) {
   }
 }
 
-export function getProductImagePreviewUrl(fileId, width = 400) {
+export function getProductImagePreviewUrl(fileId) {
   if (!fileId) return null;
-  // Constrói a URL diretamente — mais confiável que o método do SDK
+  // Usa o endpoint "view" (não o "preview") — transformações de imagem
+  // ficam bloqueadas (403) no plano gratuito do Appwrite Cloud.
   const endpoint = (
     import.meta.env.VITE_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1"
   ).replace(/\/$/, "");
   const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID || "";
-  return `${endpoint}/storage/buckets/${BUCKET_ID}/files/${fileId}/preview?width=${width}&project=${projectId}`;
+  return `${endpoint}/storage/buckets/${BUCKET_ID}/files/${fileId}/view?project=${projectId}`;
 }
 
 export async function listCategories() {

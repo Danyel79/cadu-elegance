@@ -1,7 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import AdminLayout from "./AdminLayout";
-import { listUserProfiles, normalizeRolesSelection } from "../../services/adminDataService";
+import {
+  listUserProfiles,
+  normalizeRolesSelection,
+  deleteUserProfileDocument,
+} from "../../services/adminDataService";
 
 const ROLE_LABELS = { admin: "Admin", profissional: "Barber", client: "Client" };
 
@@ -31,6 +35,7 @@ export default function AdminUsers() {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -54,6 +59,21 @@ export default function AdminUsers() {
       cancelled = true;
     };
   }, [load]);
+
+  async function handleDelete(profile) {
+    const confirmed = window.confirm(
+      `Tem certeza que deseja excluir o cliente "${profile.nickName || profile.userId}"? Esta ação não pode ser desfeita.`
+    );
+    if (!confirmed) return;
+    setDeletingId(profile.$id);
+    const res = await deleteUserProfileDocument(profile.$id);
+    setDeletingId(null);
+    if (res.success) {
+      setProfiles((prev) => prev.filter((p) => p.$id !== profile.$id));
+    } else {
+      setError(res.error || "Não foi possível excluir o usuário.");
+    }
+  }
 
   const filteredProfiles = profiles.filter(profile => {
     const matchesSearch = !searchTerm ||
@@ -204,6 +224,18 @@ export default function AdminUsers() {
                     >
                       <span className="material-symbols-outlined atelier-admin-action-icon">edit</span>
                     </Link>
+                    <button
+                      type="button"
+                      className="atelier-admin-action-btn"
+                      style={{ marginLeft: 8 }}
+                      onClick={() => handleDelete(profile)}
+                      disabled={deletingId === profile.$id}
+                      title="Excluir usuário"
+                    >
+                      <span className="material-symbols-outlined atelier-admin-action-icon" style={{ color: "#ffb4ab" }}>
+                        {deletingId === profile.$id ? "hourglass_empty" : "delete"}
+                      </span>
+                    </button>
                   </td>
                 </tr>
               ))}

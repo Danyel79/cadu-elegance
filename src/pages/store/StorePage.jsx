@@ -283,6 +283,7 @@ export default function StorePage() {
   const [products, setProducts] = useState([]);
 
   async function handleLogout() {
+    if (!window.confirm("Tem certeza que deseja sair?")) return;
     await signOut();
     navigate("/login", { replace: true });
   }

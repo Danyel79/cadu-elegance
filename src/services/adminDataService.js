@@ -3,12 +3,16 @@
  * Permissões de documentos usam apenas roles suportadas pelo projeto (ex.: users, user:id).
  * `Role.label()` não está disponível em todos os planos/configurações — evitar nesse cliente.
  */
-import { account, databases } from "../context/appwriteConfig";
+import { account, databases, storage } from "../context/appwriteConfig";
 import { ID, Permission, Query, Role } from "appwrite";
 
 const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID || "";
 const USER_PROFILE_COLLECTION_ID =
   import.meta.env.VITE_APPWRITE_USER_PROFILE_COLLECTION_ID || "";
+const STAFF_PHOTOS_BUCKET_ID =
+  import.meta.env.VITE_APPWRITE_STAFF_PHOTOS_BUCKET_ID || "";
+const SERVICE_PHOTOS_BUCKET_ID =
+  import.meta.env.VITE_APPWRITE_SERVICE_PHOTOS_BUCKET_ID || "";
 const SERVICES_COLLECTION_ID =
   import.meta.env.VITE_APPWRITE_SERVICES_COLLECTION_ID || "";
 const BOOKINGS_COLLECTION_ID =
@@ -484,7 +488,7 @@ export async function listServicesCatalog() {
   }
 }
 
-export async function updateServiceRecord(documentId, { name, description, price }) {
+export async function updateServiceRecord(documentId, { name, description, price, fotoFileId }) {
   if (!DATABASE_ID || !SERVICES_COLLECTION_ID) {
     return { success: false, error: "Defina VITE_APPWRITE_SERVICES_COLLECTION_ID no .env." };
   }
@@ -492,16 +496,45 @@ export async function updateServiceRecord(documentId, { name, description, price
   if (!name?.trim() || !description?.trim() || Number.isNaN(p)) {
     return { success: false, error: "Preencha nome, descrição e preço válido." };
   }
+  const payload = {
+    name: name.trim(),
+    description: description.trim(),
+    price: p,
+  };
+  if (typeof fotoFileId === "string") {
+    payload.fotoFileId = fotoFileId;
+  }
   try {
-    await databases.updateDocument(DATABASE_ID, SERVICES_COLLECTION_ID, documentId, {
-      name: name.trim(),
-      description: description.trim(),
-      price: p,
-    });
+    await databases.updateDocument(DATABASE_ID, SERVICES_COLLECTION_ID, documentId, payload);
     return { success: true };
   } catch (e) {
     return { success: false, error: e.message || "Erro ao atualizar serviço." };
   }
+}
+
+export async function uploadServicePhoto(file) {
+  if (!SERVICE_PHOTOS_BUCKET_ID) {
+    return { success: false, error: "Defina VITE_APPWRITE_SERVICE_PHOTOS_BUCKET_ID no .env." };
+  }
+  try {
+    const uploaded = await storage.createFile(SERVICE_PHOTOS_BUCKET_ID, ID.unique(), file, [
+      Permission.read(Role.any()), // foto de serviço é pública (catálogo)
+      Permission.update(Role.users()),
+      Permission.delete(Role.users()),
+    ]);
+    return { success: true, fileId: uploaded.$id };
+  } catch (e) {
+    return { success: false, error: e.message || "Erro ao fazer upload da foto." };
+  }
+}
+
+export function getServicePhotoUrl(fileId) {
+  if (!fileId || !SERVICE_PHOTOS_BUCKET_ID) return null;
+  const endpoint = (
+    import.meta.env.VITE_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1"
+  ).replace(/\/$/, "");
+  const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID || "";
+  return `${endpoint}/storage/buckets/${SERVICE_PHOTOS_BUCKET_ID}/files/${fileId}/view?project=${projectId}`;
 }
 
 export async function deleteServiceRecord(documentId) {
@@ -582,7 +615,44 @@ export async function listUserProfiles() {
   }
 }
 
-export async function updateUserProfileRoles(documentId, roles, { services, nickName, phone } = {}) {
+export async function deleteUserProfileDocument(documentId) {
+  if (!DATABASE_ID || !USER_PROFILE_COLLECTION_ID) {
+    return { success: false, error: "Variáveis de base de dados em falta no .env." };
+  }
+  try {
+    await databases.deleteDocument(DATABASE_ID, USER_PROFILE_COLLECTION_ID, documentId);
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message || "Erro ao excluir perfil." };
+  }
+}
+
+export async function uploadStaffPhoto(file) {
+  if (!STAFF_PHOTOS_BUCKET_ID) {
+    return { success: false, error: "Defina VITE_APPWRITE_STAFF_PHOTOS_BUCKET_ID no .env." };
+  }
+  try {
+    const uploaded = await storage.createFile(STAFF_PHOTOS_BUCKET_ID, ID.unique(), file, [
+      Permission.read(Role.any()), // foto de perfil é pública (aparece no agendamento)
+      Permission.update(Role.users()),
+      Permission.delete(Role.users()),
+    ]);
+    return { success: true, fileId: uploaded.$id };
+  } catch (e) {
+    return { success: false, error: e.message || "Erro ao fazer upload da foto." };
+  }
+}
+
+export function getStaffPhotoUrl(fileId) {
+  if (!fileId || !STAFF_PHOTOS_BUCKET_ID) return null;
+  const endpoint = (
+    import.meta.env.VITE_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1"
+  ).replace(/\/$/, "");
+  const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID || "";
+  return `${endpoint}/storage/buckets/${STAFF_PHOTOS_BUCKET_ID}/files/${fileId}/view?project=${projectId}`;
+}
+
+export async function updateUserProfileRoles(documentId, roles, { services, nickName, phone, fotoFileId } = {}) {
   if (!DATABASE_ID || !USER_PROFILE_COLLECTION_ID) {
     return { success: false, error: "Variáveis de base de dados em falta no .env." };
   }
@@ -599,6 +669,9 @@ export async function updateUserProfileRoles(documentId, roles, { services, nick
   if (typeof phone === "string") {
     data.phone = phone.trim();
   }
+  if (typeof fotoFileId === "string") {
+    data.fotoFileId = fotoFileId;
+  }
   try {
     await databases.updateDocument(
       DATABASE_ID,
@@ -612,7 +685,7 @@ export async function updateUserProfileRoles(documentId, roles, { services, nick
   }
 }
 
-export async function createServiceRecord({ name, description, price }) {
+export async function createServiceRecord({ name, description, price, fotoFileId }) {
   if (!DATABASE_ID || !SERVICES_COLLECTION_ID) {
     return { success: false, error: "Defina VITE_APPWRITE_SERVICES_COLLECTION_ID no .env." };
   }
@@ -620,16 +693,20 @@ export async function createServiceRecord({ name, description, price }) {
   if (!name?.trim() || !description?.trim() || Number.isNaN(p)) {
     return { success: false, error: "Preencha nome, descrição e preço válido." };
   }
+  const payload = {
+    name: name.trim(),
+    description: description.trim(),
+    price: p,
+  };
+  if (typeof fotoFileId === "string") {
+    payload.fotoFileId = fotoFileId;
+  }
   try {
     await databases.createDocument(
       DATABASE_ID,
       SERVICES_COLLECTION_ID,
       ID.unique(),
-      {
-        name: name.trim(),
-        description: description.trim(),
-        price: p,
-      },
+      payload,
       [
         Permission.read(Role.users()),
         Permission.update(Role.users()),

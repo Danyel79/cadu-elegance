@@ -118,7 +118,7 @@ export default function Home() {
         </p>
         <button
           type="button"
-          onClick={signOut}
+          onClick={() => window.confirm("Tem certeza que deseja sair?") && signOut()}
           style={{
             background: "transparent",
             border: "1px solid rgba(255,255,255,0.12)",

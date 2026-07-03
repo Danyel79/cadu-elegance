@@ -15,6 +15,7 @@ export default function ProfessionalLayout({ children }) {
   const navigate = useNavigate();
 
   async function handleLogout() {
+    if (!window.confirm("Tem certeza que deseja sair?")) return;
     await signOut();
     navigate("/login", { replace: true });
   }

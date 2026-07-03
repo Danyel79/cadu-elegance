@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { listServicesCatalog } from "../../services/adminDataService";
+import { listServicesCatalog, getServicePhotoUrl } from "../../services/adminDataService";
 import ClientLayout from "./ClientLayout";
 
 export default function ClientServices() {
@@ -50,28 +50,56 @@ export default function ClientServices() {
       )}
 
       <div style={{ display: "grid", gap: "18px" }}>
-        {services.map((service) => (
-          <article
-            key={service.$id}
-            style={{
-              padding: "24px",
-              borderRadius: "18px",
-              border: "1px solid rgba(209, 183, 107, 0.18)",
-              background: "rgba(255, 255, 255, 0.04)",
-              boxShadow: "0 18px 40px rgba(0,0,0,0.24)",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-              <div>
-                <h2 style={{ margin: 0, color: "#d1b76b" }}>{service.name}</h2>
-                <p style={{ margin: 0, color: "#beb7a3" }}>{service.description || "Serviço registrado pelo administrador."}</p>
+        {services.map((service) => {
+          const photoUrl = getServicePhotoUrl(service.fotoFileId);
+          return (
+            <article
+              key={service.$id}
+              style={{
+                padding: "24px",
+                borderRadius: "18px",
+                border: "1px solid rgba(209, 183, 107, 0.18)",
+                background: "rgba(255, 255, 255, 0.04)",
+                boxShadow: "0 18px 40px rgba(0,0,0,0.24)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                <div
+                  style={{
+                    width: "56px",
+                    height: "56px",
+                    borderRadius: "12px",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                    background: "rgba(209, 183, 107, 0.1)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {photoUrl ? (
+                    <img
+                      src={photoUrl}
+                      alt={service.name}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  ) : (
+                    <span className="material-symbols-outlined" style={{ color: "#d1b76b", fontSize: "26px" }}>
+                      content_cut
+                    </span>
+                  )}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <h2 style={{ margin: 0, color: "#d1b76b" }}>{service.name}</h2>
+                  <p style={{ margin: 0, color: "#beb7a3" }}>{service.description || "Serviço registrado pelo administrador."}</p>
+                </div>
+                <strong style={{ color: "#d1b76b" }}>
+                  R$ {Number(service.price).toFixed(2).replace(".", ",")}
+                </strong>
               </div>
-              <strong style={{ color: "#d1b76b" }}>
-                R$ {Number(service.price).toFixed(2).replace(".", ",")}
-              </strong>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
 
     </ClientLayout>

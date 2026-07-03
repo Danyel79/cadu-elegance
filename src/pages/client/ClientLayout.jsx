@@ -14,6 +14,7 @@ export default function ClientLayout({
   const navigate = useNavigate();
 
   async function handleLogout() {
+    if (!window.confirm("Tem certeza que deseja sair?")) return;
     await signOut();
     navigate("/login", { replace: true });
   }

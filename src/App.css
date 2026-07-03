@@ -473,14 +473,14 @@
   align-items: center;
   gap: 8px;
   font-size: 0.86rem;
-  color: #334155;
+  color: #f8f0d1;
   cursor: pointer;
 }
 
 .admin-role-check input {
   width: 16px;
   height: 16px;
-  accent-color: #2563eb;
+  accent-color: #f2ca50;
   cursor: pointer;
 }
 
@@ -489,6 +489,7 @@
   border-radius: 8px;
   border: 1px solid #cbd5e1;
   background: #f8fafc;
+  color: #1a1a1a;
   font-weight: 600;
   font-size: 0.82rem;
   cursor: pointer;
@@ -517,9 +518,9 @@
   gap: 12px;
   margin-bottom: 24px;
   padding: 16px;
-  background: #f8fafc;
+  background: rgba(255, 255, 255, 0.04);
   border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .admin-user-field {
@@ -527,11 +528,12 @@
   flex-direction: column;
   gap: 4px;
   font-size: 0.92rem;
+  color: #f8f0d1;
 }
 
 .admin-user-label {
   font-weight: 600;
-  color: #64748b;
+  color: #d0c5af;
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.02em;
@@ -545,7 +547,7 @@
 
 .admin-fieldset legend {
   font-weight: 700;
-  color: #0f172a;
+  color: #f8f0d1;
   margin-bottom: 10px;
   font-size: 0.95rem;
 }
@@ -569,7 +571,7 @@
 
 .admin-svc-price {
   font-weight: 500;
-  color: #64748b;
+  color: #beb7a3;
 }
 
 .admin-user-edit-form {
@@ -585,10 +587,12 @@
 
 .admin-staff-edit-panel {
   padding: 22px;
-  background: #09090d;
-  border-radius: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #1c1b1b;
+  border-radius: 20px;
+  border: 1px solid rgba(209, 183, 107, 0.18);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  max-width: 1180px;
+  margin: 0 auto;
 }
 
 .admin-staff-edit-grid {
@@ -708,7 +712,7 @@
   color: #d8d0ba;
 }
 
-.admin-form label {
+.admin-form-section > label {
   display: grid;
   gap: 8px;
   font-size: 0.9rem;
@@ -797,6 +801,10 @@
   color: #d8d0ba;
 }
 
+.admin-staff-edit-panel .admin-muted {
+  color: #beb7a3;
+}
+
 .admin-eyebrow {
   display: inline-block;
   margin-bottom: 10px;
@@ -819,14 +827,6 @@
 
 .admin-form-actions .admin-btn-secondary {
   width: auto;
-}
-
-.admin-form label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: 600;
-  color: #334155;
-  font-size: 0.9rem;
 }
 
 .admin-form input,

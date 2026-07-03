@@ -58,7 +58,7 @@ export default function ProfessionalDashboard() {
       <footer style={{ marginTop: "42px" }}>
         <button
           type="button"
-          onClick={signOut}
+          onClick={() => window.confirm("Tem certeza que deseja sair?") && signOut()}
           style={{
             border: "1px solid #d1b76b",
             background: "transparent",

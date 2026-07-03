@@ -1,7 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import AdminLayout from "./AdminLayout";
-import { listProfessionals, listAllBookings } from "../../services/adminDataService";
+import {
+  listProfessionals,
+  listAllBookings,
+  getStaffPhotoUrl,
+  deleteUserProfileDocument,
+} from "../../services/adminDataService";
 
 function countProfessionalBookings(bookings) {
   return bookings.reduce((acc, booking) => {
@@ -30,6 +35,7 @@ export default function AdminStaff() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -66,6 +72,21 @@ export default function AdminStaff() {
       active = false;
     };
   }, [load]);
+
+  async function handleDelete(profile) {
+    const confirmed = window.confirm(
+      `Tem certeza que deseja excluir o profissional "${profile.nickName || profile.userId}"? Esta ação não pode ser desfeita.`
+    );
+    if (!confirmed) return;
+    setDeletingId(profile.$id);
+    const res = await deleteUserProfileDocument(profile.$id);
+    setDeletingId(null);
+    if (res.success) {
+      setProfessionals((prev) => prev.filter((p) => p.$id !== profile.$id));
+    } else {
+      setError(res.error || "Não foi possível excluir o profissional.");
+    }
+  }
 
   const filteredProfessionals = professionals.filter((profile) => {
     const lowerSearch = searchTerm.toLowerCase();
@@ -170,12 +191,17 @@ export default function AdminStaff() {
               {filteredProfessionals.map((profile) => {
                 const total = bookingCounts[profile.$id] || 0;
                 const upcoming = upcomingCounts[profile.$id] || 0;
+                const photoUrl = getStaffPhotoUrl(profile.fotoFileId);
                 return (
                   <tr key={profile.$id}>
                     <td>
                       <div className="atelier-admin-table-identity">
                         <div className="atelier-admin-table-avatar">
-                          <span className="material-symbols-outlined" style={{ color: "#64748b", fontSize: 20 }}>person</span>
+                          {photoUrl ? (
+                            <img src={photoUrl} alt={profile.nickName || "Profissional"} />
+                          ) : (
+                            <span className="material-symbols-outlined" style={{ color: "#64748b", fontSize: 20 }}>person</span>
+                          )}
                         </div>
                         <span className="atelier-admin-table-name">{profile.nickName || "—"}</span>
                       </div>
@@ -196,6 +222,18 @@ export default function AdminStaff() {
                       <Link to={`/admin/staff/${profile.$id}/edit`} className="atelier-admin-action-btn">
                         <span className="material-symbols-outlined atelier-admin-action-icon">manage_accounts</span>
                       </Link>
+                      <button
+                        type="button"
+                        className="atelier-admin-action-btn"
+                        style={{ marginLeft: 8 }}
+                        onClick={() => handleDelete(profile)}
+                        disabled={deletingId === profile.$id}
+                        title="Excluir profissional"
+                      >
+                        <span className="material-symbols-outlined atelier-admin-action-icon" style={{ color: "#ffb4ab" }}>
+                          {deletingId === profile.$id ? "hourglass_empty" : "delete"}
+                        </span>
+                      </button>
                     </td>
                   </tr>
                 );

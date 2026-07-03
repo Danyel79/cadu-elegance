@@ -1,10 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import AdminLayout from "./AdminLayout";
 import {
   getUserProfileDocument,
   listServicesCatalog,
   listAllBookings,
   updateUserProfileRoles,
+  uploadStaffPhoto,
+  getStaffPhotoUrl,
   normalizeRolesSelection,
   rolesSelectionEqual,
   serviceIdsEqual,
@@ -42,6 +45,9 @@ export default function AdminStaffEdit() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   const load = useCallback(async () => {
     if (!profileId) return;
@@ -67,6 +73,8 @@ export default function AdminStaffEdit() {
     setServicesDraft(Array.isArray(profile.services) ? profile.services.map(String) : []);
     setNameDraft(profile.nickName || "");
     setPhoneDraft(profile.phone || "");
+    setPhotoFile(null);
+    setPhotoPreview(getStaffPhotoUrl(profile.fotoFileId));
 
     if (svcRes.success) {
       setServicesCatalog(svcRes.data);
@@ -102,8 +110,16 @@ export default function AdminStaffEdit() {
     !!doc &&
     (nameDraft !== (doc.nickName || "") ||
       phoneDraft !== (doc.phone || "") ||
+      !!photoFile ||
       !rolesSelectionEqual(doc.roles, roleDraft) ||
       (hasProfissional && !serviceIdsEqual(Array.isArray(doc.services) ? doc.services : [], servicesDraft)));
+
+  function handlePhotoChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  }
 
   function toggleRole(value, checked) {
     setRoleDraft((current) => {
@@ -131,11 +147,26 @@ export default function AdminStaffEdit() {
     setSaving(true);
     setError("");
     setSuccess("");
+
+    let fotoFileId;
+    if (photoFile) {
+      setUploadingPhoto(true);
+      const uploadRes = await uploadStaffPhoto(photoFile);
+      setUploadingPhoto(false);
+      if (!uploadRes.success) {
+        setSaving(false);
+        setError(uploadRes.error || "Falha ao enviar a foto.");
+        return;
+      }
+      fotoFileId = uploadRes.fileId;
+    }
+
     const servicesPayload = hasProfissional ? servicesDraft : [];
     const res = await updateUserProfileRoles(doc.$id, roleDraft, {
       services: servicesPayload,
       nickName: nameDraft,
       phone: phoneDraft,
+      ...(fotoFileId ? { fotoFileId } : {}),
     });
     setSaving(false);
     if (res.success) {
@@ -149,30 +180,36 @@ export default function AdminStaffEdit() {
 
   if (loading) {
     return (
-      <main className="admin-screen">
-        <div className="admin-panel admin-panel-wide">
+      <AdminLayout>
+        <div className="admin-staff-edit-panel">
           <p className="admin-muted">A carregar…</p>
         </div>
-      </main>
+      </AdminLayout>
     );
   }
 
   if (!doc) {
     return (
-      <main className="admin-screen">
-        <div className="admin-panel admin-panel-wide">
+      <AdminLayout>
+        <div className="admin-staff-edit-panel">
           <p className="admin-banner admin-banner-error">{error || "Perfil inválido."}</p>
           <nav className="admin-footer-nav">
             <Link to="/admin/staff">← Voltar para a equipe</Link>
           </nav>
         </div>
-      </main>
+      </AdminLayout>
     );
   }
 
   return (
-    <main className="admin-screen">
-      <div className="admin-panel admin-panel-wide admin-staff-edit-panel">
+    <AdminLayout>
+      <div style={{ marginBottom: "24px" }}>
+        <Link to="/admin/staff" style={{ color: "#d1b76b", textDecoration: "none", fontWeight: "600" }}>
+          ← Voltar para a equipe
+        </Link>
+      </div>
+
+      <div className="admin-staff-edit-panel">
         <header className="admin-header">
           <span className="admin-eyebrow">Edit Artisan Profile</span>
           <h1>Master Professional</h1>
@@ -182,13 +219,23 @@ export default function AdminStaffEdit() {
         <div className="admin-staff-edit-grid">
           <aside className="admin-staff-summary">
             <div className="admin-profile-card">
-              <div className="admin-profile-avatar">
-                <span className="material-symbols-outlined">camera_alt</span>
-              </div>
+              <label className="admin-profile-avatar" style={{ cursor: "pointer", overflow: "hidden" }}>
+                {photoPreview ? (
+                  <img
+                    src={photoPreview}
+                    alt={nameDraft || "Profissional"}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit" }}
+                  />
+                ) : (
+                  <span className="material-symbols-outlined">camera_alt</span>
+                )}
+                <input type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: "none" }} />
+              </label>
               <div>
                 <p className="admin-profile-role">Professional</p>
                 <h2 className="admin-profile-name">{nameDraft || "Sem nome"}</h2>
                 <p className="admin-profile-id">{doc.userId}</p>
+                {uploadingPhoto && <p className="admin-muted">Enviando foto…</p>}
               </div>
             </div>
 
@@ -285,7 +332,7 @@ export default function AdminStaffEdit() {
                   <div className="admin-services-grid">
                     {servicesCatalog.length === 0 ? (
                       <p className="admin-muted">
-                        Nenhum serviço encontrado. <Link to="/admin/services/new">Criar serviço</Link>
+                        Nenhum serviço encontrado. <Link to="/admin/services/new" style={{ color: "#d1b76b" }}>Criar serviço</Link>
                       </p>
                     ) : (
                       servicesCatalog.map((svc) => {
@@ -302,7 +349,11 @@ export default function AdminStaffEdit() {
                               <strong>{svc.name}</strong>
                               <p>{svc.description || "Serviço disponível"}</p>
                             </div>
-                            <span>{svc.price != null ? `${Number(svc.price).toFixed(2)} €` : "—"}</span>
+                            <span>
+                              {svc.price != null
+                                ? Number(svc.price).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+                                : "—"}
+                            </span>
                           </label>
                         );
                       })
@@ -321,6 +372,6 @@ export default function AdminStaffEdit() {
           </section>
         </div>
       </div>
-    </main>
+    </AdminLayout>
   );
 }
