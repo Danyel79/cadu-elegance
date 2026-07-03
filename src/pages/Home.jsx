@@ -5,7 +5,7 @@ import { useUserProfile } from "../hooks/useUserProfile";
 
 export default function Home() {
   const { user, loading: authLoading, signOut } = useAuth();
-  const { isAdmin, isProfessional, loading: profileLoading } = useUserProfile();
+  const { isAdmin, isProfessional, isClient, loading: profileLoading } = useUserProfile();
   const navigate = useNavigate();
 
   const areas = [];
@@ -27,13 +27,15 @@ export default function Home() {
       tag: "Profissional",
     });
   }
-  areas.push({
-    to: "/client",
-    icon: "person",
-    title: "Área do Cliente",
-    desc: "Agende serviços, veja agendamentos e explore a loja.",
-    tag: "Cliente",
-  });
+  if (isClient) {
+    areas.push({
+      to: "/client",
+      icon: "person",
+      title: "Área do Cliente",
+      desc: "Agende serviços, veja agendamentos e explore a loja.",
+      tag: "Cliente",
+    });
+  }
 
   // Auto-redirect apenas se a única opção for cliente (sem roles extras)
   useEffect(() => {
@@ -187,6 +189,7 @@ export default function Home() {
           style={{
             display: "grid",
             gridTemplateColumns: `repeat(${areas.length}, minmax(240px, 340px))`,
+            justifyContent: "center",
             gap: "20px",
             maxWidth: "1100px",
             width: "100%",

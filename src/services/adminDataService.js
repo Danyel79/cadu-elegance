@@ -177,6 +177,11 @@ export function isProfessionalProfile(profile) {
   return profile.roles.some((r) => String(r).toLowerCase() === "profissional");
 }
 
+export function isClientProfile(profile) {
+  if (!profile?.roles?.length) return false;
+  return profile.roles.some((r) => String(r).toLowerCase() === "client");
+}
+
 export async function getMyUserProfile(userId) {
   if (!DATABASE_ID || !USER_PROFILE_COLLECTION_ID) {
     return { success: false, error: "Variáveis de base de dados em falta no .env." };

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { getMyUserProfile, isAdminProfile, isProfessionalProfile } from "../services/adminDataService";
+import { getMyUserProfile, isAdminProfile, isProfessionalProfile, isClientProfile } from "../services/adminDataService";
 
 export function useUserProfile() {
   const { user, loading: authLoading } = useAuth();
@@ -48,5 +48,6 @@ export function useUserProfile() {
     error,
     isAdmin: isAdminProfile(profile),
     isProfessional: isProfessionalProfile(profile),
+    isClient: isClientProfile(profile),
   };
 }
