@@ -57,10 +57,10 @@ function AdminLayout({ children }) {
         </nav>
 
         <div className="atelier-admin-sidebar-footer">
-          <Link to="/home" className="atelier-admin-sidebar-footer-link">
+          <button type="button" className="atelier-admin-sidebar-footer-link" onClick={() => navigate(-1)}>
             <span className="material-symbols-outlined atelier-admin-sidebar-footer-icon">arrow_back</span>
             <span className="atelier-admin-sidebar-footer-text">Voltar</span>
-          </Link>
+          </button>
           <button type="button" className="atelier-admin-sidebar-footer-link" onClick={handleLogout}>
             <span className="material-symbols-outlined atelier-admin-sidebar-footer-icon">logout</span>
             <span className="atelier-admin-sidebar-footer-text">Sair</span>

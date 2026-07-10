@@ -39,7 +39,8 @@ export default function ClientDashboard() {
         style={{
           display: "grid",
           gap: "22px",
-          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 320px))",
+          alignItems: "start",
         }}
       >
         <Link to="/client/book" style={cardStyle}>
@@ -140,6 +141,8 @@ const cardStyle = {
   gap: "18px",
   padding: "26px",
   borderRadius: "24px",
+  minHeight: "180px",
+  boxSizing: "border-box",
   textDecoration: "none",
   border: "1px solid rgba(209, 183, 107, 0.18)",
   background: "rgba(255, 255, 255, 0.03)",

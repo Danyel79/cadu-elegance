@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { listProfessionals, getStaffPhotoUrl } from "../services/adminDataService";
 import { getSiteContent } from "../services/siteContentService";
 
 export default function AboutPage() {
+  const navigate = useNavigate();
   const [content, setContent] = useState(null);
   const [professionals, setProfessionals] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,18 +37,42 @@ export default function AboutPage() {
           borderBottom: "1px solid rgba(255,255,255,0.06)",
         }}
       >
-        <Link
-          to="/login"
-          style={{
-            fontFamily: "'Noto Serif', serif",
-            fontWeight: "700",
-            fontSize: "16px",
-            color: "#d1b76b",
-            textDecoration: "none",
-          }}
-        >
-          Cadu Elegance
-        </Link>
+        <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              background: "none",
+              border: "none",
+              color: "#99907c",
+              fontSize: "12px",
+              fontWeight: "600",
+              letterSpacing: "0.04em",
+              cursor: "pointer",
+              padding: 0,
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>
+              arrow_back
+            </span>
+            Voltar
+          </button>
+          <Link
+            to="/login"
+            style={{
+              fontFamily: "'Noto Serif', serif",
+              fontWeight: "700",
+              fontSize: "16px",
+              color: "#d1b76b",
+              textDecoration: "none",
+            }}
+          >
+            Cadu Elegance
+          </Link>
+        </div>
         <nav style={{ display: "flex", gap: "24px" }}>
           <Link to="/sobre" style={{ color: "#d1b76b", fontSize: "12px", fontWeight: "700", textDecoration: "none", letterSpacing: "0.08em" }}>
             SOBRE NÓS
