@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { listProfessionals, getStaffPhotoUrl } from "../services/adminDataService";
 import { getSiteContent } from "../services/siteContentService";
+import { listGalleryGroups } from "../services/galleryService";
 import PublicSiteHeader from "../components/PublicSiteHeader";
 import Reveal from "../components/Reveal";
 
@@ -34,17 +35,20 @@ const DIFERENCIAIS = [
 export default function AboutPage() {
   const [content, setContent] = useState(null);
   const [professionals, setProfessionals] = useState([]);
+  const [galleryGroups, setGalleryGroups] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const [contentRes, profRes] = await Promise.all([
+      const [contentRes, profRes, galleryRes] = await Promise.all([
         getSiteContent(),
         listProfessionals(),
+        listGalleryGroups(),
       ]);
       if (contentRes.success) setContent(contentRes.data);
       if (profRes.success) setProfessionals(profRes.data);
+      if (galleryRes.success) setGalleryGroups(galleryRes.data);
       setLoading(false);
     }
     load();
@@ -106,6 +110,45 @@ export default function AboutPage() {
                 </p>
               )}
             </Reveal>
+
+            {/* Galerias — fileiras nomeadas cadastradas pelo admin */}
+            {galleryGroups
+              .filter((group) => Array.isArray(group.fotos) && group.fotos.length > 0)
+              .map((group) => (
+                <section key={group.$id} style={{ marginBottom: "80px" }}>
+                  <Reveal>
+                    <h2 style={{ fontFamily: "'Noto Serif', serif", fontSize: "clamp(1.6rem, 3vw, 2.2rem)", margin: "0 0 28px", color: "#f6f2e8" }}>
+                      {group.titulo}
+                    </h2>
+                  </Reveal>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+                      gap: "16px",
+                    }}
+                  >
+                    {group.fotos.map((fileId, i) => (
+                      <Reveal
+                        key={fileId}
+                        delay={i * 0.05}
+                        style={{
+                          aspectRatio: "1/1",
+                          borderRadius: "14px",
+                          overflow: "hidden",
+                          background: "#141312",
+                        }}
+                      >
+                        <img
+                          src={getStaffPhotoUrl(fileId)}
+                          alt={group.titulo}
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                      </Reveal>
+                    ))}
+                  </div>
+                </section>
+              ))}
 
             {/* Nossos Valores */}
             <section style={{ marginBottom: "80px" }}>

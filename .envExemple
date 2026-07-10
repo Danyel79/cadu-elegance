@@ -17,6 +17,9 @@ VITE_APPWRITE_BLOCKS_COLLECTION_ID=bloqueios
 # Coleção com o conteúdo institucional (Sobre Nós/Contato): barbeariaTexto,
 # barbeariaFotoId, instagramUrl, whatsappNumero, contatoTexto — leitura pública
 VITE_APPWRITE_SITE_CONTENT_COLLECTION_ID=
+# Coleção com as fileiras de galeria nomeadas (Sobre Nós): titulo (String),
+# fotos (String, Array: Yes), ordem (Integer) — leitura pública
+VITE_APPWRITE_GALLERY_GROUPS_COLLECTION_ID=
 # ID da coleção em Appwrite (Settings → Name), ex.: agendamentos — tem de bater certo com a consola
 # VITE_APPWRITE_BOOKINGS_FIELD_PROFESSIONAL_PROFILE=profissionalId
 # VITE_APPWRITE_BOOKINGS_FIELD_PROFESSIONAL_USER=professionalUserId

@@ -2,6 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import AdminLayout from "./AdminLayout";
 import { uploadStaffPhoto, getStaffPhotoUrl } from "../../services/adminDataService";
 import { getSiteContent, saveSiteContent } from "../../services/siteContentService";
+import {
+  listGalleryGroups,
+  createGalleryGroup,
+  updateGalleryGroup,
+} from "../../services/galleryService";
+import GalleryGroupCard from "../../components/admin/GalleryGroupCard";
 
 const cardStyle = {
   padding: "28px",
@@ -47,6 +53,12 @@ export default function AdminInstitutional() {
   const [fotoPreview, setFotoPreview] = useState(null);
   const [uploadingFoto, setUploadingFoto] = useState(false);
 
+  const [galleryGroups, setGalleryGroups] = useState([]);
+  const [galleryLoading, setGalleryLoading] = useState(true);
+  const [galleryError, setGalleryError] = useState("");
+  const [novaFileiraTitulo, setNovaFileiraTitulo] = useState("");
+  const [creatingFileira, setCreatingFileira] = useState(false);
+
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -64,15 +76,30 @@ export default function AdminInstitutional() {
     setLoading(false);
   }, []);
 
+  const loadGalleryGroups = useCallback(async () => {
+    setGalleryLoading(true);
+    setGalleryError("");
+    const res = await listGalleryGroups();
+    if (res.success) {
+      setGalleryGroups(res.data);
+    } else {
+      setGalleryError(res.error);
+    }
+    setGalleryLoading(false);
+  }, []);
+
   useEffect(() => {
     let active = true;
     queueMicrotask(() => {
-      if (active) load();
+      if (active) {
+        load();
+        loadGalleryGroups();
+      }
     });
     return () => {
       active = false;
     };
-  }, [load]);
+  }, [load, loadGalleryGroups]);
 
   function handleFotoChange(e) {
     const file = e.target.files?.[0];
@@ -119,6 +146,35 @@ export default function AdminInstitutional() {
     }
   }
 
+  async function handleCreateFileira() {
+    if (!novaFileiraTitulo.trim()) return;
+    setCreatingFileira(true);
+    setGalleryError("");
+    const nextOrdem = galleryGroups.length
+      ? Math.max(...galleryGroups.map((g) => g.ordem ?? 0)) + 1
+      : 0;
+    const res = await createGalleryGroup({ titulo: novaFileiraTitulo, ordem: nextOrdem });
+    setCreatingFileira(false);
+    if (res.success) {
+      setNovaFileiraTitulo("");
+      await loadGalleryGroups();
+    } else {
+      setGalleryError(res.error);
+    }
+  }
+
+  async function handleMoveFileira(index, direction) {
+    const otherIndex = index + direction;
+    if (otherIndex < 0 || otherIndex >= galleryGroups.length) return;
+    const a = galleryGroups[index];
+    const b = galleryGroups[otherIndex];
+    await Promise.all([
+      updateGalleryGroup(a.$id, { ordem: b.ordem }),
+      updateGalleryGroup(b.$id, { ordem: a.ordem }),
+    ]);
+    await loadGalleryGroups();
+  }
+
   return (
     <AdminLayout>
       <header className="atelier-admin-header">
@@ -128,9 +184,9 @@ export default function AdminInstitutional() {
             Conteúdo <em>Institucional</em>
           </h1>
           <p className="atelier-admin-subtitle">
-            Gerencie a foto e o texto da barbearia, redes sociais e contato exibidos nas páginas
-            públicas "Sobre Nós" e "Contato". A biografia de cada profissional é editada
-            individualmente em Equipe de Profissionais.
+            Gerencie a foto e o texto da barbearia, as fileiras de galeria, redes sociais e contato
+            exibidos nas páginas públicas "Sobre Nós" e "Contato". A biografia de cada profissional
+            é editada individualmente em Equipe de Profissionais.
           </p>
         </div>
       </header>
@@ -138,7 +194,7 @@ export default function AdminInstitutional() {
       {loading ? (
         <p style={{ color: "#beb7a3", padding: "12px 0" }}>Carregando...</p>
       ) : (
-        <form onSubmit={handleSubmit} style={{ display: "grid", gap: "24px", maxWidth: "720px" }}>
+        <form onSubmit={handleSubmit} style={{ display: "grid", gap: "24px", maxWidth: "720px", marginBottom: "36px" }}>
           <div style={cardStyle}>
             <p
               style={{
@@ -273,6 +329,78 @@ export default function AdminInstitutional() {
           </button>
         </form>
       )}
+
+      {/* Galerias — fileiras nomeadas com fotos, exibidas na página Sobre Nós */}
+      <section style={{ maxWidth: "720px" }}>
+        <p
+          style={{
+            color: "#d1b76b",
+            textTransform: "uppercase",
+            letterSpacing: "0.18em",
+            fontSize: "11px",
+            marginBottom: "6px",
+          }}
+        >
+          Galerias
+        </p>
+        <p style={{ margin: "0 0 20px", color: "#99907c", fontSize: "12px" }}>
+          Crie quantas fileiras quiser (ex.: "Nosso Espaço", "Nossos Cortes"), cada uma com seu
+          próprio título e fotos. Elas aparecem nessa ordem na página Sobre Nós.
+        </p>
+
+        <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+          <input
+            type="text"
+            placeholder="Título da nova fileira (ex.: Nossos Cortes)"
+            value={novaFileiraTitulo}
+            onChange={(e) => setNovaFileiraTitulo(e.target.value)}
+            style={{ ...inputStyle, flex: 1 }}
+          />
+          <button
+            type="button"
+            onClick={handleCreateFileira}
+            disabled={creatingFileira || !novaFileiraTitulo.trim()}
+            style={{
+              padding: "10px 20px",
+              borderRadius: "8px",
+              border: "none",
+              background:
+                creatingFileira || !novaFileiraTitulo.trim()
+                  ? "rgba(209,183,107,0.2)"
+                  : "linear-gradient(135deg, #d1b76b, #f6e79d)",
+              color: creatingFileira || !novaFileiraTitulo.trim() ? "#6b6359" : "#1a1a1a",
+              fontWeight: "700",
+              fontSize: "13px",
+              cursor: creatingFileira || !novaFileiraTitulo.trim() ? "not-allowed" : "pointer",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {creatingFileira ? "Criando..." : "+ Nova fileira"}
+          </button>
+        </div>
+
+        {galleryError && <p style={{ color: "#f87171", fontSize: "13px", marginBottom: "16px" }}>{galleryError}</p>}
+
+        {galleryLoading ? (
+          <p style={{ color: "#beb7a3", fontSize: "13px" }}>Carregando galerias...</p>
+        ) : galleryGroups.length === 0 ? (
+          <p style={{ color: "#6b6359", fontSize: "13px" }}>Nenhuma fileira criada ainda.</p>
+        ) : (
+          <div style={{ display: "grid", gap: "16px" }}>
+            {galleryGroups.map((group, i) => (
+              <GalleryGroupCard
+                key={group.$id}
+                group={group}
+                onChanged={loadGalleryGroups}
+                onMoveUp={() => handleMoveFileira(i, -1)}
+                onMoveDown={() => handleMoveFileira(i, 1)}
+                canMoveUp={i > 0}
+                canMoveDown={i < galleryGroups.length - 1}
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </AdminLayout>
   );
 }
