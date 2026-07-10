@@ -88,6 +88,7 @@ function Login() {
     <div className="atelier-auth atelier-auth--login">
       <nav className="atelier-auth-topnav">
         <Link to="/sobre" className="atelier-auth-topnav-link">SOBRE NÓS</Link>
+        <Link to="/dia-do-noivo" className="atelier-auth-topnav-link">DIA DO NOIVO</Link>
         <Link to="/contato" className="atelier-auth-topnav-link">CONTATO</Link>
       </nav>
 

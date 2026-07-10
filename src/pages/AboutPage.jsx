@@ -1,10 +1,37 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { listProfessionals, getStaffPhotoUrl } from "../services/adminDataService";
 import { getSiteContent } from "../services/siteContentService";
+import PublicSiteHeader from "../components/PublicSiteHeader";
+import Reveal from "../components/Reveal";
+
+const VALORES = [
+  {
+    icon: "auto_awesome",
+    title: "Sofisticação",
+    text: "Um ambiente que reflete precisão e cuidado em cada detalhe do atendimento.",
+  },
+  {
+    icon: "diversity_3",
+    title: "Relacionamento",
+    text: "Construímos vínculos duradouros com quem confia na Cadu Elegance.",
+  },
+  {
+    icon: "bolt",
+    title: "Inovação",
+    text: "Técnicas tradicionais unidas às tendências mais atuais do grooming.",
+  },
+];
+
+const DIFERENCIAIS = [
+  "Ambiente climatizado e exclusivo",
+  "Produtos premium selecionados",
+  "Agendamento 100% online",
+  "Wi-Fi de alta velocidade",
+  "Atendimento pontual e ágil",
+  "Espaço pensado para sua experiência",
+];
 
 export default function AboutPage() {
-  const navigate = useNavigate();
   const [content, setContent] = useState(null);
   const [professionals, setProfessionals] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,69 +54,15 @@ export default function AboutPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0909", color: "#f6f2e8" }}>
-      <header
-        style={{
-          padding: "0 32px",
-          height: "64px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              background: "none",
-              border: "none",
-              color: "#99907c",
-              fontSize: "12px",
-              fontWeight: "600",
-              letterSpacing: "0.04em",
-              cursor: "pointer",
-              padding: 0,
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>
-              arrow_back
-            </span>
-            Voltar
-          </button>
-          <Link
-            to="/login"
-            style={{
-              fontFamily: "'Noto Serif', serif",
-              fontWeight: "700",
-              fontSize: "16px",
-              color: "#d1b76b",
-              textDecoration: "none",
-            }}
-          >
-            Cadu Elegance
-          </Link>
-        </div>
-        <nav style={{ display: "flex", gap: "24px" }}>
-          <Link to="/sobre" style={{ color: "#d1b76b", fontSize: "12px", fontWeight: "700", textDecoration: "none", letterSpacing: "0.08em" }}>
-            SOBRE NÓS
-          </Link>
-          <Link to="/contato" style={{ color: "#99907c", fontSize: "12px", fontWeight: "600", textDecoration: "none", letterSpacing: "0.08em" }}>
-            CONTATO
-          </Link>
-        </nav>
-      </header>
+      <PublicSiteHeader />
 
-      <main style={{ maxWidth: "1000px", margin: "0 auto", padding: "56px 32px 80px" }}>
+      <main style={{ maxWidth: "1000px", margin: "0 auto", padding: "56px 32px 96px" }}>
         {loading ? (
           <p style={{ color: "#beb7a3" }}>Carregando...</p>
         ) : (
           <>
             {/* Sobre a barbearia */}
-            <section style={{ marginBottom: "64px" }}>
+            <Reveal as="section" style={{ marginBottom: "80px" }}>
               <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.24em", fontSize: "11px", marginBottom: "12px" }}>
                 Nossa história
               </p>
@@ -132,10 +105,90 @@ export default function AboutPage() {
                   Conteúdo em preparação — em breve contaremos nossa história aqui.
                 </p>
               )}
+            </Reveal>
+
+            {/* Nossos Valores */}
+            <section style={{ marginBottom: "80px" }}>
+              <Reveal>
+                <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.24em", fontSize: "11px", marginBottom: "12px" }}>
+                  Os pilares que guiam nosso trabalho
+                </p>
+                <h2 style={{ fontFamily: "'Noto Serif', serif", fontSize: "clamp(1.6rem, 3vw, 2.2rem)", margin: "0 0 28px", color: "#f6f2e8" }}>
+                  Nossos Valores
+                </h2>
+              </Reveal>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                  gap: "20px",
+                }}
+              >
+                {VALORES.map((valor, i) => (
+                  <Reveal
+                    key={valor.title}
+                    delay={i * 0.1}
+                    style={{
+                      padding: "28px 24px",
+                      borderRadius: "16px",
+                      background: "#141312",
+                      border: "1px solid rgba(255,255,255,0.06)",
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ color: "#d1b76b", fontSize: "28px", display: "block", marginBottom: "14px" }}>
+                      {valor.icon}
+                    </span>
+                    <h3 style={{ margin: "0 0 8px", color: "#f6f2e8", fontSize: "16px", fontFamily: "'Noto Serif', serif" }}>
+                      {valor.title}
+                    </h3>
+                    <p style={{ margin: 0, color: "#99907c", fontSize: "13px", lineHeight: 1.7 }}>{valor.text}</p>
+                  </Reveal>
+                ))}
+              </div>
+            </section>
+
+            {/* Nossos Diferenciais */}
+            <section style={{ marginBottom: "80px" }}>
+              <Reveal>
+                <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.24em", fontSize: "11px", marginBottom: "12px" }}>
+                  Experiência premium em cada detalhe
+                </p>
+                <h2 style={{ fontFamily: "'Noto Serif', serif", fontSize: "clamp(1.6rem, 3vw, 2.2rem)", margin: "0 0 28px", color: "#f6f2e8" }}>
+                  Nossos Diferenciais
+                </h2>
+              </Reveal>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                  gap: "16px",
+                }}
+              >
+                {DIFERENCIAIS.map((item, i) => (
+                  <Reveal
+                    key={item}
+                    delay={i * 0.05}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                      padding: "16px 18px",
+                      borderRadius: "12px",
+                      background: "#141312",
+                      border: "1px solid rgba(255,255,255,0.06)",
+                    }}
+                  >
+                    <span className="material-symbols-outlined" style={{ color: "#d1b76b", fontSize: "20px", flexShrink: 0 }}>
+                      check_circle
+                    </span>
+                    <span style={{ color: "#e5e2e1", fontSize: "13px" }}>{item}</span>
+                  </Reveal>
+                ))}
+              </div>
             </section>
 
             {/* Profissionais */}
-            <section>
+            <Reveal as="section">
               <p style={{ color: "#d1b76b", textTransform: "uppercase", letterSpacing: "0.24em", fontSize: "11px", marginBottom: "12px" }}>
                 Nossa equipe
               </p>
@@ -200,7 +253,7 @@ export default function AboutPage() {
                   })}
                 </div>
               )}
-            </section>
+            </Reveal>
           </>
         )}
       </main>

@@ -16,6 +16,7 @@ import AdminFinancial from "../pages/admin/AdminFinancial";
 import AdminInstitutional from "../pages/admin/AdminInstitutional";
 import AboutPage from "../pages/AboutPage";
 import ContactPage from "../pages/ContactPage";
+import GroomDayPage from "../pages/GroomDayPage";
 import ClientDashboard from "../pages/client/ClientDashboard";
 import ClientBookAppointment from "../pages/client/ClientBookAppointment";
 import ClientServices from "../pages/client/ClientServices";
@@ -96,6 +97,7 @@ export default function AppRouter() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/sobre" element={<AboutPage />} />
         <Route path="/contato" element={<ContactPage />} />
+        <Route path="/dia-do-noivo" element={<GroomDayPage />} />
         <Route
           path="/home"
           element={
