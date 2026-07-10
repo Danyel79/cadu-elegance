@@ -174,107 +174,6 @@ function ProductCard({ product }) {
   );
 }
 
-/* ─── Card em destaque (produto principal) ─── */
-function FeaturedCard({ product }) {
-  const imgUrl = getProductImagePreviewUrl(product.imageId, 800);
-  const inStock = Number(product.stock) > 0;
-
-  return (
-    <div
-      style={{
-        borderRadius: "20px",
-        overflow: "hidden",
-        position: "relative",
-        minHeight: "420px",
-        background: "#141312",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-end",
-        border: "1px solid rgba(209,183,107,0.15)",
-      }}
-    >
-      {imgUrl && (
-        <img
-          src={imgUrl}
-          alt={product.name}
-          style={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-          onError={(e) => { e.currentTarget.style.display = "none"; }}
-        />
-      )}
-      {/* Gradiente de baixo */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "linear-gradient(to top, rgba(10,9,9,0.95) 0%, rgba(10,9,9,0.5) 50%, transparent 100%)",
-        }}
-      />
-
-      <div style={{ position: "relative", padding: "28px 32px" }}>
-        {product.category && (
-          <span
-            style={{
-              display: "inline-block",
-              padding: "3px 10px",
-              borderRadius: "999px",
-              background: "rgba(209,183,107,0.15)",
-              border: "1px solid rgba(209,183,107,0.35)",
-              color: "#d1b76b",
-              fontSize: "10px",
-              fontWeight: "700",
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
-              marginBottom: "10px",
-            }}
-          >
-            {product.category}
-          </span>
-        )}
-        <h2
-          style={{
-            margin: "0 0 6px",
-            color: "#f6f2e8",
-            fontSize: "clamp(1.4rem, 2.5vw, 1.9rem)",
-            fontFamily: "'Noto Serif', serif",
-            lineHeight: 1.25,
-          }}
-        >
-          {product.name}
-        </h2>
-        <div
-          style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "12px" }}
-        >
-          <span
-            style={{
-              color: "#d1b76b",
-              fontWeight: "700",
-              fontSize: "22px",
-            }}
-          >
-            {formatCurrency(product.price || 0)}
-          </span>
-          <span
-            style={{
-              fontSize: "12px",
-              color: inStock ? "#10b981" : "#f87171",
-              fontWeight: "600",
-            }}
-          >
-            {inStock ? "Em estoque" : "Esgotado"}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /* ─── Página principal ─── */
 export default function StorePage() {
   const { signOut } = useAuth();
@@ -289,8 +188,15 @@ export default function StorePage() {
   }
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [search, setSearch] = useState("");
+  const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
+
+  function toggleCategory(cat) {
+    setSelectedCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
+  }
 
   useEffect(() => {
     async function load() {
@@ -309,7 +215,7 @@ export default function StorePage() {
   const filtered = useMemo(() => {
     return products.filter((p) => {
       const matchCat =
-        activeCategory === "all" || p.category === activeCategory;
+        selectedCategories.length === 0 || selectedCategories.includes(p.category);
       const q = search.toLowerCase();
       const matchSearch =
         !q ||
@@ -317,27 +223,7 @@ export default function StorePage() {
         p.category?.toLowerCase().includes(q);
       return matchCat && matchSearch;
     });
-  }, [products, activeCategory, search]);
-
-  // Produto em destaque = mais caro entre os em estoque
-  const featured = useMemo(() => {
-    const inStock = products.filter((p) => Number(p.stock) > 0);
-    if (!inStock.length) return products[0] || null;
-    return inStock.reduce(
-      (best, p) => (Number(p.price) > Number(best.price) ? p : best),
-      inStock[0]
-    );
-  }, [products]);
-
-  // Restantes após remover o featured
-  const rest = useMemo(() => {
-    if (!featured) return filtered;
-    if (activeCategory !== "all" || search) return filtered;
-    return filtered.filter((p) => p.$id !== featured.$id);
-  }, [filtered, featured, activeCategory, search]);
-
-  const showFeatured =
-    featured && activeCategory === "all" && !search;
+  }, [products, selectedCategories, search]);
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0909", color: "#f6f2e8" }}>
@@ -508,46 +394,123 @@ export default function StorePage() {
           padding: "0 32px 32px",
           maxWidth: "1200px",
           margin: "0 auto",
+          position: "relative",
         }}
       >
-        <div
+        <button
+          type="button"
+          onClick={() => setCategoryMenuOpen((v) => !v)}
           style={{
             display: "flex",
+            alignItems: "center",
             gap: "8px",
-            overflowX: "auto",
-            paddingBottom: "4px",
+            padding: "10px 18px",
+            borderRadius: "12px",
+            border: categoryMenuOpen
+              ? "1px solid #d1b76b"
+              : "1px solid rgba(255,255,255,0.1)",
+            background: categoryMenuOpen
+              ? "rgba(209,183,107,0.1)"
+              : "transparent",
+            color: categoryMenuOpen ? "#d1b76b" : "#beb7a3",
+            cursor: "pointer",
+            fontSize: "13px",
+            fontWeight: "600",
           }}
         >
-          {["all", ...categories].map((cat) => {
-            const active = activeCategory === cat;
-            return (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setActiveCategory(cat)}
-                style={{
-                  padding: "8px 20px",
-                  borderRadius: "999px",
-                  border: active
-                    ? "1px solid #d1b76b"
-                    : "1px solid rgba(255,255,255,0.1)",
-                  background: active
-                    ? "rgba(209,183,107,0.12)"
-                    : "transparent",
-                  color: active ? "#d1b76b" : "#99907c",
-                  cursor: "pointer",
-                  fontSize: "13px",
-                  fontWeight: active ? "700" : "400",
-                  whiteSpace: "nowrap",
-                  flexShrink: 0,
-                  transition: "all 0.2s ease",
-                }}
-              >
-                {cat === "all" ? "Todos os produtos" : cat}
-              </button>
-            );
-          })}
-        </div>
+          <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>
+            filter_list
+          </span>
+          Categorias
+          {selectedCategories.length > 0 && (
+            <span
+              style={{
+                background: "#d1b76b",
+                color: "#0a0909",
+                borderRadius: "999px",
+                fontSize: "11px",
+                fontWeight: "700",
+                padding: "1px 7px",
+              }}
+            >
+              {selectedCategories.length}
+            </span>
+          )}
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: "18px", transform: categoryMenuOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s ease" }}
+          >
+            expand_more
+          </span>
+        </button>
+
+        {categoryMenuOpen && (
+          <div
+            style={{
+              position: "absolute",
+              top: "calc(100% - 20px)",
+              left: "32px",
+              zIndex: 20,
+              minWidth: "220px",
+              padding: "10px",
+              borderRadius: "14px",
+              background: "#141312",
+              border: "1px solid rgba(255,255,255,0.1)",
+              boxShadow: "0 16px 40px rgba(0,0,0,0.5)",
+              display: "grid",
+              gap: "2px",
+            }}
+          >
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                padding: "8px 10px",
+                borderRadius: "8px",
+                cursor: "pointer",
+                color: selectedCategories.length === 0 ? "#d1b76b" : "#e5e2e1",
+                fontWeight: selectedCategories.length === 0 ? "700" : "400",
+                fontSize: "13px",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={selectedCategories.length === 0}
+                onChange={() => setSelectedCategories([])}
+                style={{ accentColor: "#d1b76b", width: "15px", height: "15px", cursor: "pointer" }}
+              />
+              Todos os produtos
+            </label>
+            {categories.map((cat) => {
+              const checked = selectedCategories.includes(cat);
+              return (
+                <label
+                  key={cat}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    padding: "8px 10px",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    color: checked ? "#d1b76b" : "#e5e2e1",
+                    fontWeight: checked ? "700" : "400",
+                    fontSize: "13px",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => toggleCategory(cat)}
+                    style={{ accentColor: "#d1b76b", width: "15px", height: "15px", cursor: "pointer" }}
+                  />
+                  {cat}
+                </label>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* ── Conteúdo ── */}
@@ -605,7 +568,7 @@ export default function StorePage() {
             </p>
             <button
               type="button"
-              onClick={() => { setSearch(""); setActiveCategory("all"); }}
+              onClick={() => { setSearch(""); setSelectedCategories([]); }}
               style={{
                 marginTop: "12px",
                 padding: "8px 20px",
@@ -621,171 +584,19 @@ export default function StorePage() {
             </button>
           </div>
         ) : (
-          <>
-            {/* Destaque + laterais */}
-            {showFeatured && rest.length > 0 && (
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "20px",
-                  marginBottom: "32px",
-                }}
-              >
-                <FeaturedCard product={featured} />
-
-                <div style={{ display: "grid", gap: "20px", gridTemplateRows: "1fr 1fr" }}>
-                  {rest.slice(0, 2).map((p) => (
-                    <div
-                      key={p.$id}
-                      style={{
-                        borderRadius: "16px",
-                        overflow: "hidden",
-                        background: "#141312",
-                        border: "1px solid rgba(255,255,255,0.06)",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "16px",
-                        padding: "16px",
-                        transition: "border-color 0.2s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor =
-                          "rgba(209,183,107,0.25)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor =
-                          "rgba(255,255,255,0.06)";
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "90px",
-                          height: "90px",
-                          borderRadius: "10px",
-                          background: "#1a1918",
-                          overflow: "hidden",
-                          flexShrink: 0,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {getProductImagePreviewUrl(p.imageId, 180) ? (
-                          <img
-                            src={getProductImagePreviewUrl(p.imageId, 180)}
-                            alt={p.name}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                            }}
-                          />
-                        ) : (
-                          <span
-                            className="material-symbols-outlined"
-                            style={{ color: "#2a2826", fontSize: "28px" }}
-                          >
-                            image
-                          </span>
-                        )}
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        {p.category && (
-                          <p
-                            style={{
-                              margin: "0 0 4px",
-                              fontSize: "10px",
-                              color: "#d1b76b",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.12em",
-                              fontWeight: "600",
-                            }}
-                          >
-                            {p.category}
-                          </p>
-                        )}
-                        <p
-                          style={{
-                            margin: "0 0 8px",
-                            color: "#f6f2e8",
-                            fontFamily: "'Noto Serif', serif",
-                            fontSize: "14px",
-                            lineHeight: 1.4,
-                          }}
-                        >
-                          {p.name}
-                        </p>
-                        <p
-                          style={{
-                            margin: 0,
-                            color: "#d1b76b",
-                            fontWeight: "700",
-                            fontSize: "16px",
-                          }}
-                        >
-                          {formatCurrency(p.price || 0)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Separador */}
-            {showFeatured && rest.slice(2).length > 0 && (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "16px",
-                  marginBottom: "24px",
-                }}
-              >
-                <div
-                  style={{
-                    flex: 1,
-                    height: "1px",
-                    background: "rgba(255,255,255,0.06)",
-                  }}
-                />
-                <p
-                  style={{
-                    margin: 0,
-                    color: "#99907c",
-                    fontSize: "11px",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.18em",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Coleção completa
-                </p>
-                <div
-                  style={{
-                    flex: 1,
-                    height: "1px",
-                    background: "rgba(255,255,255,0.06)",
-                  }}
-                />
-              </div>
-            )}
-
-            {/* Grade de produtos */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "repeat(auto-fill, minmax(220px, 1fr))",
-                gap: "20px",
-              }}
-            >
-              {(showFeatured ? rest.slice(2) : filtered).map((product) => (
-                <ProductCard key={product.$id} product={product} />
-              ))}
-            </div>
-          </>
+          /* Grade de produtos */
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(auto-fill, minmax(220px, 1fr))",
+              gap: "20px",
+            }}
+          >
+            {filtered.map((product) => (
+              <ProductCard key={product.$id} product={product} />
+            ))}
+          </div>
         )}
       </main>
 
@@ -910,7 +721,7 @@ export default function StorePage() {
             <p key={cat} style={{ margin: "0 0 6px" }}>
               <button
                 type="button"
-                onClick={() => setActiveCategory(cat)}
+                onClick={() => setSelectedCategories([cat])}
                 style={{
                   background: "none",
                   border: "none",

@@ -13,6 +13,9 @@ import AdminAnalytics from "../pages/admin/AdminAnalytics";
 import AdminStore from "../pages/admin/AdminStore";
 import AdminUserNew from "../pages/admin/AdminUserNew";
 import AdminFinancial from "../pages/admin/AdminFinancial";
+import AdminInstitutional from "../pages/admin/AdminInstitutional";
+import AboutPage from "../pages/AboutPage";
+import ContactPage from "../pages/ContactPage";
 import ClientDashboard from "../pages/client/ClientDashboard";
 import ClientBookAppointment from "../pages/client/ClientBookAppointment";
 import ClientServices from "../pages/client/ClientServices";
@@ -91,6 +94,8 @@ export default function AppRouter() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/sobre" element={<AboutPage />} />
+        <Route path="/contato" element={<ContactPage />} />
         <Route
           path="/home"
           element={
@@ -216,6 +221,14 @@ export default function AppRouter() {
           element={
             <AdminRoute>
               <AdminFinancial />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/institutional"
+          element={
+            <AdminRoute>
+              <AdminInstitutional />
             </AdminRoute>
           }
         />

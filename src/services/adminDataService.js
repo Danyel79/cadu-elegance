@@ -657,7 +657,7 @@ export function getStaffPhotoUrl(fileId) {
   return `${endpoint}/storage/buckets/${STAFF_PHOTOS_BUCKET_ID}/files/${fileId}/view?project=${projectId}`;
 }
 
-export async function updateUserProfileRoles(documentId, roles, { services, nickName, phone, fotoFileId } = {}) {
+export async function updateUserProfileRoles(documentId, roles, { services, nickName, phone, fotoFileId, bio } = {}) {
   if (!DATABASE_ID || !USER_PROFILE_COLLECTION_ID) {
     return { success: false, error: "Variáveis de base de dados em falta no .env." };
   }
@@ -676,6 +676,9 @@ export async function updateUserProfileRoles(documentId, roles, { services, nick
   }
   if (typeof fotoFileId === "string") {
     data.fotoFileId = fotoFileId;
+  }
+  if (typeof bio === "string") {
+    data.bio = bio.trim();
   }
   try {
     await databases.updateDocument(

@@ -4,10 +4,37 @@ import AdminLayout from "./AdminLayout";
 import {
   listAllBookings,
   listProfessionals,
-  listUserProfiles,
   listServicesCatalog,
 } from "../../services/adminDataService";
 import { listAllProductsAdmin } from "../../services/storeService";
+import KpiCard from "../../components/admin/charts/KpiCard";
+import DonutChart from "../../components/admin/charts/DonutChart";
+import SegmentedControl from "../../components/admin/charts/SegmentedControl";
+import LineChart from "../../components/admin/charts/LineChart";
+import { isThisMonth, isLastMonth } from "../../utils/adminPeriod";
+
+const STATUS_COLORS = {
+  CONCLUIDO: "#10b981",
+  AGENDADO: "#d1b76b",
+  CANCELADO: "#f87171",
+};
+
+const STATUS_LABELS = {
+  CONCLUIDO: "Concluído",
+  AGENDADO: "Agendado",
+  CANCELADO: "Cancelado",
+};
+
+const PROF_COLORS = [
+  "#d1b76b", "#60a5fa", "#a78bfa", "#34d399",
+  "#f87171", "#fbbf24", "#e879f9", "#2dd4bf",
+];
+
+const PERIOD_OPTIONS = [
+  { value: "current", label: "Mês atual" },
+  { value: "last", label: "Mês anterior" },
+  { value: "all", label: "Todo o período" },
+];
 
 function formatCurrency(value) {
   return Number(value).toLocaleString("pt-BR", {
@@ -16,141 +43,25 @@ function formatCurrency(value) {
   });
 }
 
-function isThisMonth(isoDate) {
-  if (!isoDate) return false;
-  const d = new Date(isoDate);
-  const now = new Date();
-  return (
-    d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
-  );
-}
-
-function isLastMonth(isoDate) {
-  if (!isoDate) return false;
-  const d = new Date(isoDate);
-  const now = new Date();
-  const last = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  return (
-    d.getMonth() === last.getMonth() && d.getFullYear() === last.getFullYear()
-  );
-}
-
-function BarChart({ data, valueKey, labelKey, formatValue }) {
-  if (!data.length) {
-    return <p style={{ color: "#99907c", fontSize: "14px" }}>Nenhum dado disponível.</p>;
-  }
-  const max = Math.max(...data.map((d) => d[valueKey] || 0), 1);
-  return (
-    <div style={{ display: "grid", gap: "14px" }}>
-      {data.map((item, i) => (
-        <div key={item[labelKey] || i} style={{ display: "grid", gap: "6px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", color: "#beb7a3", fontSize: "13px" }}>
-            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "65%" }}>
-              {item[labelKey]}
-            </span>
-            <strong style={{ color: "#d1b76b", flexShrink: 0 }}>
-              {formatValue ? formatValue(item[valueKey]) : item[valueKey]}
-            </strong>
-          </div>
-          <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: "999px", height: "8px" }}>
-            <div
-              style={{
-                width: `${Math.max(((item[valueKey] || 0) / max) * 100, item[valueKey] > 0 ? 4 : 0)}%`,
-                height: "8px",
-                borderRadius: "999px",
-                background: "linear-gradient(90deg, #d1b76b, #f6e79d)",
-                transition: "width 0.5s ease",
-              }}
-            />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function KpiCard({ label, value, sub, icon, delta }) {
-  const isUp = delta > 0;
-  const isDown = delta < 0;
-  return (
-    <div
-      style={{
-        padding: "28px",
-        borderRadius: "16px",
-        background: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(209,183,107,0.14)",
-        display: "flex",
-        flexDirection: "column",
-        gap: "12px",
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <span
-          className="material-symbols-outlined"
-          style={{ color: "#d1b76b", fontSize: "22px" }}
-        >
-          {icon}
-        </span>
-        <p
-          style={{
-            color: "#beb7a3",
-            margin: 0,
-            fontSize: "11px",
-            textTransform: "uppercase",
-            letterSpacing: "0.16em",
-          }}
-        >
-          {label}
-        </p>
-      </div>
-      <h2 style={{ margin: 0, color: "#f6f2e8", fontSize: "2rem" }}>{value}</h2>
-      <div
-        style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}
-      >
-        {delta != null && (
-          <span
-            style={{
-              fontSize: "12px",
-              fontWeight: "700",
-              color: isUp ? "#10b981" : isDown ? "#f87171" : "#99907c",
-            }}
-          >
-            {isUp ? "▲" : isDown ? "▼" : "—"}{" "}
-            {Math.abs(delta)}
-            {typeof delta === "number" && !String(delta).includes("%")
-              ? ""
-              : ""}
-          </span>
-        )}
-        {sub && (
-          <p style={{ color: "#99907c", margin: 0, fontSize: "12px" }}>{sub}</p>
-        )}
-      </div>
-    </div>
-  );
-}
-
 export default function AdminDashboard() {
   const [bookings, setBookings] = useState([]);
   const [professionals, setProfessionals] = useState([]);
-  const [users, setUsers] = useState([]);
   const [products, setProducts] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState("current");
 
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const [bookRes, profRes, userRes, prodRes, svcRes] = await Promise.all([
+      const [bookRes, profRes, prodRes, svcRes] = await Promise.all([
         listAllBookings(),
         listProfessionals(),
-        listUserProfiles(),
         listAllProductsAdmin(),
         listServicesCatalog(),
       ]);
       if (bookRes.success) setBookings(bookRes.data);
       if (profRes.success) setProfessionals(profRes.data);
-      if (userRes.success) setUsers(userRes.data);
       if (prodRes.success) setProducts(prodRes.data);
       if (svcRes.success) setServices(svcRes.data);
       setLoading(false);
@@ -167,6 +78,12 @@ export default function AdminDashboard() {
     () => bookings.filter((b) => isLastMonth(b.dateIso)),
     [bookings]
   );
+
+  const periodBookings = useMemo(() => {
+    if (period === "current") return thisMonthBookings;
+    if (period === "last") return lastMonthBookings;
+    return bookings;
+  }, [period, bookings, thisMonthBookings, lastMonthBookings]);
 
   const servicePriceMap = useMemo(
     () => new Map(services.map((s) => [s.$id, Number(s.price) || 0])),
@@ -195,23 +112,26 @@ export default function AdminDashboard() {
     [lastMonthBookings, servicePriceMap]
   );
 
-  const thisMonthFutureRevenue = useMemo(
+  const periodRevenue = useMemo(
     () =>
-      thisMonthBookings
+      periodBookings
+        .filter((b) => (b.status || "").toUpperCase() === "CONCLUIDO")
+        .reduce((sum, b) => {
+          const p = Number(b.servicePrice ?? servicePriceMap.get(b.serviceId) ?? 0);
+          return sum + (Number.isNaN(p) ? 0 : p);
+        }, 0),
+    [periodBookings, servicePriceMap]
+  );
+
+  const periodFutureRevenue = useMemo(
+    () =>
+      periodBookings
         .filter((b) => (b.status || "").toUpperCase() !== "CONCLUIDO")
         .reduce((sum, b) => {
           const p = Number(b.servicePrice ?? servicePriceMap.get(b.serviceId) ?? 0);
           return sum + (Number.isNaN(p) ? 0 : p);
         }, 0),
-    [thisMonthBookings, servicePriceMap]
-  );
-
-  const totalClients = useMemo(
-    () =>
-      users.filter((u) =>
-        u.roles?.some((r) => String(r).toLowerCase() === "client")
-      ).length,
-    [users]
+    [periodBookings, servicePriceMap]
   );
 
   const profMap = useMemo(
@@ -235,8 +155,8 @@ export default function AdminDashboard() {
         revenue: 0,
       };
     });
-    // Soma os agendamentos históricos
-    bookings.forEach((b) => {
+    // Soma os agendamentos do período selecionado
+    periodBookings.forEach((b) => {
       const pid = b.professionalProfileId || "desconhecido";
       if (!stats[pid]) {
         stats[pid] = {
@@ -251,9 +171,80 @@ export default function AdminDashboard() {
       stats[pid].revenue += Number.isNaN(p) ? 0 : p;
     });
     return Object.values(stats).sort((a, b) => b.bookings - a.bookings);
-  }, [bookings, professionals, profMap, servicePriceMap]);
+  }, [periodBookings, professionals, profMap, servicePriceMap]);
 
-  const bookingDelta = thisMonthBookings.length - lastMonthBookings.length;
+  const revenueByProfessional = useMemo(
+    () => professionalStats.filter((p) => p.revenue > 0),
+    [professionalStats]
+  );
+
+  const statusStats = useMemo(() => {
+    const stats = {};
+    periodBookings.forEach((b) => {
+      const status = (b.status || "").toUpperCase() || "AGENDADO";
+      stats[status] = (stats[status] || 0) + 1;
+    });
+    return Object.entries(stats).map(([status, count]) => ({
+      status,
+      count,
+    }));
+  }, [periodBookings]);
+
+  const weeklyTrend = useMemo(() => {
+    const days = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const iso = d.toISOString().slice(0, 10);
+      const label = d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "").toUpperCase();
+      days.push({ iso, label, revenue: 0, bookings: 0 });
+    }
+    const dayMap = new Map(days.map((d) => [d.iso, d]));
+    bookings.forEach((b) => {
+      const iso = b.dateIso ? new Date(b.dateIso).toISOString().slice(0, 10) : null;
+      const entry = iso && dayMap.get(iso);
+      if (!entry) return;
+      entry.bookings += 1;
+      if ((b.status || "").toUpperCase() === "CONCLUIDO") {
+        const p = Number(b.servicePrice ?? servicePriceMap.get(b.serviceId) ?? 0);
+        entry.revenue += Number.isNaN(p) ? 0 : p;
+      }
+    });
+    return days;
+  }, [bookings, servicePriceMap]);
+
+  const last30DaysServiceStats = useMemo(() => {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 30);
+    const stats = {};
+    bookings.forEach((b) => {
+      const d = b.dateIso ? new Date(b.dateIso) : null;
+      if (!d || d < cutoff) return;
+      const sid = b.serviceId || "outro";
+      if (!stats[sid]) {
+        stats[sid] = { id: sid, name: serviceMap.get(sid) || b.serviceName || "Serviço", count: 0 };
+      }
+      stats[sid].count += 1;
+    });
+    return Object.values(stats).sort((a, b) => b.count - a.count);
+  }, [bookings, serviceMap]);
+
+  const todayServiceStats = useMemo(() => {
+    const todayIso = new Date().toISOString().slice(0, 10);
+    const stats = {};
+    bookings.forEach((b) => {
+      const iso = b.dateIso ? new Date(b.dateIso).toISOString().slice(0, 10) : null;
+      if (iso !== todayIso) return;
+      const sid = b.serviceId || "outro";
+      if (!stats[sid]) {
+        stats[sid] = { id: sid, name: serviceMap.get(sid) || b.serviceName || "Serviço", count: 0 };
+      }
+      stats[sid].count += 1;
+    });
+    return Object.values(stats).sort((a, b) => b.count - a.count);
+  }, [bookings, serviceMap]);
+
   const revenueDelta = thisMonthRevenue - lastMonthRevenue;
 
   const lowStockProducts = products.filter(
@@ -269,34 +260,6 @@ export default function AdminDashboard() {
   };
 
   const quickActions = [
-    {
-      to: "/admin/users",
-      icon: "group",
-      title: "Gestão de Clientes",
-      desc: "Gerencie perfis de usuários e permissões",
-      tag: "Registro",
-    },
-    {
-      to: "/admin/staff",
-      icon: "content_cut",
-      title: "Equipe de Profissionais",
-      desc: "Gerencie equipe, serviços e permissões",
-      tag: "Equipe",
-    },
-    {
-      to: "/admin/services/new",
-      icon: "inventory_2",
-      title: "Configuração de Serviços",
-      desc: "Adicione e gerencie serviços de barbearia",
-      tag: "Serviços",
-    },
-    {
-      to: "/admin/analytics",
-      icon: "insights",
-      title: "Análises e Insights",
-      desc: "Acompanhe performance e tendências detalhadas",
-      tag: "Relatórios",
-    },
     {
       to: "/admin/store",
       icon: "storefront",
@@ -336,38 +299,50 @@ export default function AdminDashboard() {
         <>
           {/* KPI Cards */}
           <section style={{ marginBottom: "36px" }}>
-            <p
+            <div
               style={{
-                color: "#d1b76b",
-                textTransform: "uppercase",
-                letterSpacing: "0.18em",
-                fontSize: "11px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: "12px",
                 marginBottom: "16px",
               }}
             >
-              Resumo do mês atual
-            </p>
+              <p
+                style={{
+                  color: "#d1b76b",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.18em",
+                  fontSize: "11px",
+                  margin: 0,
+                }}
+              >
+                Resumo do período
+              </p>
+              <SegmentedControl options={PERIOD_OPTIONS} value={period} onChange={setPeriod} />
+            </div>
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 280px))",
                 gap: "20px",
+                alignItems: "start",
               }}
             >
               <KpiCard
-                icon="calendar_month"
-                label="Agendamentos"
-                value={thisMonthBookings.length}
-                sub={`mês anterior: ${lastMonthBookings.length}`}
-                delta={bookingDelta}
+                icon="request_quote"
+                label="Receita Estimada"
+                value={formatCurrency(periodRevenue + periodFutureRevenue)}
+                sub="realizada + futura no período"
               />
               <KpiCard
                 icon="payments"
                 label="Receita Realizada"
-                value={formatCurrency(thisMonthRevenue)}
-                sub={`mês anterior: ${formatCurrency(lastMonthRevenue)}`}
+                value={formatCurrency(periodRevenue)}
+                sub={period === "current" ? `mês anterior: ${formatCurrency(lastMonthRevenue)}` : "agendamentos concluídos"}
                 delta={
-                  lastMonthRevenue
+                  period === "current" && lastMonthRevenue
                     ? `${((revenueDelta / lastMonthRevenue) * 100).toFixed(1)}%`
                     : null
                 }
@@ -375,25 +350,13 @@ export default function AdminDashboard() {
               <KpiCard
                 icon="pending_actions"
                 label="Receita Futura"
-                value={formatCurrency(thisMonthFutureRevenue)}
+                value={formatCurrency(periodFutureRevenue)}
                 sub="agendamentos pendentes"
-              />
-              <KpiCard
-                icon="group"
-                label="Clientes Cadastrados"
-                value={totalClients}
-                sub="total na plataforma"
-              />
-              <KpiCard
-                icon="content_cut"
-                label="Profissionais"
-                value={professionals.length}
-                sub="equipe ativa"
               />
             </div>
           </section>
 
-          {/* Comparativo de Profissionais */}
+          {/* Visão geral interativa */}
           <section style={{ marginBottom: "36px" }}>
             <p
               style={{
@@ -404,7 +367,96 @@ export default function AdminDashboard() {
                 marginBottom: "16px",
               }}
             >
-              Comparativo de profissionais — histórico geral
+              Visão geral — clique em um segmento para filtrar
+            </p>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(300px, 460px))",
+                gap: "24px",
+                alignItems: "start",
+              }}
+            >
+              <div style={cardStyle}>
+                <p
+                  style={{
+                    color: "#beb7a3",
+                    margin: "0 0 6px",
+                    fontSize: "11px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.16em",
+                  }}
+                >
+                  Distribuição de faturamento
+                </p>
+                <h3 style={{ margin: "0 0 20px", color: "#f6f2e8", fontSize: "16px" }}>
+                  Receita por profissional
+                </h3>
+                <DonutChart
+                  size={140}
+                  data={revenueByProfessional.map((p, i) => ({
+                    id: p.id,
+                    label: p.name,
+                    value: p.revenue,
+                    displayValue: formatCurrency(p.revenue),
+                    color: PROF_COLORS[i % PROF_COLORS.length],
+                  }))}
+                  centerLabel={
+                    <div style={{ textAlign: "center" }}>
+                      <p style={{ margin: 0, color: "#99907c", fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em" }}>Total</p>
+                      <strong style={{ color: "#f6f2e8", fontSize: "12px" }}>
+                        {formatCurrency(revenueByProfessional.reduce((s, p) => s + p.revenue, 0))}
+                      </strong>
+                    </div>
+                  }
+                />
+              </div>
+              <div style={cardStyle}>
+                <p
+                  style={{
+                    color: "#beb7a3",
+                    margin: "0 0 6px",
+                    fontSize: "11px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.16em",
+                  }}
+                >
+                  Saúde da agenda
+                </p>
+                <h3 style={{ margin: "0 0 20px", color: "#f6f2e8", fontSize: "16px" }}>
+                  Status dos agendamentos
+                </h3>
+                <DonutChart
+                  size={140}
+                  data={statusStats.map((s) => ({
+                    label: STATUS_LABELS[s.status] || s.status,
+                    value: s.count,
+                    displayValue: `${s.count}x`,
+                    color: STATUS_COLORS[s.status] || "#99907c",
+                  }))}
+                  centerLabel={
+                    <div style={{ textAlign: "center" }}>
+                      <p style={{ margin: 0, color: "#99907c", fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em" }}>Total</p>
+                      <strong style={{ color: "#f6f2e8", fontSize: "12px" }}>{periodBookings.length}</strong>
+                    </div>
+                  }
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Crescimento */}
+          <section style={{ marginBottom: "36px" }}>
+            <p
+              style={{
+                color: "#d1b76b",
+                textTransform: "uppercase",
+                letterSpacing: "0.18em",
+                fontSize: "11px",
+                marginBottom: "16px",
+              }}
+            >
+              Correlação de crescimento — últimos 7 dias
             </p>
             <div style={cardStyle}>
               <p
@@ -416,29 +468,42 @@ export default function AdminDashboard() {
                   letterSpacing: "0.16em",
                 }}
               >
-                Volume de agendamentos por profissional
+                Receita vs. agendamentos
               </p>
               <h3 style={{ margin: "0 0 20px", color: "#f6f2e8", fontSize: "16px" }}>
-                Ranking de atendimentos
+                Tendência de crescimento
               </h3>
-              <BarChart
-                data={professionalStats}
-                valueKey="bookings"
-                labelKey="name"
-                formatValue={(v) => `${v} agend.`}
+              <LineChart
+                data={weeklyTrend}
+                series={[
+                  { key: "revenue", label: "Receita", color: "#d1b76b", formatValue: formatCurrency },
+                  { key: "bookings", label: "Agendamentos", color: "#99907c", dashed: true, formatValue: (v) => `${v}` },
+                ]}
               />
             </div>
           </section>
 
-          {/* Loja + Últimos agendamentos */}
-          <section
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 2fr",
-              gap: "24px",
-              marginBottom: "36px",
-            }}
-          >
+          {/* Loja & serviços recentes */}
+          <section style={{ marginBottom: "36px" }}>
+            <p
+              style={{
+                color: "#d1b76b",
+                textTransform: "uppercase",
+                letterSpacing: "0.18em",
+                fontSize: "11px",
+                marginBottom: "16px",
+              }}
+            >
+              Loja & serviços
+            </p>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                gap: "24px",
+                alignItems: "start",
+              }}
+            >
             {/* Loja */}
             <div style={cardStyle}>
               <div
@@ -534,7 +599,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Últimos agendamentos */}
+            {/* Serviços — últimos 30 dias */}
             <div style={cardStyle}>
               <p
                 style={{
@@ -545,99 +610,64 @@ export default function AdminDashboard() {
                   letterSpacing: "0.16em",
                 }}
               >
-                Atividade recente
+                Últimos 30 dias — renova automaticamente
               </p>
-              <h3
-                style={{
-                  margin: "0 0 20px",
-                  color: "#f6f2e8",
-                  fontSize: "16px",
-                }}
-              >
-                Últimos agendamentos
+              <h3 style={{ margin: "0 0 20px", color: "#f6f2e8", fontSize: "16px" }}>
+                Serviços mais procurados
               </h3>
-              {bookings.length === 0 ? (
-                <p style={{ color: "#99907c", fontSize: "14px" }}>
-                  Nenhum agendamento encontrado.
-                </p>
-              ) : (
-                <div style={{ display: "grid", gap: "12px" }}>
-                  {bookings.slice(0, 6).map((b) => (
-                    <div
-                      key={b.$id}
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        padding: "10px 14px",
-                        borderRadius: "8px",
-                        background: "rgba(255,255,255,0.03)",
-                        gap: "12px",
-                      }}
-                    >
-                      <div style={{ minWidth: 0 }}>
-                        <p
-                          style={{
-                            margin: 0,
-                            fontSize: "13px",
-                            color: "#f6f2e8",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          {serviceMap.get(b.serviceId) || b.serviceName || "Serviço"}
-                        </p>
-                        <p
-                          style={{
-                            margin: "3px 0 0",
-                            fontSize: "11px",
-                            color: "#99907c",
-                          }}
-                        >
-                          {profMap.get(b.professionalProfileId) || b.professionalLabel || "—"} · {b.date || "—"} {b.time || ""}
-                        </p>
-                      </div>
-                      <div style={{ textAlign: "right", flexShrink: 0 }}>
-                        {b.servicePrice ? (
-                          <span
-                            style={{
-                              color: "#d1b76b",
-                              fontSize: "13px",
-                              fontWeight: "700",
-                            }}
-                          >
-                            {formatCurrency(b.servicePrice)}
-                          </span>
-                        ) : null}
-                        <p
-                          style={{
-                            margin: "3px 0 0",
-                            fontSize: "10px",
-                            color:
-                              b.status === "AGENDADO" ? "#10b981" : "#99907c",
-                          }}
-                        >
-                          {b.status || "—"}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <Link
-                to="/admin/analytics"
+              <DonutChart
+                size={130}
+                data={last30DaysServiceStats.map((s, i) => ({
+                  label: s.name,
+                  value: s.count,
+                  displayValue: `${s.count}x`,
+                  color: PROF_COLORS[i % PROF_COLORS.length],
+                }))}
+                centerLabel={
+                  <div style={{ textAlign: "center" }}>
+                    <p style={{ margin: 0, color: "#99907c", fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em" }}>Total</p>
+                    <strong style={{ color: "#f6f2e8", fontSize: "12px" }}>
+                      {last30DaysServiceStats.reduce((s, x) => s + x.count, 0)}
+                    </strong>
+                  </div>
+                }
+              />
+            </div>
+
+            {/* Serviços — hoje */}
+            <div style={cardStyle}>
+              <p
                 style={{
-                  display: "inline-block",
-                  marginTop: "16px",
-                  fontSize: "12px",
-                  color: "#d1b76b",
-                  textDecoration: "none",
-                  fontWeight: "600",
+                  color: "#beb7a3",
+                  margin: "0 0 6px",
+                  fontSize: "11px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.16em",
                 }}
               >
-                Ver análise completa →
-              </Link>
+                Agenda de hoje
+              </p>
+              <h3 style={{ margin: "0 0 20px", color: "#f6f2e8", fontSize: "16px" }}>
+                Serviços do dia
+              </h3>
+              <DonutChart
+                size={130}
+                data={todayServiceStats.map((s, i) => ({
+                  label: s.name,
+                  value: s.count,
+                  displayValue: `${s.count}x`,
+                  color: PROF_COLORS[i % PROF_COLORS.length],
+                }))}
+                centerLabel={
+                  <div style={{ textAlign: "center" }}>
+                    <p style={{ margin: 0, color: "#99907c", fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em" }}>Hoje</p>
+                    <strong style={{ color: "#f6f2e8", fontSize: "12px" }}>
+                      {todayServiceStats.reduce((s, x) => s + x.count, 0)}
+                    </strong>
+                  </div>
+                }
+              />
+            </div>
             </div>
           </section>
         </>
@@ -659,8 +689,9 @@ export default function AdminDashboard() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 340px))",
             gap: "20px",
+            alignItems: "start",
           }}
         >
           {quickActions.map((action) => (

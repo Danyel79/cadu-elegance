@@ -5,6 +5,8 @@ VITE_APPWRITE_PROJECT_ID=6938618b00071d1a0c7b
 VITE_APPWRITE_ENDPOINT=https://sfo.cloud.appwrite.io/v1
 VITE_APPWRITE_DATABASE_ID=695191e800348139a325
 VITE_APPWRITE_USER_PROFILE_COLLECTION_ID=userprofile
+# Bucket para imagens dos produtos (Storage → Buckets)
+VITE_APPWRITE_PRODUCTS_BUCKET_ID=
 # Bucket para fotos de perfil dos profissionais — pode reaproveitar o mesmo bucket dos produtos
 VITE_APPWRITE_STAFF_PHOTOS_BUCKET_ID=
 VITE_APPWRITE_SERVICES_COLLECTION_ID=services
@@ -12,6 +14,9 @@ VITE_APPWRITE_SERVICES_COLLECTION_ID=services
 VITE_APPWRITE_SERVICE_PHOTOS_BUCKET_ID=
 VITE_APPWRITE_BOOKINGS_COLLECTION_ID=agendamentos
 VITE_APPWRITE_BLOCKS_COLLECTION_ID=bloqueios
+# Coleção com o conteúdo institucional (Sobre Nós/Contato): barbeariaTexto,
+# barbeariaFotoId, instagramUrl, whatsappNumero, contatoTexto — leitura pública
+VITE_APPWRITE_SITE_CONTENT_COLLECTION_ID=
 # ID da coleção em Appwrite (Settings → Name), ex.: agendamentos — tem de bater certo com a consola
 # VITE_APPWRITE_BOOKINGS_FIELD_PROFESSIONAL_PROFILE=profissionalId
 # VITE_APPWRITE_BOOKINGS_FIELD_PROFESSIONAL_USER=professionalUserId

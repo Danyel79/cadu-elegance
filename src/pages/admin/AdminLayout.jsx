@@ -2,13 +2,14 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const navigation = [
-  { name: "Painel", href: "/admin", icon: "dashboard" },
+  { name: "Análises", href: "/admin/analytics", icon: "insights" },
+  { name: "Painel Administrativo", href: "/admin", icon: "dashboard" },
   { name: "Clientes", href: "/admin/users", icon: "group" },
   { name: "Profissionais", href: "/admin/staff", icon: "content_cut" },
   { name: "Serviços", href: "/admin/services/new", icon: "inventory_2" },
-  { name: "Análises", href: "/admin/analytics", icon: "insights" },
   { name: "Loja", href: "/admin/store", icon: "storefront" },
   { name: "Financeiro", href: "/admin/financial", icon: "account_balance" },
+  { name: "Institucional", href: "/admin/institutional", icon: "info" },
 ];
 
 function AdminLayout({ children }) {

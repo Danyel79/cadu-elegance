@@ -3,6 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { requestPasswordRecovery } from "../context/authService";
 import TermsModal from "../components/TermsModal";
+import { InstagramIcon, WhatsAppIcon } from "../components/SocialIcons";
+import { getSiteContent } from "../services/siteContentService";
 
 const LOGIN_BG =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuBqOwE08MCgq-xekfOc-gIfbZ31tiORjGl4hvGHSkXrh1njETLXXe5ZU3_RsIZBZPYBD1vPi4Il9SfcvU5lZzu71kfz5E-w4Nm6lBn8IeIu3Ohs-3OKxclfBgd_zVAD5Y9TZUejvM7ehb2y4SvgrJSPydcYohgvnAqndUzqqVjlDNbVXTmUyQrJoM3aHnk-sy0MYt8KTK_M_HJhlFWcqZxY39-y-0mBNxB8r2LSrDUVdjXoDaSrdX7t5n-PISPPGGiRDuEMA9rfGuM";
@@ -19,10 +21,24 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const { user, signIn } = useAuth();
   const navigate = useNavigate();
+  const [siteContent, setSiteContent] = useState(null);
 
   useEffect(() => {
     if (user) navigate("/home", { replace: true });
   }, [user, navigate]);
+
+  useEffect(() => {
+    let active = true;
+    getSiteContent().then((res) => {
+      if (active && res.success) setSiteContent(res.data);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const whatsappUrl = siteContent?.whatsappNumero ? `https://wa.me/${siteContent.whatsappNumero}` : null;
+  const instagramUrl = siteContent?.instagramUrl || null;
 
   function openForgot() {
     setMode("forgot");
@@ -70,6 +86,11 @@ function Login() {
     <>
     {modalType && <TermsModal type={modalType} onClose={() => setModalType(null)} />}
     <div className="atelier-auth atelier-auth--login">
+      <nav className="atelier-auth-topnav">
+        <Link to="/sobre" className="atelier-auth-topnav-link">SOBRE NÓS</Link>
+        <Link to="/contato" className="atelier-auth-topnav-link">CONTATO</Link>
+      </nav>
+
       <div className="atelier-auth-login-bg" aria-hidden="true">
         <div
           className="atelier-auth-login-bg-photo"
@@ -249,6 +270,20 @@ function Login() {
         </div>
 
         <footer className="atelier-auth-login-footer">
+          {(instagramUrl || whatsappUrl) && (
+            <div className="atelier-auth-social-icons">
+              {instagramUrl && (
+                <a href={instagramUrl} target="_blank" rel="noreferrer" className="atelier-auth-social-icon-link" aria-label="Instagram">
+                  <InstagramIcon size={18} />
+                </a>
+              )}
+              {whatsappUrl && (
+                <a href={whatsappUrl} target="_blank" rel="noreferrer" className="atelier-auth-social-icon-link" aria-label="WhatsApp">
+                  <WhatsAppIcon size={18} />
+                </a>
+              )}
+            </div>
+          )}
           <p className="atelier-auth-switch">
             Novo por aqui?{" "}
             <Link className="atelier-auth-link" to="/register">

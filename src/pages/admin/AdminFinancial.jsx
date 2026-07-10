@@ -614,7 +614,7 @@ export default function AdminFinancial() {
             O sistema sugere automaticamente o preço de venda por unidade.
           </p>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "16px", marginBottom: "24px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "16px", marginBottom: calcResult ? "24px" : 0 }}>
             <div>
               <label style={labelStyle}>Custo total do fardo (R$)</label>
               <input
@@ -654,7 +654,7 @@ export default function AdminFinancial() {
           </div>
 
           {/* Resultado */}
-          {calcResult ? (
+          {calcResult && (
             <div style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
@@ -697,21 +697,6 @@ export default function AdminFinancial() {
                   )}
                 </div>
               ))}
-            </div>
-          ) : (
-            <div style={{
-              padding: "20px",
-              borderRadius: "10px",
-              background: "rgba(255,255,255,0.02)",
-              border: "1px dashed rgba(209,183,107,0.15)",
-              textAlign: "center",
-            }}>
-              <span className="material-symbols-outlined" style={{ color: "#4a4540", fontSize: "28px", display: "block", marginBottom: "8px" }}>
-                calculate
-              </span>
-              <p style={{ margin: 0, color: "#4a4540", fontSize: "13px" }}>
-                Preencha os campos acima para ver a sugestão de preço.
-              </p>
             </div>
           )}
         </div>

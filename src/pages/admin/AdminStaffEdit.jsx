@@ -40,6 +40,7 @@ export default function AdminStaffEdit() {
   const [servicesDraft, setServicesDraft] = useState([]);
   const [nameDraft, setNameDraft] = useState("");
   const [phoneDraft, setPhoneDraft] = useState("");
+  const [bioDraft, setBioDraft] = useState("");
   const [bookingMetrics, setBookingMetrics] = useState({ total: 0, upcoming: 0 });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -73,6 +74,7 @@ export default function AdminStaffEdit() {
     setServicesDraft(Array.isArray(profile.services) ? profile.services.map(String) : []);
     setNameDraft(profile.nickName || "");
     setPhoneDraft(profile.phone || "");
+    setBioDraft(profile.bio || "");
     setPhotoFile(null);
     setPhotoPreview(getStaffPhotoUrl(profile.fotoFileId));
 
@@ -110,6 +112,7 @@ export default function AdminStaffEdit() {
     !!doc &&
     (nameDraft !== (doc.nickName || "") ||
       phoneDraft !== (doc.phone || "") ||
+      bioDraft !== (doc.bio || "") ||
       !!photoFile ||
       !rolesSelectionEqual(doc.roles, roleDraft) ||
       (hasProfissional && !serviceIdsEqual(Array.isArray(doc.services) ? doc.services : [], servicesDraft)));
@@ -166,6 +169,7 @@ export default function AdminStaffEdit() {
       services: servicesPayload,
       nickName: nameDraft,
       phone: phoneDraft,
+      bio: bioDraft,
       ...(fotoFileId ? { fotoFileId } : {}),
     });
     setSaving(false);
@@ -297,6 +301,16 @@ export default function AdminStaffEdit() {
                 <label>
                   Auth ID / Identificador
                   <input type="text" className="admin-input" value={doc.userId} disabled />
+                </label>
+                <label>
+                  História / Características
+                  <textarea
+                    className="admin-input"
+                    rows={4}
+                    placeholder="Conte a trajetória, especialidades e diferenciais deste profissional — aparece na página pública Sobre Nós."
+                    value={bioDraft}
+                    onChange={(e) => setBioDraft(e.target.value)}
+                  />
                 </label>
               </div>
 

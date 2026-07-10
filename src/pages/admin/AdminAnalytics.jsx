@@ -5,7 +5,14 @@ import {
   listAllBookings,
   listServicesCatalog,
   listProfessionals,
+  listUserProfiles,
 } from "../../services/adminDataService";
+import ColumnChart from "../../components/admin/charts/ColumnChart";
+import LineChart from "../../components/admin/charts/LineChart";
+import HorizontalBarChart from "../../components/admin/charts/HorizontalBarChart";
+import SegmentedControl from "../../components/admin/charts/SegmentedControl";
+import KpiCard from "../../components/admin/charts/KpiCard";
+import { isThisMonth, isLastMonth } from "../../utils/adminPeriod";
 
 function formatCurrency(value) {
   return value.toLocaleString("pt-BR", {
@@ -14,100 +21,22 @@ function formatCurrency(value) {
   });
 }
 
-const PROF_COLORS = [
-  "#d1b76b", "#60a5fa", "#a78bfa", "#34d399",
-  "#f87171", "#fbbf24", "#e879f9", "#2dd4bf",
+const METRIC_OPTIONS = [
+  { value: "count", label: "Agendamentos" },
+  { value: "revenue", label: "Receita" },
+  { value: "ticket", label: "Ticket médio" },
 ];
 
-function HorizontalBarChart({ data, valueKey, labelKey, formatValue }) {
-  if (!data.length) return null;
-  const max = Math.max(...data.map((d) => d[valueKey] || 0), 1);
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-      {data.map((item, i) => {
-        const pct = Math.max(((item[valueKey] || 0) / max) * 100, 3);
-        return (
-          <div key={item[labelKey] || i} style={{ display: "grid", gap: "6px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px" }}>
-              <span style={{ fontSize: "12px", color: "#beb7a3", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
-                {item[labelKey]}
-              </span>
-              <strong style={{ fontSize: "12px", color: "#60a5fa", flexShrink: 0 }}>
-                {formatValue ? formatValue(item[valueKey]) : item[valueKey]}
-              </strong>
-            </div>
-            <div style={{ background: "rgba(255,255,255,0.07)", borderRadius: "999px", height: "6px" }}>
-              <div
-                style={{
-                  width: `${pct}%`,
-                  height: "6px",
-                  borderRadius: "999px",
-                  background: "linear-gradient(90deg, #60a5fa, #2563eb)",
-                  transition: "width 0.6s ease",
-                }}
-              />
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
+const METRIC_META = {
+  count: { format: (v) => `${v}`, label: "Agendamentos" },
+  revenue: { format: (v) => formatCurrency(v), label: "Receita" },
+  ticket: { format: (v) => formatCurrency(v), label: "Ticket médio" },
+};
 
-function DonutChart({ data, size = 140, centerLabel }) {
-  const total = data.reduce((s, d) => s + (d.value || 0), 0);
-  if (!total) return null;
-  const sw = Math.round(size * 0.14);
-  const r = (size - sw) / 2;
-  const cx = size / 2;
-  const cy = size / 2;
-  const C = 2 * Math.PI * r;
-  let acc = 0;
-  const segments = data.map((d) => {
-    const f = d.value / total;
-    const seg = { ...d, f, acc };
-    acc += f;
-    return seg;
-  });
-  return (
-    <div style={{ display: "flex", gap: "20px", alignItems: "center", flexWrap: "wrap" }}>
-      <div style={{ position: "relative", width: size, height: size, flexShrink: 0 }}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: "rotate(-90deg)" }}>
-          <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={sw} />
-          {segments.map((seg, i) => (
-            <circle
-              key={i}
-              cx={cx} cy={cy} r={r}
-              fill="none"
-              stroke={seg.color}
-              strokeWidth={sw}
-              strokeDasharray={`${seg.f * C} ${C}`}
-              strokeDashoffset={C * (1 - seg.acc)}
-            />
-          ))}
-        </svg>
-        {centerLabel && (
-          <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "2px" }}>
-            {centerLabel}
-          </div>
-        )}
-      </div>
-      <div style={{ display: "grid", gap: "8px", flex: 1, minWidth: "100px" }}>
-        {segments.map((seg, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: seg.color, flexShrink: 0 }} />
-            <span style={{ fontSize: "12px", color: "#beb7a3", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
-              {seg.label}
-            </span>
-            <span style={{ fontSize: "11px", color: "#f6f2e8", fontWeight: "700", flexShrink: 0 }}>
-              {seg.displayValue || seg.value}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+const CHART_TYPE_OPTIONS = [
+  { value: "column", label: "Coluna" },
+  { value: "line", label: "Linha" },
+];
 
 function formatDateLabel(value) {
   if (!value) return "";
@@ -123,6 +52,7 @@ export default function AdminAnalytics() {
   const [bookings, setBookings] = useState([]);
   const [services, setServices] = useState([]);
   const [professionals, setProfessionals] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [startDate, setStartDate] = useState(() => {
@@ -131,16 +61,19 @@ export default function AdminAnalytics() {
     return date.toISOString().slice(0, 10);
   });
   const [endDate, setEndDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [metric, setMetric] = useState("count");
+  const [chartType, setChartType] = useState("column");
 
   useEffect(() => {
     async function loadData() {
       setLoading(true);
       setError("");
 
-      const [bookingsRes, servicesRes, profsRes] = await Promise.all([
+      const [bookingsRes, servicesRes, profsRes, usersRes] = await Promise.all([
         listAllBookings(),
         listServicesCatalog(),
         listProfessionals(),
+        listUserProfiles(),
       ]);
 
       if (!bookingsRes.success) {
@@ -156,6 +89,7 @@ export default function AdminAnalytics() {
       }
 
       if (profsRes.success) setProfessionals(profsRes.data);
+      if (usersRes.success) setUsers(usersRes.data);
 
       setLoading(false);
     }
@@ -175,23 +109,49 @@ export default function AdminAnalytics() {
     });
   }, [bookings, startDate, endDate]);
 
-  const totalRevenue = useMemo(() => {
-    return filteredBookings.reduce((sum, booking) => {
-      const price = Number(booking.servicePrice ?? servicesMap.get(booking.serviceId)?.price ?? 0);
-      return sum + (Number.isNaN(price) ? 0 : price);
-    }, 0);
-  }, [filteredBookings, servicesMap]);
+  const thisMonthBookings = useMemo(
+    () => bookings.filter((b) => isThisMonth(b.dateIso || b.date)),
+    [bookings]
+  );
+
+  const lastMonthBookings = useMemo(
+    () => bookings.filter((b) => isLastMonth(b.dateIso || b.date)),
+    [bookings]
+  );
+
+  const bookingDelta = thisMonthBookings.length - lastMonthBookings.length;
+
+  const totalClients = useMemo(
+    () =>
+      users.filter((u) =>
+        u.roles?.some((r) => String(r).toLowerCase() === "client")
+      ).length,
+    [users]
+  );
 
   const bookingsByDate = useMemo(() => {
     const counts = {};
     filteredBookings.forEach((booking) => {
       const iso = new Date(booking.dateIso || booking.date).toISOString().slice(0, 10);
-      counts[iso] = (counts[iso] || 0) + 1;
+      const price = Number(booking.servicePrice ?? servicesMap.get(booking.serviceId)?.price ?? 0);
+      if (!counts[iso]) counts[iso] = { date: iso, count: 0, revenue: 0 };
+      counts[iso].count += 1;
+      counts[iso].revenue += Number.isNaN(price) ? 0 : price;
     });
-    return Object.entries(counts)
-      .map(([date, count]) => ({ date, count }))
+    return Object.values(counts)
+      .map((item) => ({ ...item, ticket: item.count ? item.revenue / item.count : 0 }))
       .sort((a, b) => a.date.localeCompare(b.date));
-  }, [filteredBookings]);
+  }, [filteredBookings, servicesMap]);
+
+  const chartData = useMemo(
+    () =>
+      bookingsByDate.map((item) => ({
+        date: item.date,
+        label: formatDateLabel(item.date),
+        value: item[metric],
+      })),
+    [bookingsByDate, metric]
+  );
 
   const serviceStats = useMemo(() => {
     const stats = {};
@@ -227,8 +187,6 @@ export default function AdminAnalytics() {
   const totalDays = bookingsByDate.length;
   const averageBookings = totalDays ? (filteredBookings.length / totalDays).toFixed(1) : "0.0";
 
-  const maxBookings = bookingsByDate.reduce((max, item) => Math.max(max, item.count), 1);
-
   const profMap = useMemo(
     () => new Map(professionals.map((p) => [p.$id, p.nickName || p.$id])),
     [professionals]
@@ -253,6 +211,11 @@ export default function AdminAnalytics() {
     return Object.values(stats).sort((a, b) => b.bookings - a.bookings);
   }, [filteredBookings, profMap]);
 
+  const professionalStatsByRevenue = useMemo(
+    () => [...professionalStats].sort((a, b) => b.revenue - a.revenue),
+    [professionalStats]
+  );
+
   const cardStyle = {
     padding: "28px",
     borderRadius: "20px",
@@ -275,13 +238,13 @@ export default function AdminAnalytics() {
           </p>
         </div>
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "18px", marginTop: "30px" }}>
-          <div style={{ ...cardStyle, flex: "1 1 240px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "18px", marginTop: "30px", alignItems: "flex-start" }}>
+          <div style={{ ...cardStyle, flex: "0 1 280px" }}>
             <p style={{ color: "#beb7a3", margin: 0, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.12em" }}>
               Período
             </p>
             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "14px" }}>
-              <label style={{ display: "grid", gap: "6px", minWidth: "160px" }}>
+              <label style={{ display: "grid", gap: "6px", minWidth: "140px" }}>
                 <span style={{ color: "#beb7a3" }}>Início</span>
                 <input
                   type="date"
@@ -290,7 +253,7 @@ export default function AdminAnalytics() {
                   style={inputStyle}
                 />
               </label>
-              <label style={{ display: "grid", gap: "6px", minWidth: "160px" }}>
+              <label style={{ display: "grid", gap: "6px", minWidth: "140px" }}>
                 <span style={{ color: "#beb7a3" }}>Fim</span>
                 <input
                   type="date"
@@ -301,19 +264,37 @@ export default function AdminAnalytics() {
               </label>
             </div>
           </div>
-          <div style={{ ...cardStyle, flex: "1 1 240px" }}>
+          <div style={{ ...cardStyle, flex: "0 1 260px" }}>
             <p style={{ color: "#beb7a3", margin: 0, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.12em" }}>
-              Agendamentos
+              Agendamentos no período
             </p>
             <h2 style={{ margin: "14px 0 0", color: "#f6f2e8", fontSize: "2.5rem" }}>{filteredBookings.length}</h2>
-            <p style={{ color: "#99907c", marginTop: "10px" }}>Média de {averageBookings} agendamentos por dia no período.</p>
+            <p style={{ color: "#99907c", marginTop: "10px" }}>Média de {averageBookings} por dia.</p>
           </div>
-          <div style={{ ...cardStyle, flex: "1 1 240px" }}>
-            <p style={{ color: "#beb7a3", margin: 0, fontSize: "0.9rem", textTransform: "uppercase", letterSpacing: "0.12em" }}>
-              Receita estimada
-            </p>
-            <h2 style={{ margin: "14px 0 0", color: "#f6f2e8", fontSize: "2.5rem" }}>{formatCurrency(totalRevenue)}</h2>
-            <p style={{ color: "#99907c", marginTop: "10px" }}>Receita gerada por serviços vendidos.</p>
+          <div style={{ flex: "0 1 260px" }}>
+            <KpiCard
+              icon="calendar_month"
+              label="Agendamentos (mês atual)"
+              value={thisMonthBookings.length}
+              sub={`mês anterior: ${lastMonthBookings.length}`}
+              delta={bookingDelta}
+            />
+          </div>
+          <div style={{ flex: "0 1 260px" }}>
+            <KpiCard
+              icon="group"
+              label="Clientes Cadastrados"
+              value={totalClients}
+              sub="total na plataforma"
+            />
+          </div>
+          <div style={{ flex: "0 1 260px" }}>
+            <KpiCard
+              icon="content_cut"
+              label="Profissionais"
+              value={professionals.length}
+              sub="equipe ativa"
+            />
           </div>
         </div>
 
@@ -330,32 +311,29 @@ export default function AdminAnalytics() {
                   </p>
                   <h3 style={{ margin: "10px 0 0", color: "#f6f2e8" }}>Tendência diária</h3>
                 </div>
-                <span style={{ color: "#99907c", fontSize: "0.9rem" }}>{bookingsByDate.length} dias</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                  <SegmentedControl options={METRIC_OPTIONS} value={metric} onChange={setMetric} />
+                  <SegmentedControl options={CHART_TYPE_OPTIONS} value={chartType} onChange={setChartType} />
+                  <span style={{ color: "#99907c", fontSize: "0.9rem" }}>{bookingsByDate.length} dias</span>
+                </div>
               </div>
 
               {bookingsByDate.length === 0 ? (
                 <p style={{ color: "#beb7a3" }}>Nenhum agendamento encontrado no período selecionado.</p>
+              ) : chartType === "column" ? (
+                <ColumnChart
+                  data={chartData}
+                  valueKey="value"
+                  labelKey="label"
+                  formatValue={METRIC_META[metric].format}
+                />
               ) : (
-                <div style={{ display: "grid", gap: "14px" }}>
-                  {bookingsByDate.map((item) => (
-                    <div key={item.date} style={{ display: "grid", gap: "8px" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", color: "#beb7a3", fontSize: "0.9rem" }}>
-                        <span>{formatDateLabel(item.date)}</span>
-                        <strong>{item.count}</strong>
-                      </div>
-                      <div style={{ background: "rgba(255,255,255,0.08)", borderRadius: "999px", minHeight: "10px" }}>
-                        <div
-                          style={{
-                            width: `${Math.max((item.count / maxBookings) * 100, 6)}%`,
-                            minHeight: "10px",
-                            borderRadius: "999px",
-                            background: "linear-gradient(90deg, #d1b76b, #f6e79d)",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <LineChart
+                  data={chartData.map((d) => ({ label: d.label, [metric]: d.value }))}
+                  series={[
+                    { key: metric, label: METRIC_META[metric].label, color: "#d1b76b", formatValue: METRIC_META[metric].format },
+                  ]}
+                />
               )}
             </div>
 
@@ -444,10 +422,10 @@ export default function AdminAnalytics() {
                     </table>
                   </div>
 
-                  {/* Gráficos interativos */}
+                  {/* Gráficos de barra */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginTop: "8px" }}>
                     <div style={{ padding: "20px", borderRadius: "14px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                      <p style={{ color: "#60a5fa", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 16px" }}>
+                      <p style={{ color: "#d1b76b", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 16px" }}>
                         Volume de agendamentos
                       </p>
                       <HorizontalBarChart
@@ -459,24 +437,13 @@ export default function AdminAnalytics() {
                     </div>
                     <div style={{ padding: "20px", borderRadius: "14px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
                       <p style={{ color: "#d1b76b", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 16px" }}>
-                        Distribuição de faturamento
+                        Receita por profissional
                       </p>
-                      <DonutChart
-                        size={130}
-                        data={professionalStats.map((p, i) => ({
-                          label: p.name,
-                          value: p.revenue,
-                          displayValue: formatCurrency(p.revenue),
-                          color: PROF_COLORS[i % PROF_COLORS.length],
-                        }))}
-                        centerLabel={
-                          <div style={{ textAlign: "center" }}>
-                            <p style={{ margin: 0, color: "#99907c", fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em" }}>Total</p>
-                            <strong style={{ color: "#f6f2e8", fontSize: "12px" }}>
-                              {formatCurrency(professionalStats.reduce((s, p) => s + p.revenue, 0))}
-                            </strong>
-                          </div>
-                        }
+                      <HorizontalBarChart
+                        data={professionalStatsByRevenue}
+                        valueKey="revenue"
+                        labelKey="name"
+                        formatValue={(v) => formatCurrency(v)}
                       />
                     </div>
                   </div>
